@@ -1,0 +1,166 @@
+<!-- 头部 -->
+<% include ../../template/pageHead.html %>
+
+<!-- 图表组件 -->
+<% include ../components/components_slide.html %>
+<!-- 其他组件 -->
+<% include ../components/index.html %>
+
+<!-- 表格模板 -->
+<% include ../components/girdTemplate.html %>
+
+<link rel="stylesheet" href="../../css/single/SingleSlide.css" />
+<link rel="stylesheet" href="../../css/single/Inquire.css">
+
+
+
+
+<div id="singleSlidePage" class="singleComparePage">
+    <div class="pageLeft">
+        <div class="choiceCondition">
+            <div class="title">
+                筛选项目
+            </div>
+            <div class="content">
+                <div class="choiceProject">
+                    <pbutton-white bind="true" icon="''" text="addProjectTxt" @click="showEnergyModel = true"></pbutton-white>
+                </div>
+            </div>
+            <energymodel v-if="showEnergyModel" :propsprojectids="_.map(projects,'projectId')" :propsmodelids="_.map(modelids,'energyModelId')"
+                :cancel="addProjectHide" :cb="addProjectCallBack">
+            </energymodel>
+        </div>
+        <div class="choiceCondition">
+            <div class="title">
+                选择时间
+            </div>
+            <div class="content">
+                <div class="choiceTime" :arr="JSON.stringify(searchConditionObj.timeSaveArr.length)">
+                    <div class="choiceTimeOp">
+                        <ptime-calendar :id="'selectTimeLine'" orientation="down" sel="slide.confirmCurrTime">
+                            <panel timetype="dwMy" align="left" double="true" startyear="2003"></panel>
+                        </ptime-calendar>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="choiceCondition">
+            <div class="title">
+                选择分项
+            </div>
+            <div class="content">
+                <div class="choiceSubentry">
+                    <!-- <ptree-normal datasource="subentryTree" sel="singleCompare.addSubentryFn" number="2">
+                                    <item itemid="obj_id" text="obj_name" child="child" issearch="true" disabled="dis"></item>
+                                    <panel width="242" height="300"></panel>
+                                </ptree-normal> -->
+                    <div class="addSubentry" v-text="addSubentryTxt" class="content" :item="JSON.stringify(subentryDisabled)"
+                        :class="{disabled:!subentryDisabled}" @click="addSubetryShow">
+                        添加分项
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="operatBtn">
+            <pbutton-blue bind="true" text="'确定'" @click="confirmSearchListFn"></pbutton-blue>
+        </div>
+    </div>
+    <div class="pageRight">
+
+        <div ref="tab" class="tab neck layout">
+
+            <vcheckbox ref="vcheckbox1" :icon="'M'" :title="'布局'" :datasource="tableTypes" :iscombox="iscombox"
+                :computewidth="computeWidth" :primarykey="'code'" :name="'name'" :selected="query.table" :cb="createHandlerClick('table')"></vcheckbox>
+
+            <cobxs ref="cobxs1" :icon="'%'" :title="'计量方式'" :datasource="measurementTypes" :iscombox="iscombox"
+                :computewidth="computeWidth" :primarykey="'code'" :name="'name'" :selected="query.measurement" :cb="createHandlerClick('measurement')"></cobxs>
+
+            <cobxs ref="cobxs2" :icon="'g'" :title="'单位'" :datasource="unitTypes" :iscombox="iscombox" :computewidth="computeWidth"
+                :primarykey="'code'" :name="'name'" :selected="query.unit" :cb="createHandlerClick('unit')"></cobxs>
+
+            <cobxs ref="cobxs3" :icon="'g'" :title="'区分维度'" :datasource="dimensionalityTypes" :iscombox="iscombox"
+                :computewidth="computeWidth" :primarykey="'code'" :name="'name'" :selected="query.dimensionality" :cb="createHandlerClick('dimensionality')"></cobxs>
+            <vcheckbox ref="vcheckbox2" :icon="'-'" :title="'常用计算'" :datasource="calculateTypes" :iscombox="iscombox"
+                :computewidth="computeWidth" :primarykey="'code'" :name="'name'" :selected="query.calculate" :cb="createHandlerClick('calculate')"></vcheckbox>
+
+            <!--  下载Icon Start -->
+            <div ref="iconlist" class="iconlist">
+                <div class="vg">
+                    <pbutton-white icon="D" shape="rectangle"></pbutton-white>
+                </div>
+                <div class="vg">
+                    <div class="btn">
+                        <pbutton-white bind="true" icon="'N'" @mouseenter="onlineExplainEnter" @mouseleave="onlineExplainLeave"></pbutton-white>
+                    </div>
+                    <div style="position:relative;" v-if="onlineExplainFlag" @mouseenter="onlineExplainEnter"
+                        @mouseleave="onlineExplainLeave">
+                        <promptmessage :type="1"></promptmessage>
+                    </div>
+
+                </div>
+            </div>
+            <!--  下载Icon End -->
+
+
+
+        </div>
+        <div class="operatOption_">
+            <div class="dataVisualization">
+                <div class="chart" v-show="scChartShow">
+                    <!-- <div id="barChart"></div> -->
+                    <!-- 柱状图组件 -->
+                    <column_chart :data="columnConfigData"></column_chart>
+                    <div class="supple">
+                        <div>
+                            <pbutton-blue bind="true" icon="'`'" isborder="false" @click="setYAxisShowFn"></pbutton-blue>
+                        </div>
+                        <!-- <span class="unit">单位：kWh</span> -->
+                    </div>
+                </div>
+                <div class="table">
+                    <!-- 引入报表表格   支持横向竖向滚动   需组件-->
+                    <div class="reportFrom" id="scReportFrom" v-if="scReportShow">
+                        <tgrid :renderlist="gridRenderList"></tgrid>
+                    </div>
+                </div>
+                <!-- 没有数据展示 -->
+                <div class="noData" v-show="noDataChartShow">
+                    <h3>meos</h3>
+                    <span>请先在左侧列表选择参数</span>
+                </div>
+            </div>
+            <div class="projectInformation">
+                <h3 class="title">项目信息</h3>
+                <div class="content">
+                    <h4>能量拐点</h4>
+                    <div>
+                        <div v-for="item in energyPointList" v-if="energyPointList && energyPointList.length >0" v-text="item.time"
+                            :class="{rise:item.state == '2',drop:item.state == '1'}">
+
+                        </div>
+                        <!-- <div class="rise">2016.05</div> -->
+                        <!-- <div class="drop">2016.07</div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 选择分项 -->
+    <!-- 
+        showSubentryTemp:是否显示分项控件
+        addSubetryCallBack：确定选中项回调
+
+        subentryTree：数据源
+     -->
+    <suboption v-if="showSubentryTemp" :cb="addSubetryCallBack" :tree="subentryTree"></suboption>
+
+
+    <!-- 设置纵坐标组件 -->
+    <setdata v-if="setYAxisShow" :max="setMax" :min="setMin" :cb="setYdataFn" :cancle="setYAxisHideFn"></setdata>
+</div>
+
+<script src="../../../js/single/slide/model.js"></script>
+<script src="/js/single/compared/controller.js"></script>
+<script src="/js/single/slide/controller.js"></script>
+<script src="/js/single/Inquire/controller.js"></script>

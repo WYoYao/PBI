@@ -1,0 +1,7 @@
+@import "../publicSrc/public";
+
+.multipletreeitem{
+    @include pcheckbox{
+        float: right;
+    }
+}

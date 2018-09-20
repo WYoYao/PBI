@@ -1,0 +1,98 @@
+.boxshadow {
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12); }
+
+.clear:after {
+  content: "   ";
+  display: block;
+  height: 0;
+  clear: both; }
+
+.icon {
+  font-family: perficon; }
+
+.textover {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
+
+*.per-switch-checkbox {
+  overflow: hidden;
+  color: #637e99;
+  line-height: 16px;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: middle; }
+  *.per-switch-checkbox .per-checkbox_input.per-checkbox-checked {
+    background: #7a94ad; }
+  *.per-switch-checkbox .per-checkbox_input {
+    float: left;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #7a94ad;
+    border-radius: 2px;
+    box-sizing: border-box;
+    position: relative;
+    cursor: pointer;
+    background: #fff; }
+  *.per-switch-checkbox .per-switch_label {
+    float: left;
+    margin-left: 8px; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: #f0f3f6; }
+
+#tab {
+  margin: 14px 10px 0;
+  background: #FFFFFF;
+  border: 1px solid #D9E2E8;
+  border-radius: 3px 3px 0 0;
+  height: calc(100% - 14px);
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.12); }
+  #tab .header {
+    box-sizing: border-box;
+    border-bottom: 1px solid #D9E2E8;
+    line-height: 50px; }
+    #tab .header .left {
+      float: left;
+      width: 280px;
+      box-sizing: border-box;
+      border-right: 1px solid #D9E2E8;
+      line-height: 50px; }
+      #tab .header .left .back {
+        margin-left: 20px;
+        display: inline-block;
+        height: 30px;
+        width: 30px;
+        vertical-align: middle; }
+      #tab .header .left .text {
+        display: inline-block;
+        vertical-align: middle; }
+    #tab .header .rigth {
+      margin-left: 280px; }
+      #tab .header .rigth .tabItem {
+        float: left;
+        margin: 0 20px;
+        height: 42px;
+        cursor: pointer; }
+        #tab .header .rigth .tabItem .icon {
+          vertical-align: top; }
+        #tab .header .rigth .tabItem > span {
+          font-size: 16px;
+          vertical-align: middle; }
+      #tab .header .rigth .tabItem:hover, #tab .header .rigth .tabItem.on {
+        color: #02A9D1;
+        border-bottom: 3px solid #02A9D1; }
+  #tab .content {
+    box-sizing: border-box;
+    height: calc(100% - 50px); }
+    #tab .content .if {
+      display: block;
+      width: 100%;
+      height: 100%; }
+
+/*# sourceMappingURL=content.css.map */

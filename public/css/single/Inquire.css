@@ -1,0 +1,182 @@
+.boxshadow {
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12); }
+
+.clear:after {
+  content: "   ";
+  display: block;
+  height: 0;
+  clear: both; }
+
+.icon {
+  font-family: perficon; }
+
+.textover {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
+
+#app {
+  height: 100%; }
+  #app .left {
+    float: left;
+    width: 279px;
+    height: 100%;
+    border-right: 1px solid #D9E2E8; }
+    #app .left .section {
+      padding: 0 20px;
+      border-bottom: 1px solid #D9E2E8; }
+      #app .left .section .title {
+        display: inline-block;
+        margin-top: 8px;
+        line-height: 36px;
+        font-size: 16px; }
+      #app .left .section .block {
+        padding-bottom: 8px; }
+        #app .left .section .block .line {
+          margin-bottom: 10px; }
+          #app .left .section .block .line .project {
+            height: 30px;
+            border: 1px solid #D9E2E8;
+            border-radius: 1px;
+            line-height: 30px;
+            cursor: pointer;
+            padding-left: 20px;
+            background: #F7F7F9; }
+            #app .left .section .block .line .project em {
+              display: inline-block;
+              vertical-align: middle;
+              color: #637E99;
+              max-width: 40%; }
+        #app .left .section .block .same {
+          display: flex;
+          flex-flow: row nowrap;
+          justify-content: space-between;
+          align-items: center; }
+          #app .left .section .block .same .imgborder {
+            border-radius: 2px;
+            border: 1px solid #CACACA;
+            width: 68px;
+            height: 68px;
+            cursor: pointer; }
+            #app .left .section .block .same .imgborder img {
+              margin-left: 50%;
+              margin-top: 50%;
+              transform: translate(-50%, -50%); }
+            #app .left .section .block .same .imgborder .hove {
+              display: none; }
+          #app .left .section .block .same .imgborder:hover .init, #app .left .section .block .same .imgborder.on .init {
+            display: none; }
+          #app .left .section .block .same .imgborder:hover .hove, #app .left .section .block .same .imgborder.on .hove {
+            display: block; }
+  #app .right {
+    margin-left: 280px;
+    height: 100%; }
+    #app .right .content {
+      height: calc(100% - 50px);
+      position: relative; }
+      #app .right .content .r {
+        float: right;
+        height: 100%;
+        width: 260px;
+        box-sizing: border-box;
+        border-left: 1px solid #D9E2E8; }
+      #app .right .content .l {
+        position: absolute;
+        height: 100%;
+        right: 260px;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: flex-start;
+        align-items: stretch; }
+        #app .right .content .l .chart {
+          flex: 521;
+          box-sizing: border-box;
+          border-bottom: 1px solid #D9E2E8; }
+        #app .right .content .l .zom {
+          flex: 150;
+          border-bottom: 1px solid #D9E2E8; }
+        #app .right .content .l .tb {
+          flex: 310; }
+    #app .right .tab {
+      box-sizing: border-box;
+      height: 50px;
+      line-height: 50px;
+      padding: 0 20px 0 0;
+      border-bottom: 1px solid #D9E2E8;
+      white-space: nowrap; }
+      #app .right .tab .iconlist {
+        float: right;
+        line-height: 50px; }
+        #app .right .tab .iconlist .vg {
+          height: 30px;
+          display: inline-block;
+          margin-right: 10px;
+          vertical-align: middle; }
+
+.vcheckbox {
+  float: left;
+  line-height: 30px; }
+  .vcheckbox .hiddencompute {
+    opacity: 0;
+    z-index: -100;
+    position: fixed;
+    overflow: hidden; }
+  .vcheckbox .tbchk {
+    line-height: 49px; }
+    .vcheckbox .tbchk .item {
+      cursor: pointer;
+      line-height: 36px;
+      margin: 0 10px;
+      font-size: 14px;
+      color: #6D6D6D;
+      vertical-align: middle; }
+    .vcheckbox .tbchk .item.on, .vcheckbox .tbchk .item:hover {
+      color: #02A9D1; }
+  .vcheckbox .combx, .vcheckbox .tb1, .vcheckbox .tbchk {
+    float: left;
+    box-sizing: border-box;
+    padding: 0 10px;
+    border-right: 1px solid #D9E2E8; }
+  .vcheckbox .tb1 .item {
+    display: inline-block;
+    line-height: 50px;
+    margin: 0 10px; }
+  .vcheckbox .combx {
+    min-width: 120px;
+    line-height: 30px; }
+    .vcheckbox .combx .title {
+      position: relative;
+      cursor: pointer;
+      margin: 9px 0;
+      height: calc(100% - 20px);
+      border: 1px solid #D9E2E8;
+      text-align: center; }
+      .vcheckbox .combx .title .icon {
+        line-height: 30px;
+        font-size: 18px; }
+      .vcheckbox .combx .title .list.on {
+        display: block !important; }
+      .vcheckbox .combx .title .list {
+        display: none;
+        position: absolute;
+        top: calc(100% + 1px);
+        left: -1px;
+        right: -1px;
+        box-sizing: border-box;
+        border: 1px solid #D9E2E8;
+        border-top: none;
+        overflow-y: auto;
+        background: #FFFFFF;
+        z-index: 1; }
+        .vcheckbox .combx .title .list .item {
+          display: block;
+          line-height: 44px; }
+        .vcheckbox .combx .title .list .item:hover {
+          color: #02A9D1; }
+    .vcheckbox .combx .title:hover .icon, .vcheckbox .combx .title:hover .text {
+      color: #02A9D1; }
+
+/*# sourceMappingURL=Inquire.css.map */

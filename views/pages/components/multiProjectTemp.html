@@ -1,0 +1,655 @@
+<script type="text/html" id="multiple-project-template">
+    <div class="mproject"  @click.self="cancle()">
+
+        <div class="mtemplate">
+            <div class="mtitle">
+                <span>选择项目</span>
+            </div>
+            <div class="mcontent">
+                <div class="searchBlock">
+                    <div class="box">
+                        <!-- <div class="per-searchbox-icon">f</div> -->
+                        <input type="text" v-model="search" placeholder="输入关键字搜索">
+                        <div clear="" class="input_x" v-if="search.length >0" @click="search = ''">x</div>
+                    </div>
+                </div>
+                <div class="operat">
+                    <div class="left">
+                        <span v-text="result.length">0</span>/
+                        <span v-text="searchList.length">120</span>
+                    </div>
+                    <div class="right" v-if="searchResult && searchResult.length == 0">
+                        <ul>
+                            <li @click="choiceProjectCommon('all')">全选</li>
+                            <li @click="choiceProjectCommon('clear')">清除选择</li>
+                            <li @click="choiceProjectCommon('invert')">反选</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="search" v-if="searchResult && searchResult.length >0">
+                    <ul>
+                        <li v-for="item in searchResult" @click="handlerClick(item)">
+                            <span v-text="item[modelname]" :class="{isSelected : item.isSelected}"></span>
+                            <em></em>
+                        </li>
+                    </ul>
+                </div>
+                <div v-if="searchResult.length == 0" class="mstemp" :data="JSON.stringify(treedata)">
+                    <div class="option" id="treedata">
+                        <!--
+                            vcontent:树节点父级变量名称
+                            vname:树节点变量名称
+                            vkey:树节点变量key
+                            list:数据源
+                            click : 选项点击事件
+                            selectedlist : 已选列表
+                            clickplus :展开选项点击事件
+                            showlist：展示列表
+                            issingle：是否单选  false时 为多选
+                        -->
+                        <multipletree ref="multipletree" :vcontent="modelcontent" :vname="modelname" :vkey="modelkey" :list="treedata" :click="handlerClickModel"
+                            :selectedlist="selectList" :clickplus="clickplus" :showlist="shows" :issingle="false"></multipletree>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="mfooter">
+                <div class="btn" @click.stop="cancle()">
+                    <pbutton-white text="取消"></pbutton-white>
+                </div>
+                <div class="btn mconfirm" @click.stop="submit(selectList)">
+                    <pbutton-blue text="确定"></pbutton-blue>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</script>
+
+<script>
+    $(function () {
+        Vue.component('mproject', {
+            template: '#multiple-project-template',
+            props: {
+                // 搜索关键字key
+                search: {
+                    type: String,
+                    default: '',
+                },
+                // 已经的选中的模型主键数组
+                result: {
+                    type: Array,
+                    default: [],
+                },
+                cb: {
+                    type: Function,
+                    // required: true,
+                },
+                // 取消的回调
+                cancle: {
+                    type: Function,
+                },
+            },
+            data: function () {
+                return {
+                    treedata: [], //数据源
+
+                    searchList: [], //搜索数据源
+
+                    searchResult: [], //搜索结果列表
+
+                    search: '', //搜索关键字
+
+                    shows: [], //展示项数组数据
+
+                    selectList: [], //选中数据列表
+
+                    // 根据model接口定义的常量
+                    modelcontent: 'child_objs',
+                    modelname: 'obj_name',
+                    modelkey: 'obj_id',
+
+
+                }
+            },
+            computed: {
+                // seleceted: function () {
+                //     return this.result;
+                // },
+                searchKey: function () {
+                    return this.search;
+                },
+            },
+            methods: {
+                searchFn: function () { //触发搜索
+                    this.searchKey = $("#searchInput").pval();
+                },
+
+                handlerClickModel: function (id) { //每个选项点击事件
+                    var index = this.selectList.indexOf(id);
+                    index == -1 ? this.selectList.push(id) : this.selectList.splice(index, 1);
+                    this.result = this.selectList;
+                    // console.log(this.selectList);
+                },
+                //  点击属性菜单图标  显示展开项
+                clickplus: function (id) {
+                    var index = this.shows.indexOf(id);
+                    index == -1 ? this.shows.push(id) : this.shows.splice(index, 1);
+                },
+
+                // 点击选中按钮返回已选中的列表
+                submit: function (ids) {
+
+                    var _that = this;
+                    _that.cb(
+                        this.treeTransArr(this.treedata).filter(function (item) {
+                            return _that.selectList.indexOf(item[_that.modelkey]) != -1;
+                        }))
+                },
+                handlerClick: function (item) {
+                    var _that = this;
+                    item.isSelected = !item.isSelected;
+                    var index = _that.selectList.indexOf(item[_that.modelkey]);
+                    // 有则删除无则添加
+                    index == -1 ? _that.selectList.push(item[_that.modelkey]) : _that.selectList.splice(
+                        index, 1);
+                    this.result = this.selectList;
+                    console.log(_that.result);
+                },
+                treeTransArr: function (tree) {
+                    var that = this;
+                    return tree.reduce(function (con, item) {
+
+                        var callee = arguments.callee;
+
+                        con.push(item);
+
+                        if (_.isArray(item[that.modelcontent]) && item[that.modelcontent].length)
+                            item[that.modelcontent].reduce(callee, con)
+                        return con;
+                    }, []);
+                },
+                choiceProjectCommon: function (state) { //全选、反选、清除
+                    // return this.operatSate = state;
+                    var that = this;
+                    var _selectArr = JSON.parse(JSON.stringify(that.selectList));
+                    switch (state) {
+                        case '':
+                            break;
+                        case 'all':
+                            var res = that.selectedByState(that.treedata, 'all', []);
+
+                            that.selectList = _.clone(res._result);
+                            // that.shows = _.clone(res._result);
+                            that.result = res._result;
+                            console.log(that.selectList);
+                            break;
+
+                        case 'clear':
+                            var res = that.selectedByState(that.treedata, 'clear', []);
+
+                            that.selectList = _.clone(res._result);
+                            // that.shows = _.clone(res._result);
+                            that.result = res._result;
+                            console.log(that.selectList);
+                            break;
+
+                        case 'invert':
+                            var res = that.selectedByState(that.treedata, 'invert', _selectArr);
+
+                            that.selectList = _.clone(res._result);
+                            // that.shows = _.clone(res._result);
+                            that.result = res._result;
+                            console.log(that.selectList);
+                            break;
+                    }
+
+                },
+                selectedByState: function (tree, state, currList) { //处理全选，反选，取消选中 通用事件
+                    var that = this;
+                    var _tree = that.treeTransArr(tree),
+                        _result = [];
+
+                    if (state === 'all') { //全选
+                        _result = _tree.map(function (item) {
+                            return item[that.modelkey];
+                        })
+                    } else if (state === 'clear') { //取消选中
+                        _result = [];
+                    } else if (state === 'invert') { //反选
+                        _result = [];
+                        var _currList = currList.length > 0 ? currList : [];
+                        if (_currList && _currList.length > 0) { //存在已选
+                            _tree.forEach(function (item) {
+                                if (_currList.indexOf(item[that.modelkey]) == '-1') {
+                                    _result.push(item[that.modelkey]);
+                                }
+
+                            });
+
+                        } else {
+                            _result = _tree.map(function (item) {
+                                return item[that.modelkey];
+                            })
+                        }
+
+                    };
+                    return {
+                        _result: _result,
+                    }
+                },
+                disabledMethods: function () {
+                    this.$nextTick(function () {
+                        $(".mconfirm").find("div").pdisable(!this.result.length);
+                    })
+
+                }
+            },
+            watch: {
+                searchKey: function (val, oldval) {
+                    var that = this;
+                    that.searchResult = [];
+                    val = val.replace(/(^\s*)|(\s*$)/g, "");
+                    if (val === '') {
+                        return;
+                    };
+                    var list = this.searchList;
+                    //正则匹配模糊搜索
+                    if (!(list instanceof Array)) {
+                        return;
+                    }
+                    var len = list.length;
+                    var reg = new RegExp(that.searchKey.replace(/(^\s*)|(\s*$)/g, ""));
+                    for (var i = 0; i < len; i++) {
+                        //如果字符串中不包含目标字符会返回-1
+                        if (list[i][that.modelname].match(reg)) {
+                            that.searchResult.push(list[i]);
+                        }
+                    }
+                    _.forEach(that.searchResult, function (item) {
+                        if (that.result.indexOf(item[that.modelkey]) != '-1') {
+                            item.isSelected = true;
+                        } else {
+                            item.isSelected = false;
+                        }
+                    })
+                    console.log(that.searchResult);
+                },
+                result: function () {
+                    this.disabledMethods();
+                },
+            },
+            beforeMount: function () {
+                var that = this;
+                this.selectList = this.result;
+
+
+
+                // this.shows =  JSON.parse(JSON.stringify(this.result));
+                console.log(this.result);
+                console.log(this.selectList)
+                //Ajax请求获取项目数据并处理
+                that.treedata = [{
+                    "obj_id": "a11",
+                    "obj_name": "建筑类型1",
+                    "child_objs": [{
+                        "obj_id": "a22",
+                        "obj_name": "建筑类型a1",
+                        "obj_type": "p3",
+                        "child_objs": [{
+                            "obj_id": "a33",
+                            "obj_name": "项目a",
+                            "obj_type": "p3",
+
+                        }]
+                    }]
+                }, {
+                    "obj_id": "b11",
+                    "obj_name": "建筑类型2",
+                    "child_objs": [{
+                        "obj_id": "b22",
+                        "obj_name": "建筑类型b1",
+                        "obj_type": "p3",
+                        "child_objs": [{
+                            "obj_id": "b33",
+                            "obj_name": "项目b",
+                            "obj_type": "p3",
+
+                        }]
+                    }]
+                }, ];
+                that.treedata = mTreeInit(that.treedata, '', '', 1);
+                var _res = [];
+                _res = that.result.map(function (item) {
+                    return getNames(that.treedata, [], item);
+                });
+
+                function  getNames(array, childs, obj_id) {    
+                    for (var  i = 0; i < array.length; i++)     {        
+                        var  item = array[i];        
+                        if (item.obj_id == obj_id) {            
+                            childs.push(item);            
+                            return  childs;        
+                        }        
+                        if (item.child_objs && item.child_objs.length > 0) {                       
+                            childs.push(item);            
+                            var  rs = getNames(item.child_objs, childs, obj_id);            
+                            if (rs) {                
+                                return  rs;            
+                            }            
+                            else {
+                                var  index  = childs.indexOf(item);
+                                if (index > -1) {
+                                    childs.splice(index,  1);
+                                }            
+                            }        
+                        }    
+                    }    
+                    return  false;
+                }
+                var comArr = [];
+                _.forEach(_res, function (item) {
+                    var jsArr = _.map(item, 'obj_id');
+                    _.forEach(jsArr, function (info) {
+                        var index = comArr.indexOf(info);
+                        // 有则删除无则添加
+                        if (index == -1) {
+                            comArr.push(info)
+                        }
+
+                    })
+                });
+                that.shows = _.clone(comArr);
+                console.log(that.shows);
+            },
+            mounted: function () {
+                var that = this;
+                // that.selectList = [];
+                this.disabledMethods();
+                that.searchList = that.treeTransArr(that.treedata);
+
+            }
+
+
+        })
+    })
+</script>
+<script>
+    window.randomRangeId = function (num) { //生成随机数
+
+        var that = this;
+        var returnStr = "",
+            charStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for (var i = 0; i < num; i++) {
+            var index = Math.round(Math.random() * (charStr.length - 1));
+            returnStr += charStr.substring(index, index + 1);
+        }
+        return returnStr;
+    }
+    window.mTreeInit = function (arr, parentId, placeholder, lv) {
+        //默认赋值树数据
+        var that = this;
+        var mTreeInit = arguments.callee;
+
+        arr = arr.map(function (item) {
+            item.lv = lv;
+            item.placeholder = placeholder || "";
+            item.parentId = parentId || "";
+            item.id = randomRangeId(10);
+            item.selected = false;
+
+            if (item.child_objs && item.child_objs.length) {
+                mTreeInit(item.child_objs, item.obj_id, item.placeholder, lv + 1);
+            } else {
+                item.child_objs = [];
+            }
+
+            return item;
+        });
+
+        return arr;
+    }
+</script>
+<style>
+    .mproject {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        /* background: rgba(255, 255, 255, 0.8); */
+        z-index: 99;
+    }
+
+    .mproject>.mtemplate {
+        width: 600px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border: 1px solid #d9e2e8;
+        background: #fff;
+        height: 550px;
+        overflow-x: scroll;
+        /* padding: 10px; */
+    }
+
+    .mproject>.mtemplate>.mtitle {
+        height: 50px;
+        width: 100%;
+        background: #6985a1;
+        text-align: center;
+        line-height: 50px;
+        color: #fff;
+        font-size: 18px;
+        border-radius: 2px 2px 0 0;
+        box-sizing: border-box;
+    }
+
+    .mproject>.mtemplate>.mcontent {
+        padding: 10px;
+    }
+
+    .mproject .mstemp {
+        width: 100%;
+        height: 340px;
+        overflow: scroll;
+        border: 1px solid #e9e2e8;
+    }
+
+    .mproject .mstemp .top {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        height: 30px;
+        border-bottom: 1px solid #e9e2e8;
+    }
+
+    .mproject .mstemp .top .tit {
+        font-size: 14px;
+    }
+
+    .ms-arrow {
+        font-family: 'perficon';
+        color: #7a94ad;
+        cursor: pointer;
+        width: 24px;
+        height: 24px;
+        text-align: center;
+        line-height: 24px;
+        /* float: left; */
+        margin-top: 0px;
+    }
+
+    .option {}
+
+    .option .top:hover {
+        cursor: pointer;
+        background: #f8f8f8;
+    }
+
+    .pullDownList>ul>li {
+        text-indent: 24px;
+        height: 30px;
+        line-height: 30px;
+        border-bottom: 1px solid #d9e2e8;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+    }
+
+    .pullDownList>ul>li:hover {
+        cursor: pointer;
+        background: #f8f8f8;
+    }
+
+    .pullDownList>ul>li>span {
+        display: block;
+        width: 180px;
+        height: 30px;
+    }
+
+    .pullDownList>ul>li>span.isSelected {
+        color: #02a9d1;
+    }
+
+    .pullDownList>ul>li>em {
+        width: 30px;
+        height: 30px;
+    }
+
+    /* 搜索条件 */
+
+    .searchBlock {}
+
+    .searchBlock .box {
+        height: 30px;
+        position: relative;
+    }
+
+    .searchBlock .box>input {
+        width: 260px;
+    }
+
+    .searchBlock .box>.input_x {
+        width: 14px;
+        height: 14px;
+        background: #d9d9d9;
+        border-radius: 100%;
+        color: #fff;
+        font-family: 'perficon';
+        position: absolute;
+        left: 240px;
+        top: 7px;
+        cursor: pointer;
+        font-size: 12px;
+        text-align: center;
+        line-height: 14px;
+    }
+
+    /* 搜索列表 */
+
+    .search {}
+
+    .search>ul {
+        border: 1px solid #e9e2e8;
+    }
+
+    .search>ul>li {
+        text-indent: 24px;
+        height: 30px;
+        line-height: 30px;
+        border-bottom: 1px solid #d9e2e8;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+    }
+
+    .search>ul>li:hover {
+        cursor: pointer;
+        background: #f8f8f8;
+    }
+
+    .search>ul>li>span {
+        display: block;
+        width: 180px;
+        height: 30px;
+    }
+
+    .search>ul>li>span.isSelected {
+        color: #02a9d1;
+    }
+
+    .search>ul>li>em {
+        width: 30px;
+        height: 30px;
+    }
+
+    /* 选择项目的操作选项 */
+
+    .mproject .operat {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        padding-top: 12px;
+        margin-bottom: 10px;
+        justify-content: space-between;
+    }
+
+    .mproject .operat .left {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        width: 80px;
+    }
+
+    .mproject .operat .left>span:first-child {
+        color: #111;
+    }
+
+    .mproject .operat .right {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+    }
+
+    .mproject .operat .right>ul {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+    }
+
+    .mproject .operat .right>ul>li {
+        padding: 0 8px;
+        height: 20px;
+        border-right: 1px solid #d9e2e8;
+        box-sizing: border-box;
+        color: #647D99;
+    }
+
+    .mproject .operat .right>ul>li:hover {
+        cursor: pointer;
+    }
+
+    .mproject .operat .right>ul>li:last-child {
+        border-right: none;
+    }
+
+    .mproject .mfooter {
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        height: 50px;
+        text-align: center;
+    }
+
+    .mproject .mfooter .btn {
+        margin: 10px;
+        display: inline-block;
+    }
+</style>

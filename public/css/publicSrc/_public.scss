@@ -1,0 +1,78 @@
+.boxshadow{
+    box-shadow: 0 0 12px 0 rgba(0,0,0,0.12);
+}
+
+
+
+.clear:after{
+     content:"   ";        
+     display:block;        
+     height:0;        
+     clear:both;             
+}
+
+.icon{
+    font-family: perficon;
+}
+
+.textover{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+
+$fff : #FFFFFF;
+$cb1:#D9E2E8;
+$ch:#02A9D1;
+$iconcolor:#7A94AD;
+
+@mixin pcheckbox{
+        .pcheckbox{
+            @content;
+            overflow: hidden;
+            color: #637e99;
+            line-height: 16px;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 14px;
+
+            .pcheckbox_input{
+                float: left;
+                width: 16px;
+                height: 16px;
+                border: 1px solid #7a94ad;
+                border-radius: 2px;
+                box-sizing: border-box;
+                position: relative;
+                cursor: pointer;
+                background: #fff;
+            }
+            
+            .pswitch_label {
+                float: left;
+            }
+
+            .pcheckbox-checked {
+                background: #7a94ad;
+            }
+
+            .pcheckbox-checked.pcheckbox_input:before {
+                box-sizing: content-box;
+                content: "";
+                border: 2px solid #fff;
+                border-left: 0;
+                border-top: 0;
+                height: 7px;
+                left: 4px;
+                top: 1px;
+                transform: rotate(45deg);
+                width: 4px;
+                transition: transform .15s cubic-bezier(.71, -0.46, .88, .6) .05s;
+                transform-origin: center;
+                position: absolute;
+            }
+        }
+}
+

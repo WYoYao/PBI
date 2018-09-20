@@ -1,0 +1,55 @@
+.boxshadow {
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12); }
+
+.clear:after {
+  content: "   ";
+  display: block;
+  height: 0;
+  clear: both; }
+
+.icon {
+  font-family: perficon; }
+
+.textover {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
+
+.multipletreeitem .pcheckbox {
+  float: right;
+  overflow: hidden;
+  color: #637e99;
+  line-height: 16px;
+  cursor: pointer;
+  display: inline-block;
+  margin-top: 14px; }
+  .multipletreeitem .pcheckbox .pcheckbox_input {
+    float: left;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #7a94ad;
+    border-radius: 2px;
+    box-sizing: border-box;
+    position: relative;
+    cursor: pointer;
+    background: #fff; }
+  .multipletreeitem .pcheckbox .pswitch_label {
+    float: left; }
+  .multipletreeitem .pcheckbox .pcheckbox-checked {
+    background: #7a94ad; }
+  .multipletreeitem .pcheckbox .pcheckbox-checked.pcheckbox_input:before {
+    box-sizing: content-box;
+    content: "";
+    border: 2px solid #fff;
+    border-left: 0;
+    border-top: 0;
+    height: 7px;
+    left: 4px;
+    top: 1px;
+    transform: rotate(45deg);
+    width: 4px;
+    transition: transform 0.15s cubic-bezier(0.71, -0.46, 0.88, 0.6) 0.05s;
+    transform-origin: center;
+    position: absolute; }
+
+/*# sourceMappingURL=MultipleTree.css.map */

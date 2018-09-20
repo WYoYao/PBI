@@ -1,0 +1,72 @@
+.boxshadow {
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12); }
+
+.clear:after {
+  content: "   ";
+  display: block;
+  height: 0;
+  clear: both; }
+
+.icon {
+  font-family: perficon; }
+
+.textover {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
+
+.suboption {
+  height: 100%;
+  width: 100%; }
+  .suboption .layer {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0; }
+  .suboption .sheader {
+    height: 30px;
+    background: #F7F7F9;
+    padding: 10px 20px; }
+    .suboption .sheader .input-unit {
+      display: block;
+      position: relative; }
+      .suboption .sheader .input-unit .selected {
+        position: relative;
+        height: 30px;
+        border: 1px solid #D9E2E8;
+        border-radius: 1px;
+        line-height: 30px;
+        cursor: pointer;
+        padding-left: 20px;
+        background: #F7F7F9; }
+        .suboption .sheader .input-unit .selected .icon {
+          right: 1px !important;
+          left: auto; }
+      .suboption .sheader .input-unit .icon {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 30px;
+        width: 30px;
+        text-align: center;
+        line-height: 30px;
+        color: #7A94AD; }
+      .suboption .sheader .input-unit .input-div {
+        height: 30px; }
+        .suboption .sheader .input-unit .input-div input[type="text"] {
+          padding-left: 30px; }
+  .suboption .ptem {
+    position: relative; }
+    .suboption .ptem .floatemp {
+      position: absolute;
+      top: 0;
+      right: -251px;
+      height: 600px;
+      z-index: 10;
+      border: 1px solid #D9E2E8; }
+  .suboption .sbody {
+    height: calc(100% - 50px);
+    background: #FFFFFF; }
+
+/*# sourceMappingURL=suboption.css.map */

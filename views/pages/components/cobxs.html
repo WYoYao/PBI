@@ -1,0 +1,95 @@
+<script type="text/html" id="cobxs">
+
+    <div class="vcheckbox" @click.stop="void 0">
+        <!-- 图表Start -->
+        <div :class="iscombox?'hiddencompute':''">
+            <div ref="tbchk" class="tbchk">
+                <span class="item" v-for="(item,index) in (_.isArray(datasource)?datasource:[])" @click="handlerClick(item)" :class="selected.indexOf(item[primarykey])!=-1?'on':''" :title="item[name]" v-text="item[name]"></span>
+            </div>
+        </div>
+        <!-- 图表End -->
+        <!-- 下拉Start -->
+        <div class="combx" v-show="iscombox">
+            <div class="title" @click.stop="open=!open">
+                <span>
+                    <em class="icon" v-text="icon"></em>
+                    <em class="text" v-text="title" v-show="!selected.length"></em>
+                    <em class="text" v-text="title" v-show="selected.length" :title="getTitle()" v-text="getTitle()"></em>
+                </span>
+                <!-- <ul class="list" :class="open?'on':''" v-show="open"> -->
+                 <ul class="list" :class="open?'on':''">
+                    <li v-for="(item,index) in (_.isArray(datasource)?datasource:[])" class="item" @click="handlerClick(item)" :title="item[name]" v-text="item[name]"></li>
+                </ul>
+            </div>
+        </div>
+        <!-- 下拉End -->
+    </div>
+</script>
+
+
+<script>
+    Vue.component('cobxs', {
+        template: '#cobxs',
+        data: function () {
+            return {
+                // iscombox: false,
+                selected: [],
+                open: false,
+            }
+        },
+        /**
+         * more 单选或多选  单选为 false 多选为 true
+         * computewidth 父级可用空间宽度方法
+         * datasrouce 选项集合
+         * primarykey 集合中实例的主键
+         * name 集合中实例的名字
+         * cb 点击选择的返回值
+        */
+        props: ["more", "datasource", "computewidth", "primarykey", "cb", "name", "iscombox", "title", "icon"],
+        methods: {
+            getTitle: function () {
+                var query = {};
+                query[this.primarykey] = this.selected[0];
+                return _.get(_.find(this.datasource, query), this.name, this.title);
+            },
+            //  点击事件
+            handlerClick: function (item) {
+                var _that = this;
+                _that.selected = [item[_that.primarykey]];
+                _.isFunction(_that.cb) ? _that.cb(
+                    (_that.datasource || []).filter(function (item) {
+                        return _that.selected.indexOf(item[_that.primarykey]) != -1;
+                    })
+                ) : "";
+            },
+            getWidth: function () {
+                return this.$refs.tbchk.offsetWidth;
+            },
+            documentClick: function () {
+                this.open = false;
+            }
+        },
+        computed: {
+        },
+        watch: {
+            open: function (newValue, oldValue) {
+                if (newValue != oldValue) {
+                    if (newValue) {
+                        document.addEventListener("click", this.documentClick);
+                    } else {
+                        document.removeEventListener("click", this.documentClick);
+                    }
+                }
+            }
+        },
+        updated: function () {
+
+        },
+        mounted: function () {
+            this.computewidth();
+        },
+        beforeDestroy: function () {
+
+        }
+    })
+</script>

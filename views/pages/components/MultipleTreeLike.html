@@ -1,0 +1,68 @@
+<link rel="stylesheet" href="/css/single/MultipleTree.css">
+
+<script type="text/html" id="multipletreelike">
+<div class="per-structure-normal multipletree">
+    <div class="per-structure-con">
+        <div class="per-scrollbar" style="overflow-y:auto;">
+            <div class="per-scrollbar_wrap">
+                <div class="per-scrollbar_actual">
+                    <div class="per-tree-wrap">
+                        <!--  Start  -->
+                        <div class="per-tree-temp multipletreeitem" v-for="(item,index) in list">
+                            <div class="per-tree-title per-structure-single" :title="item[vname]">
+                                <div class="per-slh">
+                                    <span class="per-tree-arrow" style="visibility: visible;" v-if="item[vcontent] && _.isArray(item[vcontent]) && item[vcontent].length" @click.stop="clickplus(item[vkey])" v-text="(showlist.indexOf(item[vkey]) !=-1)?'b':'r'"></span>
+                                    <span class="per-tree-arrow" style="visibility: visible;" v-if="!(item[vcontent] && _.isArray(item[vcontent]) && item[vcontent].length)" v-text=""></span>
+                                    <b :title="item[vname]" @click.stop="void 0">
+                                        {{item[vname]}}
+                                        <div class="pcheckbox" v-if="!issingle">
+                                            <span class="pcheckbox_input" :class="(selectedlist.indexOf(item[vkey]) !=-1)?'pcheckbox-checked':''"></span>
+                                            <span class="pswitch_label"></span>
+                                        </div>
+                                    </b>
+                                </div>
+                            </div>
+                            <div class="per-tree-con" v-if="item[vcontent] && _.isArray(item[vcontent]) && item[vcontent].length" v-show="showlist.indexOf(item[vkey]) !=-1">
+                                <multipletreeitem v-for="(item,index) in item[vcontent]" :click="click" :clickplus="clickplus" :item="item" :vcontent="vcontent" :selectedlist="selectedlist" :showlist="showlist" :vname="'energyModelName'" :vkey="'energyModelId'" :issingle="issingle"></multipletreeitem>
+                            </div>
+                        </div>
+                        <!-- End -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
+
+<script>
+
+    $(function () {
+
+        Vue.component('multipletreelike', {
+            template: '#multipletreelike',
+            data: function () {
+                return {
+                    "vcontent": "energyModelList",
+                    "vname": "buildingLocalName",
+                    "vkey": "buildingLocalId",
+                };
+            },
+            /**
+             * vcontent 子集合的 key
+             * vname 名称的 key
+             * vkey 唯一主键的 key
+             * list 数据集合 Array
+             * showlist  需要展示的主键集合
+             * selectedlist 选中的主键集合
+             * click  点击事件的回调
+            */
+            props: ["list", "click", "clickplus", "showlist", "selectedlist", "issingle"],
+            methods: {},
+            computed: {},
+            watch: {},
+            beforeMount: function () { },
+            beforeDestroy: function () { }
+        })
+    })
+</script>

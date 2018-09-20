@@ -1,0 +1,199 @@
+<% include ../../template/pageHead.html %>
+
+<script type="text/javascript" src="<%=host%>/pcontrol/pchart_src_2.0.js"></script>
+<link rel="stylesheet" href="../css/multiple/MultiplePop.css">
+<script src="../../../js/multiple/MultiplePop/model.js"></script>
+<script src="../../../js/multiple/MultiplePop/controller.js"></script>
+
+
+<div class="multiplePopContent" id="multiplePopContent">
+    <div class="leftContent" id="leftContent">
+        <div class="multipleSelect">
+            <div class="title">选择项目</div>
+            <div class="chooseProjects">
+                <div class="project">
+                    <span v-text="projectTextShow">项目</span><i class="arrow"></i>
+                </div>
+                <!--项目选择弹框显示-->
+            </div>
+        </div>
+        <div class="multipleSelect">
+            <div class="title">选择时间</div>
+            <ptime-calendar id="multiplePopCalendar" orientation="down" sel="multiplePopMethods.selCalendarTime">
+                <panel timetype="dwMy" startyear="2000" endyear="2050" double="true" doubletoggle="true"></panel>
+            </ptime-calendar>
+        </div>
+        <div class="multipleSelect">
+            <div class="title">选择分项</div>
+            <div class="chooseProjects">
+                <div class="project" @click="objectSelectMadel()">
+                    <span v-text="objectName">选择分项</span><i class="arrow"></i>
+                </div>
+                <!--分项选择弹框显示-->
+                <div class="objectSelect" v-show="objectSelectShow">
+                    <ptree-normal bind="true" datasource="treeData" sel="multiplePop.selected()" number="1" id="'hasSelectedObject'">
+                        <item itemid="id" text="name" child="child" issearch="true" disabled="dis"></item>
+                        <panel width="400" height="600"></panel>
+                    </ptree-normal>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!--没有分项的项目重新选择-->
+        <div class="noSelect">
+            <div class="specialProject">以下项目无所选分项，请重新选择</div>
+            <div v-for="item in 2">
+                <div v-text="" class="projectName">项目A</div>
+                <div class="chooseProjects">
+                    <div class="project" @click="objectSelectMadel()">
+                        <span v-text="objectName">选择分项</span><i class="arrow"></i>
+                    </div>
+                    <!--分项选择弹框显示-->
+                    <div class="objectSelect" v-show="objectSelectShow">
+                        <ptree-normal bind="true" datasource="treeData" sel="multiplePop.selected()" number="1" id="'hasSelectedObject'">
+                            <item itemid="id" text="name" child="child" issearch="true" disabled="dis"></item>
+                            <panel width="400" height="600"></panel>
+                        </ptree-normal>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <pbutton-blue text="确定" id="confirm" @click="confirm()"></pbutton-blue>
+    </div>
+    <div class="rightContent">
+        <div class="neck">
+            <div class="chartOption" id="chartOption">
+                <pswitch-checkbox text="图表" state="true" change="multiplePop.chartType('chartForm')"
+                                  id="chartForm"></pswitch-checkbox>
+                <pswitch-checkbox text="报表" state="false" change="multiplePop.chartType('reportForm')"
+                                  id="reportForm"></pswitch-checkbox>
+            </div>
+            <div class="energySourceOption">
+                <ul>
+                    <li class="isSelected" @click="energySourceType(event,0)">能耗</li>
+                    <li @click="energySourceType(event,1)">费用</li>
+                    <li @click="energySourceType(event,2)">碳排放量</li>
+                    <li @click="energySourceType(event,3)">标煤</li>
+                </ul>
+            </div>
+            <div class="dimensionOption">
+                <div class="textPart">气泡颜色区分纬度</div>
+                <pswitch-radio text="建筑类型" name="mark" change="multiplePop.dimensionType(0)"
+                               state="true"></pswitch-radio>
+                <pswitch-radio text="气候区" name="mark" change="multiplePop.dimensionType(1)"></pswitch-radio>
+                <pswitch-radio text="管理区" name="mark" change="multiplePop.dimensionType(2)"></pswitch-radio>
+            </div>
+            <div class="downLoadPart">
+                <pbutton-white icon="D" @click="downLoad"></pbutton-white>
+
+                <pbutton-white icon="?" id="detail"  @click="showModel"></pbutton-white>
+                <div class="showList" v-show="showDownLoadList">
+                    <ul>
+                        <li @click="downLoadChart">下载图表</li>
+                        <li @click="downLoadChart">下载报表</li>
+                    </ul>
+                </div>
+                <div class="pic information" style="position: relative">
+                    <div class="model">
+                        <div class="conversion">
+                            <p>| 单位换算</p>
+                            <ul>
+                                <li>费用=能耗(kWh)×能源单价(元/kWh）</li>
+                                <li>碳排放量(g)=能耗(kWh)×折算系数</li>
+                                <li>标煤(tce)=能耗(kWh)×折算系数</li>
+                            </ul>
+                        </div>
+                        <div class="conversion">
+                            <p>| 图表信息</p>
+                            <ul>
+                                <li>横坐标为所选项目所选分项对应面积</li>
+                                <li>纵坐标为所选项目所选分项单平米指标</li>
+                                <li>气泡大小为所选项目所选分项总能耗</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="main">
+            <div class="mainChartPart">
+                <div class="editBtn">
+                    <pbutton-blue icon="`" isborder="false" @click="ordinateBuild"></pbutton-blue>
+                    <pwindow-modal id="modalWindow" templateid="windowTemp1"></pwindow-modal>
+                    <div class="unit" v-text="unit">kWh/㎡</div>
+                </div>
+                <div id="chartPart"></div>
+                <div id="mainChartTable">
+                    <pgrid-normal style=" height: 400px;">
+                        <panel datasource="tableDataAry"></panel>
+                        <header>
+                            <column name="时间" source="name"></column>
+                            <column name="项目名称" source="age"></column>
+                            <column name="动力用电（kWh）" source="hobby"></column>
+                            <column name="面积（㎡）" source="hobby"></column>
+                            <column name="单平米指标（kWh/㎡）" source="hobby"></column>
+                        </header>
+
+                    </pgrid-normal>
+                </div>
+            </div>
+            <div class="infoDescribe">
+                <ul class="infoDescribeTitle">
+                    <li class="addSelect" @click="showInformation">参考信息</li>
+                    <li @click="showInformation">辅助数据</li>
+                </ul>
+                <div class="infoDescribeContent" >
+                    <div class="standardData">
+                        <p>国家标准值</p>
+                        <div  v-for="item in 2">
+                            <span>商业建筑</span>
+                            <ul>
+                                <li><span>约束值</span><span><i>108</i>kWh/㎡</span></li>
+                                <li><span>约束值</span><span><i>108</i>kWh/㎡</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<script type="text/html" id="windowTemp1">
+    <div id="ordinateModel">
+        <div class="maxBuild">
+            <p>设置纵坐标最大值</p>
+            <div class="setValue">
+                <pswitch-radio text="默认" name="max" change="" state="true" style="color: #333333"></pswitch-radio>
+                <div>201kWh</div>
+            </div>
+            <div class="setValue">
+                <pswitch-radio text="自定义" name="max" change="" style="color: #333333"></pswitch-radio>
+                <ptext-text placeholder="不得低于默认值" text="kWh">
+                    <verify errtip="不可为空" verifytype="space"></verify>
+                </ptext-text>
+            </div>
+            <div class="reference">参考：动力用电额定功率：301kWh，历史最大功率：301kWh</div>
+        </div>
+        <div class="maxBuild">
+            <p>设置纵坐标最小值</p>
+            <div class="setValue">
+                <pswitch-radio text="默认" name="min" change="" state="true" style="color: #333333"></pswitch-radio>
+                <div>0kWh</div>
+            </div>
+            <div class="setValue">
+                <pswitch-radio text="自定义" name="min" change="" style="color: #333333"></pswitch-radio>
+                <ptext-text placeholder="不得低于默认值" text="kWh">
+                    <verify errtip="不可为空" verifytype="space"></verify>
+                </ptext-text>
+            </div>
+            <div class="reference">参考：动力用电额定功率：301kWh，历史最大功率：301kWh</div>
+        </div>
+        <pbutton-blue text="确定" @click="modalHide" id="modelConfirm"></pbutton-blue>
+    </div>
+</script>

@@ -1,0 +1,435 @@
+input[type="radio"],input[type="checkbox"]{
+    margin-right: 5px;
+    vertical-align: middle
+}
+#multiplePopContent{
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.multiplePopContent .leftContent{
+    width: 279px;
+}
+.multiplePopContent .leftContent .multipleSelect
+{
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    min-height: 100px;
+    max-height: 600px;
+    border-bottom: 1px solid #D9E2E8 ;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.multiplePopContent .leftContent .multipleSelect:last-child{
+    border-bottom: none;
+}
+.multiplePopContent .leftContent .chooseProjects,#multiplePopCalendar{
+    padding: 0 20px;
+}
+.multiplePopContent .leftContent .multipleSelect .chooseProjects:hover{
+    cursor: pointer;
+}
+
+.multiplePopContent .leftContent .project{
+    display: inline-flex;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    width: 240px;
+    height: 30px;
+    border:1px solid #D9E2E8 ;
+    box-sizing: border-box;
+}
+.multiplePopContent .leftContent .project i{
+    width: 6px;
+    height: 6px;
+    border-top: 1px solid #637E99;
+    border-right: 1px solid #637E99;
+    transform: rotate(45deg);
+}
+
+.multiplePopContent .leftContent .title{
+    /*padding: 0 20px 10px;*/
+    padding: 10px 20px;
+    width: 280px;
+    height: 16px;
+    line-height: 16px;
+    font-size: 16px;
+    color: #333;
+    border-bottom: 1px solid #D9E2E8 ;
+}
+.multiplePopContent .leftContent .timeSelect .title{
+    height: 20px;
+    line-height: 20px;
+}
+.multiplePopContent .leftContent .project span{
+    color: #637E99;
+}
+
+.multiplePopContent .leftContent #confirm{
+    position: fixed;
+    bottom: 40px;
+    margin-left: 40px;
+    width: 200px;
+    height: 30px;
+}
+
+.multiplePopContent .leftContent .objectSelect{
+    position: absolute;
+    left: 280px;
+    top: 200px;
+    width: 400px;
+    height: 600px;
+    z-index: 10;
+}
+.multiplePopContent .leftContent .specialProject{
+    padding: 15px 20px;
+    height: 16px;
+    line-height: 16px;
+    color: red;
+    border-bottom: 1px solid #D9E2E8 ;
+}
+.multiplePopContent .leftContent .projectName{
+    padding: 10px 20px;
+    height: 16px;
+    line-height: 16px;
+    color: red;
+    border-bottom: 1px solid #D9E2E8 ;
+}
+.noSelect .chooseProjects{
+    margin: 20px 0;
+    border-bottom: 1px solid #D9E2E8 ;
+}
+.icon{
+    font-family: "perficon";
+    line-height: 22px;
+    font-size: 22px;
+    box-sizing: border-box;
+    margin: 9px auto;
+    border-radius: 50%;
+    color: #7a94ad;
+    font-weight: normal;
+}
+
+
+
+.multiplePopContent .rightContent{
+    width: calc(100% - 280px);
+    overflow-y: hidden;
+    border-left: 1px solid #D9E2E8;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+
+}
+.rightContent .neck{
+    position: relative;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    height: 50px;
+    align-items: center;
+    border-bottom: 1px solid #D9E2E8;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.rightContent .neck .chartOption{
+    width: 150px;
+    height: 50px;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    flex-direction: row;
+    justify-content:space-around;
+    align-items: center;
+    border-right: 1px solid #D9E2E8 ;
+}
+.rightContent .neck .energySourceOption ul{
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 230px;
+    height: 50px;
+    border-right: 1px solid #D9E2E8;
+}
+.rightContent .neck .energySourceOption ul li{
+    height: 18px;
+    /*font-size: 14px;*/
+    color: #6D6D6D;
+}
+.rightContent .neck .energySourceOption ul li:hover{
+    cursor: pointer;
+}
+.rightContent .neck .energySourceOption ul li.isSelected,.rightContent .neck li.isSelected{
+    color: #02A9D1;
+}
+.rightContent .neck .dimensionOption{
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    /*font-size: 14px;*/
+}
+.rightContent .neck .dimensionOption div{
+    margin-left: 20px;
+}
+.rightContent .neck .dimensionOption span.textPart{
+    display: inline-block;
+    color: #6D6D6D;
+}
+.rightContent .neck .downLoadPart{
+    position: absolute;
+    right: 20px;
+    top: 10px;
+}
+.rightContent .neck .downLoadPart .showList{
+    position: absolute;
+    top: 29px;
+    right: 33px;
+    width: 80px;
+    border: 1px solid #D9E2E8;
+    background-color: #EEEEEE;
+}
+.rightContent .neck .downLoadPart .showList ul{
+    padding: 5px;
+}
+.rightContent .neck .downLoadPart .showList ul li {
+    line-height: 20px;
+    text-align: center;
+}
+.rightContent .neck .downLoadPart .showList ul li:hover{
+    cursor: pointer;
+}
+.rightContent .neck .downLoadPart .model{
+    display: none;
+    position: absolute;
+    right: -1px;
+    top: -4px;
+    width: 302px;
+    z-index: 100;
+    border-radius: 3px;
+    border: 1px solid #D9D9D9;
+    box-shadow: 0 4px 4px 0 rgba(0,0,0,0.12) ;
+    background-color: #EEEEEE;
+}
+.rightContent .neck .downLoadPart .model .conversion{
+    padding-top: 20px;
+    padding-left: 20px;
+}
+.rightContent .neck .downLoadPart .model .conversion:last-child{
+    padding-bottom: 20px;
+}
+.rightContent .neck .downLoadPart .model p{
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.rightContent .main{
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    height: calc(100% - 50px);
+}
+
+.rightContent .main .mainChartPart{
+    position: relative;
+    width: calc(100% - 259px);
+    overflow-y: auto;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    background-color: #FBFBFC;
+}
+.rightContent .main .mainChartPart .editBtn{
+    padding: 0 15px;
+}
+.rightContent .main .mainChartPart .editBtn.compareEditBtn{
+    display: flex;
+    justify-content: space-between;
+
+    margin-top: 20px;
+}
+.rightContent .main .mainChartPart .editBtn .unit{
+    font-size: 12px;
+    height: 16px;
+    line-height: 16px;
+    color: #6D6D6D;
+}
+.rightContent .main .infoDescribe{
+    width: 259px;
+    border-left: 1px solid #D9D9D9;
+}
+.rightContent .main .infoDescribe ul.infoDescribeTitle{
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: inline-flex;
+    height: 40px;
+    line-height: 40px;
+}
+.rightContent .main .infoDescribe ul.infoDescribeTitle li{
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    justify-content: center;
+    width: 130px;
+    /*font-size: 14px;*/
+    color: #6D6D6D;
+    border-right: 1px solid #D9E2E8;
+    border-bottom: 1px solid #D9E2E8;
+}
+.rightContent .main .infoDescribe ul.infoDescribeTitle li:last-child{
+    border-right-width: 0;
+}
+.rightContent .main .infoDescribe ul.infoDescribeTitle li:hover{
+    cursor: pointer;
+}
+.rightContent .main .infoDescribe ul.infoDescribeTitle li.addSelect{
+    font-size: 16px;
+    color: #333333;
+    border-bottom-width: 0;
+}
+.rightContent .main .infoDescribe div.infoDescribeContent{
+    padding: 0 30px;
+}
+.rightContent .main .infoDescribe div div.standardData{
+    margin-top: 20px;
+    color: #6D6D6D;
+}
+.rightContent .main .infoDescribe div div.standardData p{
+    padding: 5px 0;
+    height: 18px;
+    line-height: 18px;
+    font-weight: bold;
+    color: #333333;
+    border-bottom: 1px solid #EEEEEE;
+}
+.rightContent .main .infoDescribe div div.standardData div{
+    padding: 5px;
+}
+.rightContent .main .infoDescribe div div.standardData div span{
+    color: #333333;
+    height: 18px;
+    line-height: 18px;
+}
+.rightContent .main .infoDescribe div div.standardData div ul li {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 26px;
+}
+.rightContent .main .infoDescribe div div.standardData div ul li i{
+    font-weight: bold;
+    color: #333333;
+}
+
+
+.rightContent .neck .layout{
+    margin-left: 12px;
+    position: relative;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    width: 90px;
+    height: 30px;
+    border-radius: 2px;
+    border: 1px solid #CACACA;
+    z-index: 5;
+}
+.rightContent .neck .layout.computedWay{
+    width: 108px;
+}
+.rightContent .neck .layout:hover{
+    cursor: pointer;
+}
+.rightContent .neck .layout div:nth-child(1){
+    width: inherit;
+    padding: 0 15px;
+}
+.rightContent .neck .layout div i.icon{
+    margin-right: 5px;
+    font-size: 14px;
+}
+.rightContent .neck .layout div i:nth-child(2){
+    color: #6D6D6D;
+}
+.rightContent .neck .selectFrame,.rightContent .neck .selectParameter{
+    position: absolute;
+    top: 30px;
+    left: -1px;
+    width: inherit;
+    border: 1px solid #CACACA;
+    background-color: #EEEEEE;
+
+}
+.rightContent .neck .selectFrame ul li{
+    line-height: 20px;
+    padding: 0 15px;
+}
+.rightContent .neck .selectParameter ul li{
+    line-height: 20px;
+    padding: 0 15px;
+
+}
+
+
+#ordinateModel{
+    /*display: none;*/
+    width: 340px;
+    height: 414px;
+    padding: 20px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.12);
+    border-radius: 3px;
+}
+#ordinateModel .maxBuild p{
+    height: 18px;
+    line-height: 18px;
+    color: #333333;
+    font-weight: bold;
+}
+#ordinateModel .maxBuild .setValue{
+    display: inline-flex;
+    height: 30px;
+    align-items: center;
+}
+#ordinateModel .maxBuild .setValue div:nth-child(1){
+    min-width: 70px;
+    max-width: 100px;
+    margin-right: 10px;
+}
+#ordinateModel .reference{
+    margin-top: 10px;
+    padding: 6px;
+    font-size: 12px;
+    color: #333333;
+    line-height: 16px;
+    background-color: #F7F7F9;
+}
+#ordinateModel .maxBuild:nth-child(2){
+    /*margin: 20px 0;*/
+}
+#ordinateModel #modelConfirm{
+    margin: 0 60px;
+    width: 180px;
+}
+
+
+
+
+
+
+
+
+

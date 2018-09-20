@@ -1,0 +1,87 @@
+<% include ../template/pageHead.html %>
+    <link rel="stylesheet" href="../../../../css/public/entry.css">
+    <input type="hidden" id="menu" value="<%=JSON.stringify(menu)%>">
+
+    <div id="app">
+        <!-- 头部Start -->
+        <div class="header clear">
+            <span class="ipt">
+                <ptext-text placeholder="'搜索分析模板'" bind="true" value="text">
+                </ptext-text>
+            </span>
+        </div>
+        <!-- 头部End -->
+
+        <div class="content" v-show="singleList.length || multipleList.length">
+
+            <div class="line" v-if="singleList.length">单项目-分项能耗</div>
+
+            <div class="list">
+                <a class="item" v-for="(item,index) in singleList" :href="'/entry?type='+item.type">
+                    <p class="title over" :title="item.title" v-text="item.title"></p>
+
+                    <div class="block">
+                        <img v-if="_.get(item,'src.length')" width="272" :src="item.src" :alt="item.title">
+                        <span class="alt" v-if="!_.get(item,'src.length')">暂无图片</span>
+                        <div class="description" :title="item.description" v-text="item.description">
+
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="line" v-if="multipleList.length">多项目-分项能耗</div>
+
+            <div class="list">
+                <a class="item" v-for="(item,index) in multipleList" :href="'/entry?type='+item.type">
+                    <p class="title over" :title="item.title" v-text="item.title"></p>
+
+                    <div class="block">
+                        <img v-if="_.get(item,'src.length')" width="272" :src="item.src" :alt="item.title">
+                        <span class="alt" v-if="!_.get(item,'src.length')">暂无图片</span>
+                        <div class="description" :title="item.description" v-text="item.description">
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="content" v-show="!(singleList.length || multipleList.length)">
+            <div class="notip">
+                未匹配到任何信息
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <% include ../template/pageFoot.html %>
+
+        <script type="text/javascript">
+            $(function () {
+                var app = new Vue({
+                    el: "#app",
+                    data: {
+                        menu: JSON.parse(document.getElementById("menu").value),
+                        text: ""
+                    },
+                    computed: {
+                        singleList: function () {
+                            var _that = this;
+                            return _that.text.length ? _that.menu.single.contents.filter(function (item) {
+                                return item.title.indexOf(_that.text) != -1;
+                            }) : _that.menu.single.contents;
+                        },
+                        multipleList: function () {
+                            var _that = this;
+                            return _that.text.length ? _that.menu.multiple.contents.filter(function (item) {
+                                return item.title.indexOf(_that.text) != -1;
+                            }) : _that.menu.multiple.contents;
+                        }
+                    }
+                })
+
+                window.app = app;
+            })
+        </script>

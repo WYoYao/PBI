@@ -1,0 +1,175 @@
+<script type="text/html" id="set-data-temp">
+    <div class="setData" @click.self="cancle">
+        <div class="setDataBox">
+            <div class="setDataMax setDataDiv">
+                <h3 class="title">
+                    设置纵坐标最大值
+                </h3>
+                <div class="max content">
+                    <div  class="option">
+                        <em class="per-radio_input" @click="checkItem(max,max[0],0)" :class="{'per-radio-checked':max[0].isSelected}"></em>
+                        <em v-text="max[0].name"></em>
+                        <span v-text="max[0].value + max[0].unit"></span>
+
+                    </div>
+                    <div class="option">
+                        <em class="per-radio_input"  @click="checkItem(max,max[1],1)" :class="{'per-radio-checked':max[1].isSelected}"></em>
+                        <em v-text="max[1].name"></em>
+                        <span>
+                            <input type="text" v-model="max[1].value">
+                        </span>
+                        
+                    </div>
+                    <div class="option desc">
+                        <em>参考：</em>
+                        <span>动力用电额定功率：301 kW，<br>
+                                历史最大功率：341 kW</span>
+                    </div>
+                </div>
+            </div>
+            <div class="setDataMin setDataDiv">
+                <h3 class="title">
+                    设置纵坐标最小值
+                </h3>
+                <div class="min content">
+                    <div  class="option">
+                        <em class="per-radio_input" @click="checkItem(min,min[0],0)" :class="{'per-radio-checked':min[0].isSelected}"></em>
+                        <em v-text="min[0].name"></em>
+                        <span v-text="min[0].value + min[0].unit"></span>
+
+                    </div>
+                    <div class="option">
+                        <em class="per-radio_input" @click="checkItem(min,min[1],1)" :class="{'per-radio-checked':min[1].isSelected}"></em>
+                        <em v-text="min[1].name"></em>
+                        <span>
+                            <input type="text" v-model="min[1].value">
+                        </span>
+                    </div>
+                    <div class="option desc">
+                        <em>参考：</em>
+                        <span>动力用电额定功率：301 kW，<br>
+                                历史最大功率：341 kW</span>
+                    </div>
+                </div>
+            </div>
+            <div class="setDataCommit" @click.stop="submit(max,min)">
+                <pbutton-blue text="确定"></pbutton-blue>
+            </div>
+        </div>
+
+
+    </div>
+
+</script>
+
+
+<script>
+    Vue.component('setdata', {
+        template: '#set-data-temp',
+        data: function () {
+            return {
+
+            }
+        },
+        /**
+        max 最大值数组  min最小值数组  cb点击确定后的回调函数 cancle 取消回调函数
+        */
+        props: [
+            "max", "min", "cb" ,"cancle"
+        ],
+        methods: {
+            checkItem: function (model, item, index) {
+                if (index == 0){
+                    if(!item.isSelected){
+                        model[index].isSelected = !model[index].isSelected;
+                        model[index+1].isSelected = !model[index +1 ].isSelected;
+                    }
+                   
+                }else{
+                    if(!item.isSelected){
+                        model[index].isSelected = !model[index].isSelected;
+                        model[index-1].isSelected = !model[index-1].isSelected;
+                    }
+                    
+                }
+                console.log(this.max);
+            },
+            submit:function(item1,item2){
+                this.cb(
+                    item1.filter(function(item){
+                        return item.isSelected;
+                    }),
+                    item2.filter(function(item){
+                        return item.isSelected;
+                    })
+                );
+            }
+        },
+        computed: {
+
+        },
+        watch: {
+
+        },
+        updated: function () {
+
+        },
+        mounted: function () {
+
+        },
+        beforeDestroy: function () {
+
+        }
+    })
+</script>
+<style>
+    .setData {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .setData .setDataBox {
+        width: 380px;
+        height: 420px;
+        border: 1px solid #d9e2e8;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        display: flex;
+        flex-flow: column nowrap;
+        padding-left: 20px;
+        padding-top: 20px;
+    }
+    .setData .setDataBox .setDataCommit{
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .setData .setDataDiv .title{
+        height:30px;
+        line-height:30px;
+        font-size:16px;
+    }
+    .setData .setDataDiv .content .option{
+        display:flex;
+        flex-flow: row nowrap;
+        height:30px;
+        align-items: center;
+    }.setData .setDataDiv .content .option  >em{
+        display:block;
+        margin-right:10px
+    }
+    .setData .setDataDiv .content .option >span >input{
+        height:30px;
+    }
+    .setData .setDataDiv .content .desc{
+        margin-top:10px;
+        margin-bottom:20px;
+    }
+</style>

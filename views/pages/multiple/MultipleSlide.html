@@ -1,0 +1,236 @@
+<link rel="stylesheet" href="<%=host%>/pcontrol/css/flatBlueSeries_min_2.0.css" />
+<script src="<%=host%>/scripts/lib/jquery-2.0.0.min.js"></script>
+<script src="<%=host%>/scripts/lib/vue-2.2.0.min.js"></script>
+<script src="<%=host%>/scripts/lib/when-3.7.8.min.js"></script>
+<script src="<%=host%>/scripts/lib/highcharts.src-6.0.1.js"></script>
+<script src="<%=host%>/scripts/lib/highcharts-more.src.js"></script>
+<script src="<%=host%>/scripts/tool/pconst.js"></script>
+<script src="<%=host%>/scripts/tool/psecret.js"></script>
+<script src="<%=host%>/scripts/tool/ptool.js"></script>
+<script src="<%=host%>/scripts/tool/pcolor.js"></script>
+<script src="<%=host%>/scripts/tool/pajax.js"></script>
+<script src="<%=host%>/scripts/extend/Array.js"></script>
+<script src="<%=host%>/scripts/extend/Date.js"></script>
+<script src="<%=host%>/scripts/extend/jQueryDom.js"></script>
+<script src="<%=host%>/scripts/extend/String.js"></script>
+<script src="<%=host%>/scripts/extend/Number.js"></script>
+<script src="<%=host%>/scripts/extend/Math.js"></script>
+<script src="../../../js/public/polyfill.js"></script>
+<script src="../../../js/public/lodash.min.js"></script>
+<script src="<%=host%>/pcontrol/flatBlueSeries_src_2.0.js"></script>
+<script src="<%=host%>/pcontrol/pchart_src_2.0.js"></script>
+<link rel="stylesheet" href="<%=host%>/pcontrol/css/pchart_src_2.0.css" />
+
+<link rel="stylesheet" href="../../css/single/SingleSlide.css" />
+<script src="../../../js/multiple/slide/model.js"></script>
+<script src="/js/single/Inquire/controller.js"></script>
+<!-- <script src="../../../js/single/slide/controller.js"></script> -->
+
+
+<!-- 图表组件 -->
+<% include ../components/components_slide.html %>
+<!-- 其他组件 -->
+<% include ../components/index.html %>
+
+
+<div id="singleSlidePage" class="singleComparePage">
+    <div class="pageLeft">
+        <div class="choiceCondition">
+            <div class="title">
+                筛选项目
+            </div>
+            <div class="content">
+                <div class="choiceProject">
+                    <pbutton-white bind="true" icon="''" text="projectObj.text" @click="projectObj.display = true"></pbutton-white>
+                </div>
+            </div>
+            <energymodel v-if="showEnergyModel" :propsprojectids="_.map(projects,'projectId')" :propsmodelids="_.map(modelids,'obj_id')"
+                :cancel="addProjectHide" :cb="addProjectCallBack">
+            </energymodel>
+        </div>
+        <div class="choiceCondition">
+            <div class="title">
+                选择时间
+            </div>
+            <div class="content">
+                <div class="choiceTime" :arr="JSON.stringify(searchConditionObj.timeSaveArr.length)">
+                    <div class="choiceTimeOp">
+                        <ptime-calendar :id="'selectTimeLine'" orientation="down" sel="">
+                            <panel timetype="d" align="left" double="true" startyear="2003" iscommontime="true"
+                                commontime="['d','pd','w','pw','M','pM','y','py']" lock="false"></panel>
+                        </ptime-calendar>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="choiceCondition">
+            <div class="title">
+                选择分项
+            </div>
+            <div class="content">
+                <div class="choiceSubentry">
+                    <ptree-normal datasource="subentryTree" sel="" number="1">
+                        <item itemid="obj_id" text="obj_name" child="child" issearch="true" disabled="dis"></item>
+                        <panel width="242" height="300"></panel>
+                    </ptree-normal>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pageRight">
+        <div class="topNav">
+            <div class="gridOption">
+                <div class="gridOptionItem">
+                    <pswitch-checkbox id="chartType" text="图表" state="true" change="slide.gridOptionChange('chartType')"></pswitch-checkbox>
+                </div>
+                <div class="gridOptionItem">
+                    <pswitch-checkbox id="tableType" text="报表" state="false" change="slide.gridOptionChange('tableType')"></pswitch-checkbox>
+                </div>
+            </div>
+            <div class="energyConsumption">
+                <ul>
+                    <li class="checked" @click="wordSelect('energyConsumption',0)">能耗</li>
+                    <li @click="wordSelect('energyConsumption',1)">单平米能耗</li>
+                    <li @click="wordSelect('energyConsumption',2)">下级能耗</li>
+                </ul>
+            </div>
+            <div class="types">
+                <ul>
+                    <li class="checked" @click="wordSelect('types',0)">能耗</li>
+                    <li @click="wordSelect('types',1)">费用</li>
+                    <li @click="wordSelect('types',2)">碳排放量</li>
+                    <li @click="wordSelect('types',3)">标煤</li>
+                </ul>
+            </div>
+            <div class="monthOrDay">
+                <ul>
+                    <li class="checked" @click="wordSelect('monthOrDay',0)">滑动年按月</li>
+                    <li @click="wordSelect('monthOrDay',1)">滑动年按日</li>
+                </ul>
+            </div>
+            <div class="buildingType">
+                <div class="">
+                    <pswitch-checkbox id="buildingType" text="区分建筑类型" state="false" change="slide.buildingTypeChange"></pswitch-checkbox>
+                </div>
+            </div>
+            <div class="operatOption">
+                <ul class="list">
+                    <li>
+                        <div class="btn">
+                            <pbutton-white bind="true" icon="'D'" @click=""></pbutton-white>
+                        </div>
+                        <div v-if="downLoadBlockIsShow" class="downloadBlock">
+                            <ul>
+                                <li>下载图表</li>
+                                <li>下载报表</li>
+                            </ul>
+                        </div>
+
+                    </li>
+                    <li>
+                        <div class="btn">
+                            <pbutton-white bind="true" icon="'N'" @click=""></pbutton-white>
+                        </div>
+                        <div>
+
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="operatOption_">
+            <div class="dataVisualization">
+                <div class="chart">
+                    <!-- <div id="barChart"></div> -->
+                    <!-- 柱状图组件 -->
+                    <column_chart :data="columnConfigData"></column_chart>
+                    <div class="supple">
+                        编辑
+                        <span class="unit">单位：kWh</span>
+                    </div>
+                </div>
+                <div class="table">
+                    <pgrid-normal style="width: 100%; height: 400px;">
+                        <panel datasource="gridArr"></panel>
+                        <header>
+                            <column name="时间" source="time"></column>
+                            <column name="动力用电（kWh）" source="energyConsumption"></column>
+                        </header>
+                    </pgrid-normal>
+                </div>
+            </div>
+            <div class="projectInformation">
+                <!-- <h3 class="title">项目信息</h3>
+                <div class="content">
+                    <h4>能量拐点</h4>
+                    <div>
+                        <div class="rise">2016.05</div>
+                        <div class="drop">2016.07</div>
+                    </div>
+                </div> -->
+                <h3 class="title">项目信息</h3>
+                <div id="mulProjectMessage">
+                    <div class="projectTop">
+                        已选项目<span class="projectNum" v-html="'<span style=\'color:#02a9d1\'>112</span>个'"></span>
+                    </div>
+                    <div class="projectCon">
+                        <div class="projectTitle">
+                            <span class="iconR" @click="projectsSlideUp">r</span>商业建筑<span class="projectNum" v-html="'<span style=\'color:#02a9d1\'>112</span>个'"></span>
+                        </div>
+                        <div class="projects">
+                            <div class="projectItem">
+                                <div class="word">
+                                    <span>项目A</span>
+                                    <span class="projectNum">266kWh</span>
+                                </div>
+                                <progress max="100" :value="'20'"></progress>
+                            </div>
+                            <div class="projectItem">
+                                <div class="word">
+                                    <span>项目A</span>
+                                    <span class="projectNum">266kWh</span>
+                                </div>
+                                <progress max="100" :value="'20'"></progress>
+                            </div>
+                            <div class="projectItem">
+                                <div class="word">
+                                    <span>项目A</span>
+                                    <span class="projectNum">266kWh</span>
+                                </div>
+                                <progress max="100" :value="'20'"></progress>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="projectCon">
+                        <div class="projectTitle">
+                            <span class="iconR" @click="projectsSlideUp">r</span>商业建筑<span class="projectNum" v-html="'<span style=\'color:#02a9d1\'>112</span>个'"></span>
+                        </div>
+                        <div class="projects">
+                            <div class="projectItem">
+                                <div class="word">
+                                    <span>项目A</span>
+                                    <span class="projectNum">266kWh</span>
+                                </div>
+                                <progress max="100" :value="'20'"></progress>
+                            </div>
+                            <div class="projectItem">
+                                <div class="word">
+                                    <span>项目A</span>
+                                    <span class="projectNum">266kWh</span>
+                                </div>
+                                <progress max="100" :value="'20'"></progress>
+                            </div>
+                            <div class="projectItem">
+                                <div class="word">
+                                    <span>项目A</span>
+                                    <span class="projectNum">266kWh</span>
+                                </div>
+                                <progress max="100" :value="'20'"></progress>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

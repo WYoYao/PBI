@@ -1,0 +1,157 @@
+<script type="text/html" id="mproject-tree-item">
+    <div class="mprojectBox">
+
+        <div class="mprojectName" :data="item">
+            <span class="ms-arrow arrow" :style="{'text-indent':(item.lv *24 +'px')}" 
+            @click="openSelectList(event)"
+            v-if="item.child_objs && item.child_objs.length >0">b</span>
+            <div :atext="item.selected + 1" class="partitionName" :class="{selected:item.selected}" :style="{'text-indent':(item.lv *24 +'px')}"
+                v-text="item.obj_name" @click="clickcb(item)">
+            </div>
+        </div>
+        <!-- <div style="border-bottom:1px solid #eee"></div> -->
+        <div class="pullDownList">
+            <mtreeitem class="item" v-for="item in item.child_objs" :item="item"  :clickcb="clickcb" :style="{'box-sizing':'border-box'}">
+            </mtreeitem>
+        </div>
+    </div>
+</script>
+<script type="text/html" id="mproject-tree">
+    <div class="mprojectBox">
+        <div class="">
+            <div class="" style="overflow-y:auto;">
+                <div class="">
+                    <mtreeitem class="treedata" v-for="item in treedata" :treedata="treedata" :item="item" :clickcb="clickcb" :style="{'box-sizing':'border-box'}">
+                    </mtreeitem>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="mprojectBox">
+
+        <div class="mprojectName" :data="models">
+            <span class="ms-arrow arrow" @click="openSelectList($event)">b</span>
+            <section :text="models.obj_name" class="partitionName" :class="{'checked':models.checked}" :style="{'text-indent':(models.lv *24 +'px')}"
+                v-text="models.obj_name">
+            </section>
+        </div>
+        <div style="border-bottom:1px solid #eee"></div>
+        <div class="pullDownList">
+            <mtree class="models" v-for="models in models.child_objs" :models="models" :clickcb="clickcb" :style="{'box-sizing':'border-box'}">
+            </mtree>
+        </div>
+    </div> -->
+</script>
+
+
+
+<script>
+    $(function () {
+        Vue.component('mtreeitem', {
+            template: '#mproject-tree-item',
+            data: function () {
+                return {}
+            },
+            props: ["item", "treedata", "result", "modelcontent", "modelname", "modelkey", "clickcb"],
+            methods: {
+                openSelectList: function (e) { //展开关闭选项
+                    var $el = $(e.currentTarget);
+                    var dircetion = 'b';
+                    dircetion = $el.text() == 'r' ? 'b' : 'r';
+                    $el.text(dircetion);
+                    if (dircetion == 'b') {
+                        $el.parent().parent().find('.pullDownList').slideDown();
+                    } else {
+                        $el.parent().parent().find('.pullDownList').slideUp();
+                    }
+                },
+                clickItem: function (item) {
+                    var that = this;
+                    item.selected = !item.selected;
+                    // that.treedata = _.clone(that.treedata);
+                    // Vue.set(that, treedata, that.treedata);
+
+                    console.log(that.treedata)
+
+                },
+            },
+            computed: {},
+            watch: {},
+            beforeMount: function () {},
+            beforeDestroy: function () {}
+        })
+
+        Vue.component('mtree', {
+            template: '#mproject-tree',
+            data: function () {
+                return {
+
+                }
+            },
+            props: {
+                treedata: { //数据源
+                    type: Array,
+                    default: [],
+                },
+                result: { //选中数据源
+                    type: Array,
+                    default: [],
+                },
+                modelcontent: { //传入树节点名称
+                    type: String,
+                    default: 'child_objs',
+                },
+                modelname: { //子节点名称
+                    type: String,
+                    default: 'obj_name',
+                },
+                modelkey: { //子节点key值
+                    type: String,
+                    default: 'obj_id',
+                },
+                clickcb: { //确定后回调
+                    type: Function,
+                    default: '',
+                }
+            },
+            computed: {
+
+            },
+            methods: {
+
+
+            },
+
+            beforeMount() {
+                console.log(this.treedata);
+                debugger;
+            },
+            mounted: function () {
+                console.log(this.treedata)
+            }
+
+
+        })
+    })
+</script>
+<style>
+    .mprojectBox {}
+
+    .mprojectBox .mprojectName {
+        display: flex;
+        height: 30px;
+        align-items: center;
+        border-bottom: 1px solid #e9e2e8;
+    }
+
+    .mprojectBox .mprojectName .partitionName {
+        height: 30px;
+        line-height: 30px;
+        width: 90%;
+    }
+
+    .mprojectBox .mprojectName div.selected {
+        color: #02a9d1;
+    }
+</style>

@@ -1,0 +1,214 @@
+<link rel="stylesheet" href="../../../css/single/Energymodel.css">
+<script type="text/html" id="energymodel">
+<!--  Start  -->
+<div class="energymodel" @click.stop="cancel">
+    <input type="hidden" ref="projects" value="<%=JSON.stringify(projects)%>" />
+    <div class="box boxshadow">
+        <div class="eheader">
+            选择项目
+        </div>
+        <div class="ebody">
+            <div class="esection">
+                <div class="esh">
+                    选择项目
+                </div>
+                <div class="esb">
+                    <multipletree :vname="projectName" :vkey="projecKey" :list="prjects" :click="handdlerClick" :selectedlist="projectids" :issingle="true"></multipletree>
+                </div>
+            </div>
+            <div class="esection">
+                <div class="esh">
+                    选择能耗模型
+                </div>
+                <div class="esb">
+                    <multipletreelike ref="multipletree" :list="models" :click="handlerClickModel" :selectedlist="modelids" :clickplus="clickplus" :showlist="shows" :issingle="true"></multipletreelike>
+                </div>
+            </div>
+        </div>
+        <div class="efooter">
+            <div class="btn" @click.stop="cancel(modelids)">
+                <pbutton-white text="取消"></pbutton-white> 
+            </div>
+             <div class="btn" ref="submit" @click.stop="submit(modelids)">
+                <pbutton-blue text="确定"></pbutton-blue> 
+            </div>
+        </div>
+    </div>
+</div>
+<!--  End  -->
+</script>
+
+
+
+<script>
+
+    $(function () {
+        Vue.component('energymodel', {
+            template: '#energymodel',
+            data: function () {
+                return {
+                    // 项目集合
+                    prjects: [],
+                    // 模型集合
+                    models: [],
+                    // 已选中的id集合
+                    projectids: [],
+                    // 展开的id集合
+                    shows: [],
+                    // 已选中model id集合
+                    modelids: [],
+                    // 根据project接口定义的常量
+                    projectName: "projectName",
+                    projecKey: "projectId",
+                    // 根据model接口定义的常量
+                    modelcontent: 'energyModelList',
+                    modelname: 'energyModelName',
+                    modelkey: 'energyModelId',
+                }
+            },
+            props: {
+                // 已经的选中的项目主键数组
+                propsprojectids: {
+                    type: Array,
+                    default: [],
+                },
+                // 已经的选中的模型主键数组
+                propsmodelids: {
+                    type: Array,
+                    default: [],
+                },
+                // 成的回调 返回的 选中的项目数组 和模型数组
+                cb: {
+                    type: Function,
+                    required: true,
+                },
+                // 取消的回调
+                cancel: {
+                    type: Function,
+                }
+            },
+            methods: {
+                //  点击属性菜单图标
+                clickplus: function (id) {
+                    var index = this.shows.indexOf(id);
+                    index == -1 ? this.shows.push(id) : this.shows.splice(index, 1);
+                },
+                // 模型点击事件
+                handlerClickModel: function (id) {
+                    this.modelids = [id];
+                },
+                //  项目点击事件
+                handdlerClick: function (id) {
+                    this.projectids = [id];
+                    this.getModel(id);
+                },
+                // 获取项目列表
+                getProject: function () {
+                    var _that = this;
+                    var res;
+                    try {
+                        res = JSON.parse(this.$refs.projects.value)
+                    } catch (error) {
+                        res = [];
+                    }
+
+                    _that.prjects = res;
+
+                    return res;
+                },
+                // 获取模型树
+                getModel: function (project_id) {
+                    var _that = this;
+                    var query = {};
+                    query[this.projecKey] = project_id;
+                    var res = singleController.queryModel(query);
+                    res.then(function (res) {
+                        _that.models = res;
+                    })
+                    return res;
+                },
+                submit: function (ids) {
+                    var _that = this;
+
+                    this.cb(
+                        this.prjects.filter(function (item) {
+                            return _that.projectids.indexOf(item[_that.projecKey]) != -1;
+                        })
+                        ,
+                        this.models
+                            .map(function (item) {
+                                return item.energyModelList;
+                            })
+                            .reduce(function (con, item) {
+                                return con.concat(item || []);
+                            }, [])
+                            .filter(function (item) {
+                                return ids.indexOf(item[_that.modelkey]) != -1;
+                            })
+                    );
+
+                },
+                disabledMethods: function () {
+                    this.$nextTick(function () {
+                        $(this.$refs.submit).find("div").pdisable(!this.modelids.length);
+                    })
+
+                }
+            },
+            computed: {},
+            watch: {
+                modelids: function () {
+                    this.disabledMethods();
+                }
+            },
+            beforeMount: function () {
+
+            },
+            mounted: function () {
+
+
+                var _that = this;
+                _that.getProject();
+
+                _that.projectids = _.clone(_that.propsprojectids.filter(function (item) {
+                    return item;
+                }));
+
+                _that.modelids = _.clone(_that.propsmodelids.filter(function (item) {
+                    return item;
+                }));
+
+                //  如果选中项目集合则默认查询对应的能耗模型
+                if (_that.projectids.length) {
+                    res = _that.getModel(_that.projectids[0]);
+
+                    //  如果选中对应的模型则默认展开对应的模型
+                    if (_that.modelids.length) {
+
+                        var modelcontent = _that.modelcontent;
+                        var modelname = _that.modelname;
+                        var modelkey = _that.modelkey;
+
+                        res.then(function (tree) {
+
+                            //  循环所有的建筑
+                            tree.forEach(function (item) {
+
+                                // 循环建筑下面的能耗模型
+                                if (_.isArray(item[modelcontent])
+                                    && item[modelcontent].length
+                                    && _.map(item.energyModelList, "energyModelId").indexOf(_that.modelids[0]) != -1) {
+
+                                    _that.shows.push(item.buildingLocalId);
+                                }
+                            })
+                        })
+                    }
+                }
+
+                this.disabledMethods();
+            },
+            beforeDestroy: function () { }
+        })
+    })
+</script>

@@ -1,0 +1,223 @@
+<link rel="stylesheet" href="<%=host%>/pcontrol/css/flatBlueSeries_min_2.0.css" />
+<script type="text/javascript" src="<%=host%>/scripts/lib/jquery-2.0.0.min.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/lib/vue-2.2.0.min.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/lib/when-3.7.8.min.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/lib/highcharts.src-6.0.1.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/lib/highcharts-more.src.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/tool/pconst.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/tool/psecret.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/tool/ptool.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/tool/pcolor.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/tool/pajax.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/extend/Array.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/extend/Date.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/extend/jQueryDom.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/extend/String.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/extend/Number.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/extend/Math.js"></script>
+<script type="text/javascript" src="../../../js/public/polyfill.js"></script>
+<script type="text/javascript" src="../../../js/public/lodash.min.js"></script>
+<script type="text/javascript" src="<%=host%>/pcontrol/flatBlueSeries_src_2.0.js"></script>
+<script type="text/javascript" src="<%=host%>/pcontrol/pchart_src_2.0.js"></script>
+<link rel="stylesheet" href="<%=host%>/pcontrol/css/pchart_src_2.0.css" />
+
+<link rel="stylesheet" href="../../css/single/SingleCompared.css" />
+<script type="text/javascript" src="../../../js/single/compared/model.js"></script>
+<script type="text/javascript" src="../../../js/single/compared/controller.js"></script>
+<script type="text/javascript" src="../../../js/single/compared/event.js"></script>
+
+
+<!-- 表格模板 -->
+<% include ../components/girdTemplate.html %>
+
+<!-- 右侧记录列表模板 -->
+<% include ../components/recordListTemplate.html %>
+
+<!-- 选择项目组件 -->
+<% include ../../pages/components/index.html %>
+
+<div id="singleComparePage" class="singleComparePage">
+    <div class="pageLeft">
+        <div class="choiceCondition">
+            <div class="title">
+                选择项目
+
+            </div>
+            <div class="content">
+                <div class="choiceProject">
+                    <span class="projectName" :title="addProjectTxt" v-text="addProjectTxt" @click="addProjectShow">
+
+                    </span>
+                </div>
+
+                <energymodel v-if="showEnergyModel" :propsprojectids="_.map(projects,'projectId')" :propsmodelids="_.map(modelids,'energyModelId')"
+                    :cancel="addProjectHide" :cb="addProjectCallBack">
+                </energymodel>
+
+            </div>
+        </div>
+        <div class="choiceCondition">
+            <div class="title">
+                选择时间
+            </div>
+            <div class="content">
+                <div class="choiceTime" :arr="JSON.stringify(searchConditionObj.timeSaveArr.length)" v-show="searchConditionObj.timeSaveArr.length >0">
+                    <div class="choiceTimeOp" v-for="(item,index) in searchConditionObj.timeSaveArr">
+                        <div class="timer">
+                            <span @click="showTimerPop(item,index,$event)" v-text="item.text">
+
+                            </span>
+                            <em @click="deleteTimeFn(item,index)">
+                                一
+                            </em>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="addTimeBtn">
+                    <pbutton-white bind="true" icon="'J'" text="'添加时间'" @click="addTimeFn"></pbutton-white>
+                </div>
+            </div>
+        </div>
+        <div class="choiceCondition">
+            <div class="title">
+                选择分项
+            </div>
+            <div class="content">
+                <div class="choiceSubentry">
+                    <!-- <ptree-normal datasource="subentryTree" sel="singleCompare.addSubentryFn" number="2">
+                                    <item itemid="obj_id" text="obj_name" child="child" issearch="true" disabled="dis"></item>
+                                    <panel width="242" height="300"></panel>
+                                </ptree-normal> -->
+                    <div class="addSubentry" v-text="addSubentryTxt" class="content" :item="JSON.stringify(subentryDisabled)"
+                        :class="{disabled:!subentryDisabled}" @click="addSubetryShow">
+                        添加分项
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+        <div class="operatBtn">
+            <pbutton-blue bind="true" text="'确定'" @click="confirmSearchListFn"></pbutton-blue>
+        </div>
+    </div>
+    <div class="pageRight">
+        <div class="topNav">
+            <div class="gridOption">
+                <div class="gridOptionItem">
+                    <pswitch-checkbox text="图表" id="chartId" state="true" change="singleCompare.showChatFn"></pswitch-checkbox>
+                </div>
+                <div class="gridOptionItem">
+                    <pswitch-checkbox text="报表" id="reportId" state="false" change="singleCompare.showReportFn"></pswitch-checkbox>
+                </div>
+            </div>
+            <div class="numberOption">
+                <ul>
+                    <li v-for=" item in tabOptionTwo" :class="{'checked':item.checked}" v-text="item.name" :id="item.code"
+                        @click="tableOptionChangeFn(tabOptionTwo,item)">
+
+                    </li>
+                </ul>
+            </div>
+            <div class="energyOption">
+                <ul>
+                    <li v-for="item in tabOptionThree" :class="{'checked':item.checked}" v-text="item.name" :id="item.code"
+                        @click="tableOptionChangeFn(tabOptionThree,item)">
+                    </li>
+                </ul>
+            </div>
+            <div class="operatOption">
+                <ul class="list">
+                    <li>
+                        <div class="btn">
+                            <pbutton-white bind="true" icon="'D'" @click="downloadChart"></pbutton-white>
+                        </div>
+                        <div v-if="downLoadBlockIsShow" class="downloadBlock">
+                            <ul>
+                                <li>下载图表</li>
+                                <li>下载报表</li>
+                            </ul>
+                        </div>
+
+                    </li>
+                    <li>
+                        <div class="btn">
+                            <pbutton-white bind="true" icon="'N'" @mouseenter="onlineExplainEnter" @mouseleave="onlineExplainLeave"></pbutton-white>
+                        </div>
+                        <div style="position:relative;" v-if="onlineExplainFlag" @mouseenter="onlineExplainEnter"
+                            @mouseleave="onlineExplainLeave">
+                            <promptmessage :type="1"></promptmessage>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="contentPart">
+            <div class="aboutChart" id="downloadAboutChart">
+                <!-- 没有数据展示 -->
+                <div class="noData" v-show="noDataChartShow">
+                    <h3>meos</h3>
+                    <span>请先在左侧列表选择参数</span>
+                </div>
+                <!-- 引入chart图表 -->
+
+                <div v-show="scChartShow">
+                    <div class="chartOperat">
+                        <div>
+                            <pbutton-blue bind="true" icon="'`'" isborder="false" @click="setYAxisShowFn"></pbutton-blue>
+                        </div>
+                        <div>
+                            单位：
+                            <span v-text="chartUnit"></span>
+                        </div>
+                    </div>
+                    <div id="divLineChart"></div>
+                </div>
+
+
+                <!-- 引入报表表格   支持横向竖向滚动   需组件-->
+                <div class="reportFrom" id="scReportFrom" v-if="scReportShow">
+                    <tgrid :renderlist="gridRenderList"></tgrid>
+                </div>
+            </div>
+            <div class="aboutRecord">
+                <div class="title">
+                    <span>已选择项</span>
+                </div>
+                <!-- 引入 时间 + 项目  +  分项  生成的记录  需组件-->
+                <ctrecord :list-data="cRecordList" :type="'compare'" :deletecb="deleteRecordFn"></ctrecord>
+            </div>
+        </div>
+    </div>
+
+    <!-- 选择时间控件 -->
+    <div id="choiceTimePop">
+        <ptime-calendar id="choiceTime" orientation="down" sel="singleCompare.confirmCurrTime">
+            <panel timetype="dwMy" align="left" double="true" startyear="2003"></panel>
+        </ptime-calendar>
+    </div>
+
+    <!-- 选择分项 -->
+    <!-- 
+        subtree：分项模型树
+        search：搜索关键字
+        cb：添加分项回调函数
+        cancle：隐藏分项组件
+        result：点开组件选中结果项
+     -->
+    <msubentry v-if="showSubentryTemp" :subtree="subentryTree" :search="searchSubentry" :cb="addSubetryCallBack" :cancle="addSubetryHide" :result="_.map(currentSubentryList,'localId')">
+
+    </msubentry>
+
+
+    <!-- 设置纵坐标组件 -->
+    <setdata v-if="setYAxisShow" :max="setMax" :min="setMin" :cb="setYdataFn" :cancle="setYAxisHideFn"></setdata>
+</div>
+
+<!-- loading -->
+<ploading-part id="globalloading" text="加载中..."></ploading-part>
+<!-- 成功失败提示 -->
+<pnotice-message id="globalnotice"></pnotice-message>
+<script src="/js/single/Inquire/controller.js"></script>

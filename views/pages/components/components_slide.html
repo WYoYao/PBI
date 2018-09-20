@@ -1,0 +1,86 @@
+<!-- 滑动平均模块组件集 -->
+
+
+<!-- 柱状图生成组件 column_chart -->
+<!-- 
+    
+    < 组件说明 >
+
+    组件用途：根据参数生成一个柱状图
+    调用示例：<column_chart :id=""></column_chart>
+    参数说明：data 为三个属性构成的对象，作为插件的输入（详见补充说明）必填项；
+             id 字符串，作为图表标签的id，不填将随机生成一个 可选项；
+    注意事项：data为必填项，不填写值将报错;
+    引用列表：Highcharts@v6.0.2 pchart
+    补充说明：data属性如下：
+                data = {
+                    text_title: '',        // 标题名 Str
+                    series: []             // 数据项，对象组成的数组 Arr 
+                } 
+
+-->
+
+<script type="text/x-template" id="columnChart">
+    <div :id="id_" style="width: 100%;height: 100%"></div>
+</script>
+
+<script>
+    Vue.component('column_chart', {
+        template: '#columnChart',
+        props: [
+            "data",
+            "id"
+        ],
+        data: function () {
+            return {
+                id_: "id"
+            }
+        },
+        watch: {
+            data: {
+                handler: function (newVal, oldVal) {
+                    var that = this;
+                    debugger;
+                    pchart.initColumn(that.chartConfig(that.data));
+                },
+                deep: true
+            }
+        },
+        methods: {
+            chartConfig: function (data) {
+                if (!this.data) {
+                    throw new Error('图表数据不存在！');
+                };
+                var config = {
+                    container: this.id_,
+                    series: data.series,
+                    title: {
+                        text: data.text_title,
+                        align: 'left',
+                        x: 0,
+                        y: 20,
+                        margin: 20,
+                        style: {
+                            fontSize: '16',
+                            marginBottom: 10
+                        }
+                    },
+                    subtitle: {
+                        text: 'd',
+                        style: {
+                            color: 'transparent'
+                        }
+                    },
+                };
+                return config;
+            }
+        },
+        created: function () {
+            this.id_ = this.id ? this.id : tools.generatorId();
+        },
+        mounted: function () {
+            // 初始化图表
+            pchart.initColumn(this.chartConfig(this.data));
+        },
+    });
+</script>

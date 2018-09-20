@@ -1,0 +1,83 @@
+@import "../publicSrc/public";
+
+.energymodel{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    text-align: center;
+    line-height: 100%;
+
+    .box{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        height: 550px;
+        width: 600px;
+        transform: translate(-50%,-50%);
+        display: inline-block;
+        background: $fff;
+        border-radius: 2px;
+
+        .eheader{
+            height: 50px;
+            width: 100%;
+            background: #6985a1;
+            text-align: center;
+            line-height: 50px;
+            color: #fff;
+            font-size: 18px;
+            border-radius: 2px 2px 0 0;  
+            box-sizing: border-box;
+        }
+
+        .ebody{
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50px;
+            bottom: 50px;
+            text-align: center;
+
+            .esection{
+                display: inline-block;
+                width: 250px;
+                height: calc(100% - 10px);
+                margin: 10px 10px 0;
+                box-sizing: border-box;
+                border: 1px solid $cb1;
+
+                .esh{
+                    text-align: center;
+                    height: 50px;
+                    line-height: 50px;
+                    box-sizing: border-box;
+                    border-bottom: 1px solid $cb1;
+                }
+
+                .esb{
+                    width: 100%;
+                    height: calc(100% - 50px);
+                    overflow-y: auto;
+                    text-align: left;
+                }
+
+            }
+        }
+
+        .efooter{
+            position: absolute;
+            width: 100%;
+            bottom: 0;
+            height: 50px;
+            text-align: center;
+
+            .btn{
+                margin: 10px;
+                display: inline-block;
+            }
+        }
+    }
+}

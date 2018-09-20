@@ -1,0 +1,64 @@
+<% include ../template/pageHead.html %>
+    <!-- 内容部分 -->
+    <link rel="stylesheet" href="../../../css/public/content.css">
+
+    <input type="hidden" id="menu" value="<%=JSON.stringify(menu) %>">
+    <input type="hidden" id="type" value="<%=(type) %>">
+
+    <div id="tab">
+        <!-- 头部Start -->
+        <div class="header clear">
+            <!-- 返回图标 Start -->
+            <div class="left">
+                <!-- <a href="/entry" class="back icon">I</a> -->
+                <a href="/entry" class="back">
+                    <pbutton-white icon="I" shape="rectangle"></pbutton-white>
+                </a>
+                <span title="选择故事版" class="textover text">选择故事版</span>
+            </div>
+            <!-- 返回图标 End -->
+
+            <!-- Tab Start -->
+            <div class="rigth" v-for="(item,index) in (isSingle?menu.single:menu.multiple).contents" @click="HandlerClickUrl(item.type,isSingle)">
+                <div class="tabItem" :class="item.type==type?'on':''">
+                    <img :src="item.img" :title="item.title" v-if="!item.icon && item.img">
+                    <span class="icon" v-if="item.icon" :title="item.title" v-text="item.icon"></span>
+                    <span :title="item.title" v-text="item.title"></span>
+                </div>
+            </div>
+            <!-- Tab End -->
+
+            <!-- {{isSingle}} -->
+        </div>
+        <!-- 头部End -->
+
+        <div class="content">
+            <iframe ref="iframe" class="if" src="/entry?type=<%=(type)%>&&sorm=Single" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <% include ../template/pageFoot.html %>
+
+        <script type="text/javascript">
+            $(function () {
+                var app = new Vue({
+                    el: "#tab",
+                    data: {
+                        menu: JSON.parse($("#menu").val()),
+                        type: $("#type").val().toString(),
+                    },
+                    computed: {
+                        isSingle: function () {
+                            return !_.isUndefined(_.find(this.menu.single.contents, { type: this.type }))
+                        }
+                    },
+                    methods: {
+                        HandlerClickUrl: function (type, sorm) {
+                            this.type = type;
+                            history.pushState(200, null, "/entry?type=" + type + "")
+                            $(this.$refs.iframe).attr("src", "/entry?type=" + type + "&&sorm=" + sorm + "")
+                        }
+                    }
+                })
+            })
+        </script>

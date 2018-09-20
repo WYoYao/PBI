@@ -1,0 +1,235 @@
+<link rel="stylesheet" href="<%=host%>/pcontrol/css/flatBlueSeries_min_2.0.css" />
+<script type="text/javascript" src="<%=host%>/scripts/lib/jquery-2.0.0.min.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/lib/vue-2.2.0.min.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/lib/when-3.7.8.min.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/lib/highcharts.src-6.0.1.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/lib/highcharts-more.src.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/tool/pconst.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/tool/psecret.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/tool/ptool.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/tool/pcolor.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/tool/pajax.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/extend/Array.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/extend/Date.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/extend/jQueryDom.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/extend/String.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/extend/Number.js"></script>
+<script type="text/javascript" src="<%=host%>/scripts/extend/Math.js"></script>
+<script type="text/javascript" src="../../../js/public/polyfill.js"></script>
+<script type="text/javascript" src="../../../js/public/lodash.min.js"></script>
+<script type="text/javascript" src="<%=host%>/pcontrol/flatBlueSeries_src_2.0.js"></script>
+<script type="text/javascript" src="<%=host%>/pcontrol/pchart_src_2.0.js"></script>
+<link rel="stylesheet" href="<%=host%>/pcontrol/css/pchart_src_2.0.css" />
+
+<link rel="stylesheet" href="../../css/multiple/multipleCompared.css" />
+<script type="text/javascript" src="../../../js/multiple/compared/model.js"></script>
+<script type="text/javascript" src="../../../js/multiple/compared/controller.js"></script>
+
+
+<!-- 表格模板 -->
+<% include ../components/girdTemplate.html %>
+
+    <!-- 右侧记录列表模板 -->
+    <% include ../components/recordListTemplate.html %>
+
+        <!-- 选择项目组件 -->
+        <% include ../components/index.html %>
+
+            <div id="multipleComparePage" class="multipleComparePage">
+                <div class="pageLeft">
+                    <div class="choiceCondition">
+                        <div class="title">
+                            选择项目
+                        </div>
+                        <div class="content">
+                            <div class="addProject" v-text="addProjectTxt" class="content" @click="addProjectShow">
+                                添加项目
+                            </div>
+                        </div>
+                    </div>
+                    <div class="choiceCondition">
+                        <div class="title">
+                            选择时间
+                        </div>
+                        <div class="content">
+                            <div class="choiceTime" :arr="JSON.stringify(searchConditionObj.timeSaveArr.length)" v-show="searchConditionObj.timeSaveArr.length >0">
+                                <div class="choiceTimeOp" v-for="(item,index) in searchConditionObj.timeSaveArr">
+                                    <div class="timer">
+                                        <span @click="showTimerPop(item,index,$event)" v-text="item.text">
+
+                                        </span>
+                                        <em @click="deleteTimeFn(item,index)">
+                                            一
+                                        </em>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="addTimeBtn">
+                                <pbutton-white bind="true" icon="'J'" text="'添加时间'" @click="addTimeFn"></pbutton-white>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="choiceCondition">
+                        <div class="title">
+                            <span>选择分项</span>
+                            <div class="branch">
+                                <pswitch-checkbox text="显示所选分项支路信息" name="mask" change="multipleCompare.branchIsShowFn" id="configSubscriptType"></pswitch-checkbox>
+                            </div>
+                        </div>
+                        <div class="content">
+                            <div class="addProject" v-text="addSubentryTxt" class="content" @click="addSubetryShow">
+                                添加分项
+                            </div>
+
+                        </div>
+                        <div class="subentryNotMatch">
+                            <span class="sTit"></span>
+
+                            <div class="notMatchList" :arr="JSON.stringify(searchConditionObj.notMatchSubentryArr.length)" v-show="searchConditionObj.notMatchSubentryArr.length >0">
+                                <div class="notMatchOption" v-for="(item,index) in searchConditionObj.notMatchSubentryArr">
+                                    <div class="pName" v-text="item.projectName"></div>
+                                    <div class="subAbout">
+                                        <div  class="subList" v-for="(info,sindex) in item.subArrSaveList">
+                                            <div class="subOption">
+                                                <span @click="notMatchSubentryPopShow(info,index,sindex,event)" v-text="info.text">
+
+                                                </span>
+                                                <em @click="deleteNotMatchSubentry(info,index,sindex)">
+                                                    一
+                                                </em>
+                                            </div>
+                                            <div class="subBranch" :data="JSON.stringify(branchIsShow)" v-if="branchIsShow">
+                                                <ul>
+                                                    <li v-for="brc in info.branch">
+                                                        <span :class="{isSelected:brc.isSelected}" v-text="brc.name" @click="selectedBranchOptionFn(brc)"></span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="addsubentryBtn">
+                                        <!-- <pbutton-white bind="true" icon="'J'" text="'添加分项'" @click="addNotMatchSubentry(index)"></pbutton-white> -->
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="confirmCommit">
+                            <pbutton-blue bind="true" text="'确定'" @click="confirmCommitFn"></pbutton-blue>
+                        </div>
+                    </div>
+                </div>
+                <div class="pageRight">
+                    <div class="topNav">
+                        <div class="gridOption">
+                            <div class="gridOptionItem">
+                                <pswitch-checkbox text="图表" state="true" change=""></pswitch-checkbox>
+                            </div>
+                            <div class="gridOptionItem">
+                                <pswitch-checkbox text="报表" state="false" change=""></pswitch-checkbox>
+                            </div>
+                        </div>
+                        <div class="numberOption">
+                            <ul>
+                                <li class="checked">总量</li>
+                                <li>单平米</li>
+                            </ul>
+                        </div>
+                        <div class="energyOption">
+                            <ul>
+                                <li class="checked">能耗</li>
+                                <li>费用</li>
+                                <li>碳排放量</li>
+                                <li>标煤</li>
+                            </ul>
+                        </div>
+                        <div class="operatOption">
+                            <ul class="list">
+                                <li>
+                                    <div class="btn">
+                                        <pbutton-white bind="true" icon="'D'" @click="downloadChart"></pbutton-white>
+                                    </div>
+                                    <div v-if="downLoadBlockIsShow" class="downloadBlock">
+                                        <ul>
+                                            <li>下载图表</li>
+                                            <li>下载报表</li>
+                                        </ul>
+                                    </div>
+
+                                </li>
+                                <li>
+                                    <div class="btn">
+                                        <pbutton-white bind="true" icon="'N'" @mouseenter="onlineExplainEnter" @mouseleave="onlineExplainLeave"></pbutton-white>
+                                    </div>
+                                    <div style="position:relative;" v-if="onlineExplainFlag" @mouseenter="onlineExplainEnter" @mouseleave="onlineExplainLeave">
+                                        <promptmessage :type="1"></promptmessage>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="contentPart">
+                        <div class="aboutChart">
+                            <!-- 引入chart图表 -->
+                            <div class="chartOperat">
+                                <div>
+                                    <pbutton-blue bind="true" icon="'`'" isborder="false" @click="setYAxisShowFn"></pbutton-blue>
+                                </div>
+                                <div>
+                                    单位：
+                                    <span v-text="chartUnit"></span>
+                                </div>
+                            </div>
+                            <div id="divLineChart"></div>
+
+                            <!-- 引入报表表格-->
+                            <div class="reportFrom">
+                                <tgrid :title="reportFromTitle" :from-content="reportFromContent"></tgrid>
+                            </div>
+                        </div>
+                        <div class="aboutRecord">
+                            <div class="title">
+                                <span>已选择项</span>
+                            </div>
+                            <!-- 引入 时间 + 项目  +  分项  生成的记录  需组件-->
+                            <ctrecord :list-data="cRecordList" :type="'compare'"></ctrecord>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 选择时间控件 -->
+                <div id="choiceTimePop">
+                    <ptime-calendar id="choiceTime" orientation="down" sel="multipleCompare.confirmCurrTime">
+                        <panel timetype="dwMy" align="left" double="true" startyear="2003"></panel>
+                    </ptime-calendar>
+                </div>
+
+                <!-- 多选项目模块 -->
+                <!-- showProjectTemp 显示隐藏   searchContent 搜索关键字  cb 点击事件回调 cancle组件隐藏 result选中的数据列表 -->
+                <mproject v-if="showProjectTemp" :search="searchContent" :cb="addProjectCallBack" :cancle="addProjectHide" :result="_.map(currProjectResult,'obj_id')">
+                </mproject>
+
+                <!-- 选择分项 -->
+                <msubentry v-if="showSubentryTemp" :search="searchSubentry" :cb="addSubetryCallBack" :cancle="addSubetryHide" :result="_.map(currentSubentryList,'obj_id')">
+
+                </msubentry>
+
+                <!-- 未匹配分项组件  notMatchSubCurrTemp -->
+                <msubentry v-if="notMatchSubCurrTemp" :search="notMatchSubSearchKey" :cb="notMatchSubentryCB" :cancle="notMatchSubentryPopHide"
+                    :result="_.map(notMatchSubCurrList,'obj_id')">
+
+                </msubentry>
+
+                <!-- 设置纵坐标组件 -->
+                <setdata v-if="setYAxisShow" :max="setMax" :min="setMin" :cb="setYdataFn" :cancle="setYAxisHideFn"></setdata>
+            </div>
+
+            <!-- loading -->
+            <ploading-part id="globalloading" text="加载中..."></ploading-part>
+            <!-- 成功失败提示 -->
+            <pnotice-message id="globalnotice"></pnotice-message>

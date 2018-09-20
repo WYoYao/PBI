@@ -1,0 +1,193 @@
+<script type="text/html" id="record-template">
+    <div class="recordList" id="cRecordList">
+        <div class="list" v-if="type == 'compare'">
+            <ul class="listUl">
+                <li v-for="(item,index) in listData" @mouseenter.self="deleteShow($event)" @mouseleave.self="deleteFalse($event)">
+                    <section :data="JSON.stringify(listData)" class="section">
+                        <div class="block block1">
+                            <div>
+                                <em class="sign">
+                                    <span :style="{'background':item.base.color}"></span>
+                                </em>
+                                <em v-text="item.subentry && item.subentry.energyItemLocalName"></em>
+                            </div>
+                            
+                            <em v-text="transTimeFormat(item.time)"></em>
+                        </div>
+                        <div class="block block2">
+                            <span v-text="item.value && item.value.num"></span>
+                            <em v-text="item.value.unit"></em>
+                        </div>
+                        <div class="block block3">
+                            <div>
+                                <span :style="{'width':item.base.width,'background':item.base.color}"></span>
+                            </div>
+                        </div>
+                    </section>
+                    <div clear="" class="input_x" @click="deleteCbFn(item)">x</div>
+                </li>
+            </ul>
+        </div>
+
+
+    </div>
+</script>
+
+<!--  type compare -->
+<!-- 
+    listData ：[{
+        time:{st:"",et:""},//时间
+        value:{num:"",unit:""},//数值
+        subentry:{energyItemLocalName:"",energyItemLocalId:""},//分项
+        base:{width:"",color:""},//基础设置
+    }]
+ -->
+
+<script>
+    $(function () {
+        Vue.component('ctrecord', {
+            template: '#record-template',
+            props: ["title", "list-data", "type", "deletecb"],
+            data: function () {
+                return {
+
+                }
+
+            },
+            methods: {
+                transTimeFormat: function (obj) {
+                    if (JSON.stringify(obj) == '{}') {
+                        return;
+                    }
+                    var str = "";
+                    str = obj.et ? (obj.st ? obj.st : "") + '-' + obj.et : obj.st;
+                    return str;
+                },
+                deleteShow: function (e) {
+                    var el = $(e.target)[0];
+                    $(el).find('.input_x').show();
+                },
+                deleteFalse: function (e) {
+                    var el = $(e.target)[0];
+                    $(el).find('.input_x').hide();
+                },
+                deleteCbFn: function (item) {
+                    this.deletecb(item);
+                }
+            },
+            watch: {
+
+            },
+            beforeMount: function () {
+
+            },
+
+        })
+    })
+</script>
+
+<style>
+    .recordList {}
+
+    .recordList .list .listUl li {
+        max-height: 100px;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .recordList .list .listUl li .input_x {
+        width: 14px;
+        height: 14px;
+        background: #d9d9d9;
+        border-radius: 100%;
+        color: #fff;
+        font-family: 'perficon';
+        /* position: absolute; */
+        left: 240px;
+        top: 7px;
+        cursor: pointer;
+        font-size: 12px;
+        text-align: center;
+        line-height: 14px;
+        margin-left: 10px;
+        display: none;
+    }
+
+    .recordList .list .listUl li .section {
+        max-height:100px;
+        padding-left: 20px;
+        padding-top: 10px;
+        width: 80%;
+    }
+
+    .recordList .list .listUl li .section .block {
+        max-height: 100px;
+    }
+
+    .recordList .list .listUl li .section .block1 {
+        max-height: 100px;
+        display: flex;
+        flex-flow: column nowrap;
+    }
+
+    .recordList .list .listUl li .section .block1>em {
+        display: block;
+        max-height: 100px;
+        /* line-height: 20px; */
+    }
+
+    .recordList .list .listUl li .section .block1>:nth-child(1) {
+        margin-right: 4px;
+        display:flex;
+        flex-flow:row nowrap;
+        align-items:center;
+    }
+
+    .recordList .list .listUl li .section .block1>:nth-child(2) {
+        margin-right: 10px;
+    }
+
+    .recordList .list .listUl li .section .block1 .sign {
+        height: 20px;
+        margin-right:10px;
+    }
+
+    .recordList .list .listUl li .section .block1 .sign>span {
+        display: block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-top: 5px;
+    }
+
+    .recordList .list .listUl li .section .block2 {
+        display: flex;
+        flex-flow: row nowrap;
+    }
+
+    .recordList .list .listUl li .section .block2 span {
+        font-weight: bold;
+        display: block;
+        margin-left: 14px;
+        margin-right: 6px;
+    }
+
+    .recordList .list .listUl li .section .block3 {}
+
+    .recordList .list .listUl li .section .block3>div {
+        width: 200px;
+        height: 8px;
+        background: #f1f3f4;
+        position: relative;
+    }
+
+    .recordList .list .listUl li .section .block3>div>span {
+        display: block;
+        height: 8px;
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+</style>

@@ -1,0 +1,148 @@
+<% include ../../template/pageHead.html %>
+    <% include ../../pages/components/index.html %>
+        <link rel="stylesheet" href="../../css/single/Inquire.css">
+
+
+        <div id="app">
+            <!-- 左侧内容 Start -->
+            <div class="left">
+                <!-- 筛选项目Start -->
+                <div class="section clear">
+                    <span class="title">
+                        筛选项目
+                    </span>
+                    <div class="block">
+                        <div class="line">
+                            <ptime-calendar id="divCalendar" orientation="down" sel="click">
+                                <panel timetype="dwMy" align="left" double="true" startyear="2003" endyear="2018" commontime="['w','pw']"></panel>
+                            </ptime-calendar>
+                        </div>
+                    </div>
+                </div>
+                <!-- 筛选项目End -->
+
+                <!-- 筛选时间Start -->
+                <div class="section">
+                    <span class="title">
+                        筛选时间
+                    </span>
+                    <div class="block">
+                        <div class="line">
+                            <ptime-calendar id="divCalendar" orientation="down" sel="click">
+                                <panel timetype="dwMy" align="left" double="true" startyear="2003" endyear="2018" commontime="['w','pw']"></panel>
+                            </ptime-calendar>
+                        </div>
+                        <div class="line same">
+                            <div class="imgborder on">
+                                <img class="init" src="../../../images/上周同期-2@2x.png" alt="上周同期">
+                                <img class="hove" src="../../../images/上周同期-1@2x.png" alt="上周同期">
+                            </div>
+
+                            <div class="imgborder">
+                                <img class="init" src="../../../images/上月同期-2@2x.png" alt="上月同期">
+                                <img class="hove" src="../../../images/上月同期-1@2x.png" alt="上月同期">
+                            </div>
+
+                            <div class="imgborder">
+                                <img class="init" src="../../../images/去年同期-2@2x.png" alt="去年同期">
+                                <img class="hove" src="../../../images/去年同期-1@2x.png" alt="去年同期">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 筛选时间End -->
+
+            </div>
+            <!-- 左侧内容 End -->
+            <!-- 右侧内容 Start -->
+            <div class="right">
+                <!-- 上方选项卡  -->
+                <div class="tab" ref="tab">
+                    <!-- 图表Start -->
+                    <vcheckbox :ref="'vcheckbox'" :datasrouce="_.range(10).map((item,index)=>({id:+new Date(),name:index}))" :computewidth="item=>false"
+                        :primarykey="'id'" :name="'name'" :cb="item=>console.log(item)"></vcheckbox>
+                    <!-- 图表End -->
+
+                    <!-- 能耗选择Tab2 Start -->
+                    <div class="tbchk">
+                        <span class="item on">总量</span>
+                        <span class="item">单平米</span>
+                        <span class="item">下级拆分</span>
+                    </div>
+                    <!-- 能耗选择Tab2 End -->
+
+                    <!-- 能耗选择Tab2 Start -->
+                    <div class="tbchk">
+                        <span class="item on">能耗</span>
+                        <span class="item">费用</span>
+                        <span class="item">碳排放量</span>
+                        <span class="item">标煤</span>
+                    </div>
+                    <!-- 能耗选择Tab2 End -->
+
+                    <!-- 图表Start -->
+                    <div class="tb1">
+                        <span class="item">
+                            <div class="per-switch-checkbox">
+                                <span class="per-checkbox_input"></span>
+                                <span class="per-switch_label">最大值</span>
+                            </div>
+                        </span>
+                        <span class="item">
+                            <div class="per-switch-checkbox">
+                                <span class="per-checkbox_input per-checkbox-checked"></span>
+                                <span class="per-switch_label">最小值</span>
+                            </div>
+                        </span>
+
+                        <span class="item">
+                            <div class="per-switch-checkbox">
+                                <span class="per-checkbox_input per-checkbox-checked"></span>
+                                <span class="per-switch_label">平均值</span>
+                            </div>
+                        </span>
+
+                        <span class="item">
+                            <div class="per-switch-checkbox">
+                                <span class="per-checkbox_input per-checkbox-checked"></span>
+                                <span class="per-switch_label">中位数</span>
+                            </div>
+                        </span>
+                    </div>
+                    <!-- 图表End -->
+
+                    <!--  下载Icon Start -->
+                    <div class="iconlist">
+                        <div class="vg">
+                            <pbutton-white icon="D" shape="rectangle"></pbutton-white>
+                        </div>
+                        <div class="vg">
+                            <pbutton-white icon="!" shape="rectangle"></pbutton-white>
+                        </div>
+                    </div>
+                    <!--  下载Icon End -->
+
+
+
+                </div>
+                <br/>
+                <br/>
+
+
+                <!-- 图表 和 辅助信息 Start -->
+                <div class="content">
+                    <div class="l"></div>
+                    <div class="r"></div>
+                </div>
+                <!-- 图表 和 辅助信息 End -->
+
+            </div>
+            <!-- 右侧内容 End -->
+        </div>
+
+        <script src="../../js/single/Inquire/model.js"></script>
+        <script src="../../js/single/Inquire/controller.js"></script>
+
+
+
+        <% include ../../template/pageFoot.html %>

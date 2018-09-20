@@ -1,0 +1,79 @@
+@import "../publicSrc/public";
+
+.suboption{
+    height: 100%;
+    width: 100%;
+
+    .layer{
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+    }
+
+    .sheader{
+        height: 30px;
+        background: #F7F7F9;
+        padding:10px 20px;
+
+        .input-unit{
+            display: block;
+            position: relative;
+
+            .selected{
+                position: relative;
+                height: 30px;
+                border: 1px solid #D9E2E8;
+                border-radius: 1px;
+                line-height: 30px;
+                cursor: pointer;
+                padding-left: 20px;
+                background: #F7F7F9;
+
+                .icon{
+                    right: 1px !important;
+                    left: auto;
+                }
+            }
+
+            .icon{
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: 30px;
+                width: 30px;
+                text-align: center;
+                line-height: 30px;
+                color: #7A94AD;
+            }
+
+            .input-div{
+                height: 30px;
+
+                input[type="text"]{
+                    padding-left: 30px;
+                }
+            }
+        }
+    }
+
+    .ptem{
+         position: relative;
+
+         .floatemp{
+            position: absolute;
+            top: 0;
+            right: -251px;
+            height: 600px;
+            z-index: 10;
+            border: 1px solid #D9E2E8;
+         }
+
+    }
+
+    .sbody{
+        height: calc(100% - 50px);
+        background: #FFFFFF;
+    }
+}

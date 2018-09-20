@@ -1,0 +1,155 @@
+<script type="text/html" id="grid-template">
+    <div>
+        <div id="commonGrid" class="commonGrid cgrid" v-for="item in renderlist">
+                <div class="title">
+                    <ul>
+                        <li  :style="{width:(100/item.renderTit['length'] + '%')}" v-for="info in item.renderTit">
+                            <span v-text="info.name">
+                                
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div style="height:30px">
+        
+                </div>
+                <div class="content" :data="JSON.stringify(item.renderCon)">
+                    <ul>
+                        <li v-for="options in item.renderCon">
+                            <span :style="{width:(100/options['length'] + '%')}" v-for="op in options" v-text="op">
+                                
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+        
+            </div>
+    </div>
+    
+</script>
+
+<script>
+    Vue.component('tgrid', {
+        template: '#grid-template',
+        props: ["renderlist"],
+        data: function () {
+            return {
+                number: "",
+            }
+        },
+        computed: {
+
+        },
+        methods: {
+
+        },
+        watch: {
+
+        },
+        mounted() {
+            console.log(this.number)
+        }
+
+    })
+</script>
+<script>
+    //滚动时表头固定
+    $(function () {
+        var pre_scrollTop = 0;
+        pre_scrollTop = $("#commonGrid").scrollTop();
+        $("#commonGrid").scroll(function () {
+            // debugger
+            var scrollTop = $("#commonGrid").scrollTop();
+            if (pre_scrollTop != scrollTop) {
+                pre_scrollTop = scrollTop;
+                $("#commonGrid .title").css("top", pre_scrollTop);
+            }
+        })
+    })
+</script>
+<style>
+    .cgrid {
+        position: relative;
+        width: 100%;
+        max-height: 300px;
+        min-height: 160px;
+        max-width: 100%;
+        overflow: scroll;
+        overflow: overlay;
+
+    }
+
+    .cgrid::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    .cgrid .title {
+        width: 100%;
+        height: 30px;
+        position: absolute;
+        /* top: 0; */
+        left: 0;
+
+    }
+
+    .cgrid .title ul {
+        /* padding:0 20px; */
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        height: inherit;
+
+    }
+
+    .cgrid .title ul li {
+        /* width:130px; */
+        /* min-width:130px; */
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        background: #8b959a;
+    }
+
+    .cgrid .title ul li span {
+        color: #fff;
+    }
+
+    .cgrid .content {
+        max-height: 100px;
+        /* margin-top: 30px; */
+    }
+
+    .cgrid .content ul {
+        /* padding:0 20px; */
+        max-width: 100%;
+        /* overflow-x:scroll; */
+        display: flex;
+        flex-flow: column nowrap;
+        /* align-items: center; */
+        height: inherit;
+        /* background: #fff; */
+        border-bottom: 1px solid #d9e2e8;
+        /* border-right: 1px solid #e9e2e8; */
+    }
+
+    .cgrid .content ul li {
+        height: 30px;
+        line-height: 30px;
+        /* margin-left: 20px; */
+        /* border-right: 1px solid #d9e2e8; */
+        display: flex;
+        flex-flow: row nowrap;
+    }
+
+    .cgrid .content ul li span {
+        display: block;
+        /* min-width: 130px; */
+        /* width: 130px; */
+        text-align: center;
+        border-right: 1px solid #d9e2e8;
+        border-bottom: 1px solid #d9e2e8;
+        background: #fff;
+        box-sizing: border-box;
+    }
+</style>

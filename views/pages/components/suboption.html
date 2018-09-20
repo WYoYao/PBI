@@ -1,0 +1,128 @@
+<link rel="stylesheet" href="/css/single/suboption.css">
+<script type="text/html" id="suboption">
+   <div class="suboption">
+       <div class="sheader ptem">
+            <div class="input-unit">
+                <div class="input-div selected" @click.captrue.stop="isShow=!isShow">
+                    {{_.map(selecteds,vname).join(',') || '请选择'}}
+                     <div class="icon">></div>
+                </div>
+            </div>
+
+            <div class="floatemp" @click.stop="void 0;console.log(123)" v-show="isShow">
+                <div class="sheader">
+                    <div class="input-unit">
+                        <div class="icon">f</div>
+                        <div class="input-div">
+                            <input v-model="str" class="input" type="text" text="" placeholder="请输入">
+                            </div>
+                        </div>
+                        <div class="layer" @click.stop="isShow=!isShow" v-show="isShow"></div>
+                </div>
+                <div class="sbody">
+                        <multipletree :vcontent='str?"":vcontent' :vname="vname" :vkey="vkey" :list="list" :click="click" :clickplus="clickplus" :showlist="shows" :selectedlist="selecteds" :issingle="true"></multipletree>
+                </div>
+            </div>
+        </div>
+   </div>
+</script>
+<script>
+
+    $(function () {
+        Vue.component('suboption', {
+            template: "#suboption",
+            data: function () {
+                return {
+                    // 树类型的中实例对应的主键字段
+                    vkey: 'localId',
+                    // 树类型的中实例对应的展示字段
+                    vname: 'name',
+                    // 树类型的中实例对应的子字段
+                    vcontent: 'content',
+                    // 展开的主键集合
+                    shows: [],
+                    // 选中的主键集合
+                    selecteds: [],
+                    // 用于查询搜索的字符串
+                    str: "",
+                    // 是否展示面板
+                    isShow: false,
+                }
+            },
+            props: {
+                cb: {
+                    type: Function,
+                    required: true,
+                },
+                tree: {
+                    type: Array,
+                    required: true
+                }
+            },
+            methods: {
+                clickplus: function (id) {
+                    var index = this.shows.indexOf(id);
+                    if (index != -1) {
+                        this.shows.splice(index, 1);
+                    } else {
+                        this.shows.push(id);
+                    }
+                },
+                click: function (id) {
+                    Vue.set(this, 'selecteds', [id])
+                }
+            },
+            computed: {
+                ctree: function () {
+                    return this.t
+                },
+                searchlist: function () {
+                    var _that = this;
+
+                    return _that.tree.reduce(function (con, item) {
+
+                        var callee = arguments.callee;
+                        con.push(item);
+
+                        if (_.isArray(item[_that.vcontent]) && item[_that.vcontent].length)
+                            item[_that.vcontent].reduce(callee, con)
+                        return con;
+                    }, []);
+                },
+                list: function () {
+                    var _that = this;
+
+                    if (_that.str) {
+                        return _that.searchlist.filter(function (item) {
+                            return item[_that.vname].indexOf(_that.str) != -1;
+                        });
+                    } else {
+                        return _that.tree;
+                    }
+                }
+            },
+            watch: {
+                str: function () {
+                    Vue.set(this, 'shows', []);
+                    Vue.set(this, 'selecteds', []);
+                },
+                selecteds: {
+                    handler: function (val, oldVal) {
+                        var _that = this;
+                        if (val.length) {
+                            _that.cb(
+                                _that.searchlist.filter(function (item) {
+                                    return _that.selecteds.indexOf(item[_that.vkey]) != -1;
+                                })
+                            )
+                        }
+                    },
+                    deep: true
+                }
+            },
+            beforeMount: function () {
+
+            }
+        })
+    })
+</script>
