@@ -7,6 +7,7 @@ $(function () {
                 {
                     name: "图表",
                     code: 0,
+                    lock: true
                 }, {
                     name: "报表",
                     code: 1,
@@ -65,7 +66,14 @@ $(function () {
             iscombox: false,
             // 已选中类型
             query: {
-                tables: [],
+                tables: [{
+                    name: "图表",
+                    code: 0,
+                    lock: true
+                }, {
+                    name: "报表",
+                    code: 1,
+                }],
                 auxiliarys: [],
                 areas: [],
                 energy: [],
@@ -84,12 +92,37 @@ $(function () {
             detailTable: null,
             // 对应的分项集合
             suboptionModel: [],
+            // 时间控件中的时间
+            timer: {
+
+            },
+            queryRes: null,
         },
         methods: {
+            //  查询按钮
+            queryData: function () {
+
+                // 分项
+                console.log(this.suboptionModel);
+
+                // 时间
+                console.log(this.timer);
+
+            },
             createHandlerClick: function (type) {
                 var _that = this;
                 return function (arr) {
                     _that.query[type] = arr;
+                    console.log(JSON.stringify(_that.query))
+
+                    // 销毁图表
+                    // 父级的对应的表
+                    _that.masterTable.destroy();
+                    // 详情对应的表
+                    _that.detailTable.destroy();
+
+                    // 重新查询数据
+                    _that.createMaster(_that.queryRes).then(_that.createDetail)
                 }
             },
             getTableTypes: function () {
@@ -275,10 +308,26 @@ $(function () {
                 console.log(_that.query);
                 // 查询对应的项目模型
                 console.log(_that.energyProject);
-                console.log(_that.showEnergyModel);
 
-                singleController.queryTable().then(_that.createMaster).then(_that.createDetail)
+                console.log(_that.suboptionModel);
+
+                console.log(_that.timer);
+
+                singleController.queryTable().then(function (res) {
+                    // 保存渲染的表格的数据
+                    _that.queryRes = res;
+
+                    //  渲染的主表格
+                    return _that.createMaster(res)
+
+                    //  渲染的渲染的对应子表格
+                }).then(_that.createDetail)
             },
+            //  时间控件点击选择事件
+            timeClick: function (argu) {
+                this.timer = argu;
+                console.log(argu);
+            }
         },
         computed: {
             energyModelTree: function () {
@@ -295,6 +344,9 @@ $(function () {
                         };
                         return item;
                     })
+            },
+            canQuery: function () {
+
             }
         }
     });

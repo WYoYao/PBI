@@ -4,7 +4,7 @@
         <!-- 图表Start -->
         <div :class="iscombox?'hiddencompute':''">
             <div class="tb1" ref="tb">
-                <span class="item" v-for="(item,index) in (_.isArray(datasource)?datasource:[])" >
+                <span class="item" v-for="(item,index) in (_.isArray(datasource)?datasource:[])" :pdisabled="item.lock">
                     <div class="per-switch-checkbox" :title="item[name]" @click="handlerClick(item)">
                         <span class="per-checkbox_input" :class="selected.indexOf(item[primarykey])!=-1?'per-checkbox-checked':''"></span>
                         <span class="per-switch_label" :title="item[name]" v-text="item[name]"></span>
@@ -21,8 +21,8 @@
                     <em class="text" v-text="title"></em>
                 </span>
                 <!-- <ul class="list" :class="open?'on':''" v-show="open"> -->
-                 <ul class="list" :class="open?'on':''">
-                    <li v-for="(item,index) in (_.isArray(datasource)?datasource:[])" class="item" @click="handlerClick(item)">
+                 <ul class="list" :class="open?'on':''" @click.stop="void 0">
+                    <li v-for="(item,index) in (_.isArray(datasource)?datasource:[])" :pdisabled="item.lock" class="item" @click="handlerClick(item)">
                         <div class="per-switch-checkbox" :title="item[name]">
                             <span class="per-checkbox_input" :class="selected.indexOf(item[primarykey])!=-1?'per-checkbox-checked':''"></span>
                             <span class="per-switch_label" :title="item[name]" v-text="item[name]"></span>
@@ -54,10 +54,13 @@
          * name 集合中实例的名字
          * cb 点击选择的返回值
         */
-        props: ["more", "datasource", "computewidth", "primarykey", "cb", "name", "iscombox","title","icon"],
+        props: ["more", "datasource", "computewidth", "primarykey", "cb", "name", "iscombox", "title", "icon"],
         methods: {
             //  点击事件
             handlerClick: function (item) {
+
+                if (item.lock) return;
+
                 var _that = this;
                 var index = _that.selected.indexOf(item[_that.primarykey]);
                 index == -1 ? _that.selected.push(item[_that.primarykey]) : _that.selected.splice(index, 1);
@@ -66,6 +69,9 @@
                         return _that.selected.indexOf(item[_that.primarykey]) != -1;
                     })
                 ) : "";
+
+                // 隐藏内容
+                _that.open = false;
             },
             getWidth: function () {
                 return this.$refs.tb.offsetWidth;

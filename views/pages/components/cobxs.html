@@ -4,7 +4,7 @@
         <!-- 图表Start -->
         <div :class="iscombox?'hiddencompute':''">
             <div ref="tbchk" class="tbchk">
-                <span class="item" v-for="(item,index) in (_.isArray(datasource)?datasource:[])" @click="handlerClick(item)" :class="selected.indexOf(item[primarykey])!=-1?'on':''" :title="item[name]" v-text="item[name]"></span>
+                <span class="item" v-for="(item,index) in (_.isArray(datasource)?datasource:[])" :pdisabled="item.lock" @click="handlerClick(item)" :class="selected.indexOf(item[primarykey])!=-1?'on':''" :title="item[name]" v-text="item[name]"></span>
             </div>
         </div>
         <!-- 图表End -->
@@ -18,7 +18,7 @@
                 </span>
                 <!-- <ul class="list" :class="open?'on':''" v-show="open"> -->
                  <ul class="list" :class="open?'on':''">
-                    <li v-for="(item,index) in (_.isArray(datasource)?datasource:[])" class="item" @click="handlerClick(item)" :title="item[name]" v-text="item[name]"></li>
+                    <li v-for="(item,index) in (_.isArray(datasource)?datasource:[])"  :pdisabled="item.lock" class="item" @click="handlerClick(item)" :title="item[name]" v-text="item[name]"></li>
                 </ul>
             </div>
         </div>
@@ -54,6 +54,7 @@
             },
             //  点击事件
             handlerClick: function (item) {
+                if (item.lock) return;
                 var _that = this;
                 _that.selected = [item[_that.primarykey]];
                 _.isFunction(_that.cb) ? _that.cb(

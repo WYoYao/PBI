@@ -1,0 +1,124 @@
+<link rel="stylesheet" href="/css/single/timer.css">
+<script type="text/html" id="timer">
+  <div class="timer" @mouseenter="addHandlerClickToWindow">
+   <div class="line">
+       <ptime-calendar ref="ptime" orientation="down" sel="timerClick">
+           <panel timetype="dwMy" align="left" double="true" startyear="2003" endyear="2018" commontime="['d','pd','w','pw','M','pM','y','py']"></panel>
+       </ptime-calendar>
+   </div>
+   <div class="line same">
+       <!-- <div class="imgborder on"> -->
+        <div class="imgborder" v-for="(item,index) in comsFilter" :class="time.timeType == item.code?'on':''" @click.stop="compareClick(item)">
+           <img class="init" :src="item.init" :alt="item.alt">
+           <img class="hove" :src="item.hove" :alt="item.alt">
+        </div>
+   </div>
+</div>
+</script>
+<script>
+
+    $(function () {
+        Vue.component('timer', {
+            template: "#timer",
+            data: function () {
+                return {
+                    // 日期控件中的日期类型
+                    timeType: "d",
+                    // 同比集合
+                    coms: [{
+                        init: "../../../images/上周同期-2@2x.png",
+                        hove: "../../../images/上周同期-1@2x.png",
+                        alt: "上周同期",
+                        code: "week",
+                    }, {
+                        init: "../../../images/上月同期-2@2x.png",
+                        hove: "../../../images/上月同期-1@2x.png",
+                        alt: "上月同期",
+                        code: "month",
+                    }, {
+                        init: "../../../images/去年同期-2@2x.png",
+                        hove: "../../../images/去年同期-1@2x.png",
+                        alt: "去年同期",
+                        code: "year",
+                    }],
+                    time: {
+                        timeType: "d",
+                        startTime: 1537027200000,
+                        endTime: 1537113599000,
+                    }
+                }
+            },
+            props: {
+                cb: {
+                    type: Function,
+                    required: true,
+                }
+            },
+            methods: {
+                // 时间选择时间
+                handlerClick: function () {
+                    var argu = $(this.$refs.ptime).psel();
+                    // 设置对应的时间类型
+                    this.time = argu;
+
+                    _.isFunction(this.cb) ? this.cb(argu) : void 0;
+                },
+                // 鼠标移入控件的时候的绑定对应的全局事件
+                addHandlerClickToWindow: function () {
+                    window.timerClick = this.handlerClick;
+                },
+                // 同比点击事件
+                compareClick: function (item) {
+                    // this.timeType = item.code;
+
+                    var startTime = new Date(this.time.startTime);
+                    var endTime = new Date(this.time.endTime);
+
+                    if (item.code == "year") {
+                        startTime.setFullYear(startTime.getFullYear() - 1);
+                        endTime.setFullYear(endTime.getFullYear() - 1);
+                    } else if (item.code == "month") {
+                        startTime.setMonth(startTime.getMonth() - 1);
+                        endTime.setMonth(endTime.getMonth() - 1);
+                    } else if (item.code == "week") {
+                        startTime.setDate(startTime.getDate() - 7);
+                        endTime.setDate(endTime.getDate() - 7);
+                    }
+
+                    $(this.$refs.ptime).psel(Object.assign({}, this.time, {
+                        startTime: +startTime,
+                        endTime: +endTime
+                    }));
+                }
+            },
+            computed: {
+                // 根据选择的时间类型来进行的筛选
+                comsFilter: function () {
+
+                    if (this.time.timeType == "d") {
+                        return this.coms;
+                    } else if (this.time.timeType == "w") {
+                        return this.coms.filter(function (item) {
+                            return ['year', 'month'].indexOf(item.code) != -1;
+                        })
+                    } else if (this.time.timeType == "M") {
+                        return this.coms.filter(function (item) {
+                            return ['month'].indexOf(item.code) != -1;
+                        })
+                    }
+
+                    return [];
+                }
+            },
+            watch: {
+
+            },
+            mounted: function () {
+                this.handlerClick();
+            },
+            beforeMount: function () {
+
+            }
+        })
+    })
+</script>

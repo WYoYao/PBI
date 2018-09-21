@@ -1,0 +1,61 @@
+.boxshadow {
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12); }
+
+.clear:after {
+  content: "   ";
+  display: block;
+  height: 0;
+  clear: both; }
+
+.icon {
+  font-family: perficon; }
+
+.textover {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
+
+.timer {
+  padding-bottom: 8px; }
+  .timer .per-calendar-text {
+    width: 173px; }
+  .timer .line {
+    margin-bottom: 10px; }
+    .timer .line .project {
+      height: 30px;
+      border: 1px solid #D9E2E8;
+      border-radius: 1px;
+      line-height: 30px;
+      cursor: pointer;
+      padding-left: 20px;
+      background: #F7F7F9; }
+      .timer .line .project em {
+        display: inline-block;
+        vertical-align: middle;
+        color: #637E99;
+        max-width: 40%; }
+  .timer .same {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center; }
+    .timer .same .imgborder {
+      border-radius: 2px;
+      border: 1px solid #CACACA;
+      width: 68px;
+      height: 68px;
+      cursor: pointer; }
+      .timer .same .imgborder img {
+        margin-left: 50%;
+        margin-top: 50%;
+        transform: translate(-50%, -50%); }
+      .timer .same .imgborder .hove {
+        display: none; }
+    .timer .same .imgborder:hover .init,
+    .timer .same .imgborder.on .init {
+      display: none; }
+    .timer .same .imgborder:hover .hove,
+    .timer .same .imgborder.on .hove {
+      display: block; }
+
+/*# sourceMappingURL=timer.css.map */

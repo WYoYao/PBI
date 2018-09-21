@@ -18,6 +18,7 @@ controller.prototype.entry = function (req, res, next) {
 		});
 
 		if (list.length && list[0] && list[0].url && !sorm) {
+			console.log(JSON.stringify(req.session[_this.tool.userSessionName]));
 			res.render("./pages/content", {
 				host: commonLibUrl,
 				type: list[0].type,

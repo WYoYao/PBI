@@ -25,6 +25,7 @@
     right: 0;
     left: 0; }
   .suboption .sheader {
+    position: relative;
     height: 30px;
     background: #F7F7F9;
     padding: 10px 20px; }

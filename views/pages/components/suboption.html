@@ -3,13 +3,14 @@
    <div class="suboption">
        <div class="sheader ptem">
             <div class="input-unit">
-                <div class="input-div selected" @click.captrue.stop="isShow=!isShow">
-                    {{_.map(selecteds,vname).join(',') || '请选择'}}
+                <div class="input-div selected" @click.captrue.stop="list.length?isShow=!isShow:void 0">
+                    {{tree.length?(_.map(selectedNames,vname).join(',') || '请选择'):'请选择能耗模型'}}
                      <div class="icon">></div>
                 </div>
             </div>
 
-            <div class="floatemp" @click.stop="void 0;console.log(123)" v-show="isShow">
+            <div class="floatemp" @click.stop="void 0;" v-show="isShow">
+                <div class="layer" @click.stop="isShow=!isShow" v-show="isShow"></div>
                 <div class="sheader">
                     <div class="input-unit">
                         <div class="icon">f</div>
@@ -17,7 +18,6 @@
                             <input v-model="str" class="input" type="text" text="" placeholder="请输入">
                             </div>
                         </div>
-                        <div class="layer" @click.stop="isShow=!isShow" v-show="isShow"></div>
                 </div>
                 <div class="sbody">
                         <multipletree :vcontent='str?"":vcontent' :vname="vname" :vkey="vkey" :list="list" :click="click" :clickplus="clickplus" :showlist="shows" :selectedlist="selecteds" :issingle="true"></multipletree>
@@ -69,6 +69,8 @@
                     }
                 },
                 click: function (id) {
+
+                    this.isShow = false;
                     Vue.set(this, 'selecteds', [id])
                 }
             },
@@ -99,6 +101,12 @@
                     } else {
                         return _that.tree;
                     }
+                },
+                selectedNames: function () {
+                    var _that = this;
+                    return _that.searchlist.filter(function (item) {
+                        return _that.selecteds.indexOf(item.localId) != -1;
+                    })
                 }
             },
             watch: {
@@ -119,6 +127,10 @@
                     },
                     deep: true
                 }
+            },
+
+            mounted: function () {
+
             },
             beforeMount: function () {
 

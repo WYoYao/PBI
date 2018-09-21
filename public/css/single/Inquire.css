@@ -64,10 +64,18 @@
               transform: translate(-50%, -50%); }
             #app .left .section .block .same .imgborder .hove {
               display: none; }
-          #app .left .section .block .same .imgborder:hover .init, #app .left .section .block .same .imgborder.on .init {
+          #app .left .section .block .same .imgborder:hover .init,
+          #app .left .section .block .same .imgborder.on .init {
             display: none; }
-          #app .left .section .block .same .imgborder:hover .hove, #app .left .section .block .same .imgborder.on .hove {
+          #app .left .section .block .same .imgborder:hover .hove,
+          #app .left .section .block .same .imgborder.on .hove {
             display: block; }
+    #app .left .footbtn {
+      position: absolute;
+      bottom: 0;
+      left: 78px;
+      height: 50px;
+      width: 80px; }
   #app .right {
     margin-left: 280px;
     height: 100%; }
@@ -133,9 +141,12 @@
       font-size: 14px;
       color: #6D6D6D;
       vertical-align: middle; }
-    .vcheckbox .tbchk .item.on, .vcheckbox .tbchk .item:hover {
+    .vcheckbox .tbchk .item.on,
+    .vcheckbox .tbchk .item:hover {
       color: #02A9D1; }
-  .vcheckbox .combx, .vcheckbox .tb1, .vcheckbox .tbchk {
+  .vcheckbox .combx,
+  .vcheckbox .tb1,
+  .vcheckbox .tbchk {
     float: left;
     box-sizing: border-box;
     padding: 0 10px;
@@ -176,7 +187,8 @@
           line-height: 44px; }
         .vcheckbox .combx .title .list .item:hover {
           color: #02A9D1; }
-    .vcheckbox .combx .title:hover .icon, .vcheckbox .combx .title:hover .text {
+    .vcheckbox .combx .title:hover .icon,
+    .vcheckbox .combx .title:hover .text {
       color: #02A9D1; }
 
 /*# sourceMappingURL=Inquire.css.map */

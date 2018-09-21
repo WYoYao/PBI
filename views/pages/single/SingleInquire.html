@@ -33,34 +33,21 @@
             <span class="title">
                 筛选时间
             </span>
-            <div class="block">
-                <div class="line">
-                    <ptime-calendar id="divCalendar" orientation="down" sel="click">
-                        <panel timetype="dwMy" align="left" double="true" startyear="2003" endyear="2018" commontime="['w','pw']"></panel>
-                    </ptime-calendar>
-                </div>
-                <div class="line same">
-                    <div class="imgborder on">
-                        <img class="init" src="../../../images/上周同期-2@2x.png" alt="上周同期">
-                        <img class="hove" src="../../../images/上周同期-1@2x.png" alt="上周同期">
-                    </div>
-                    <div class="imgborder">
-                        <img class="init" src="../../../images/上月同期-2@2x.png" alt="上月同期">
-                        <img class="hove" src="../../../images/上月同期-1@2x.png" alt="上月同期">
-                    </div>
-                    <div class="imgborder">
-                        <img class="init" src="../../../images/去年同期-2@2x.png" alt="去年同期">
-                        <img class="hove" src="../../../images/去年同期-1@2x.png" alt="去年同期">
-                    </div>
-                </div>
-            </div>
+            <!-- 单个时间选择控件 Start -->
+            <timer :cb="timeClick"></timer>
+            <!-- 单个时间选择控件 End -->
         </div>
         <!-- 筛选时间End -->
         <!-- 选择分项Start -->
-        <div class="section" style="height: calc(100% - 269px);padding:0;">
+        <div class="section" style="height: 50px;padding:0;">
             <suboption :cb="handlerclickSuboption" :tree="energyModelTree"></suboption>
         </div>
         <!-- 选择分项End -->
+        <!-- 查询按钮 Start -->
+        <div class="section footbtn" :pdisabled="!suboptionModel.length" @click.stop="suboptionModel.length?queryTabel():void 0">
+            <pbutton-blue text="查询"></pbutton-blue>
+        </div>
+        <!-- 查询按钮 End -->
 
     </div>
     <!-- 左侧内容 End -->
@@ -99,9 +86,13 @@
             <div class="l">
                 <div id="chart" ref="chart" class="chart"></div>
                 <div ref="masterChart" class="zom"></div>
-                <div class="tb"></div>
+                <div class="tb" v-show="_.filter(query.tables,{code:1}).length">
+                    <inquiretable></inquiretable>
+                </div>
             </div>
-            <div class="r"></div>
+            <div class="r">
+                {{_.filter(query.tables,{code:1}).length}}
+            </div>
         </div>
         <!-- 图表 和 辅助信息 End -->
 

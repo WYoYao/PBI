@@ -1,0 +1,18 @@
+.boxshadow {
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12); }
+
+.clear:after {
+  content: "   ";
+  display: block;
+  height: 0;
+  clear: both; }
+
+.icon {
+  font-family: perficon; }
+
+.textover {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
+
+/*# sourceMappingURL=inquiretable.css.map */
