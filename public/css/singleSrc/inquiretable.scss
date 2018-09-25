@@ -1,4 +1,43 @@
 @charset "utf-8";
 @import "../publicSrc/public";
 // 中文
-.inquiretable {}
+.inquiretable {
+    &_header,
+    &_content {
+        display: flex;
+        width: 100%;
+        height: 30px;
+        justify-content: center;
+        align-items: center;
+        &_item {
+            display: block;
+            flex: 1;
+            line-height: 30px;
+            height: 100%;
+            padding-left: 20px;
+        }
+    }
+    &_content {
+        box-sizing: border-box;
+        background: #D9D9D9;
+        border-right: 1px solid #DDDDDD;
+        &_item {
+            box-sizing: border-box;
+            border-left: 1px solid #DDDDDD;
+            border-bottom: 1px solid #DDDDDD;
+            color: #333333;
+        }
+    }
+    &_content:nth-of-type(2n+1) {
+        background: #D9D9D9;
+    }
+    &_content:nth-of-type(2n+2) {
+        background: #FFFFFF;
+    }
+    &_header {
+        background: #8B959A;
+        &_item {
+            color: #FFFFFF;
+        }
+    }
+}

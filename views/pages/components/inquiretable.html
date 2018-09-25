@@ -1,33 +1,18 @@
 <link rel="stylesheet" href="/css/single/inquiretable.css">
 <script type="text/html" id="inquiretable">
-<div class="inquiretable">
-        <div id="commonGrid" class="commonGrid cgrid">
-        <div class="title">
-            <ul>
-                <li style="width: 50%;"><span>时间</span></li>
-                <li style="width: 50%;"><span>em1111</span></li>
-            </ul>
-        </div>
-        <div style="height: 30px;"></div>
-        <div data="[[&quot;00:00&quot;,&quot;150&quot;],[&quot;02:00&quot;,&quot;120&quot;],[&quot;04:00&quot;,&quot;220&quot;],[&quot;06:00&quot;,&quot;210&quot;],[&quot;08:00&quot;,&quot;150&quot;],[&quot;10:00&quot;,&quot;300&quot;],[&quot;12:00&quot;,&quot;222&quot;],[&quot;14:00&quot;,&quot;100&quot;],[&quot;16:00&quot;,&quot;169&quot;],[&quot;18:00&quot;,&quot;120&quot;],[&quot;20:00&quot;,&quot;200&quot;],[&quot;22:00&quot;,&quot;120&quot;]]"
-            class="content">
-            <ul>
-                <li><span style="width: 50%;">00:00</span><span style="width: 50%;">150</span></li>
-                <li><span style="width: 50%;">02:00</span><span style="width: 50%;">120</span></li>
-                <li><span style="width: 50%;">04:00</span><span style="width: 50%;">220</span></li>
-                <li><span style="width: 50%;">06:00</span><span style="width: 50%;">210</span></li>
-                <li><span style="width: 50%;">08:00</span><span style="width: 50%;">150</span></li>
-                <li><span style="width: 50%;">10:00</span><span style="width: 50%;">300</span></li>
-                <li><span style="width: 50%;">12:00</span><span style="width: 50%;">222</span></li>
-                <li><span style="width: 50%;">14:00</span><span style="width: 50%;">100</span></li>
-                <li><span style="width: 50%;">16:00</span><span style="width: 50%;">169</span></li>
-                <li><span style="width: 50%;">18:00</span><span style="width: 50%;">120</span></li>
-                <li><span style="width: 50%;">20:00</span><span style="width: 50%;">200</span></li>
-                <li><span style="width: 50%;">22:00</span><span style="width: 50%;">120</span></li>
-            </ul>
-        </div>
-    </div>
-</div>
+
+        <ul class="inquiretable">
+            <!-- 表头  -->
+            <li class="inquiretable_header">
+                   <span v-for="item in keys" class="inquiretable_header_item align" :title="item.name" v-text="item.name"></span>
+            </li>
+            <!-- /表头  -->
+            <!-- 表体  -->
+            <li class="inquiretable_content" v-for="item in list">
+                    <span v-for="model in keys" class="inquiretable_content_item align" :title="item[model.key]" v-text="item[model.key]"></span>
+            </li>
+            <!-- /表体  -->
+        </ul>
 </script>
 <script>
 
@@ -36,12 +21,32 @@
             template: "#inquiretable",
             data: function () {
                 return {
-
+                    // list: _.range(20).map(item => ({
+                    //     name: `name${+new Date()}`,
+                    //     age: `age${+new Date()}`,
+                    //     like: `like${+new Date()}`,
+                    // })),
+                    // keys: [{
+                    //     name: '姓名',
+                    //     key: 'name'
+                    // }, {
+                    //     name: '年龄',
+                    //     key: 'age'
+                    // }, {
+                    //     name: '爱好',
+                    //     key: 'like'
+                    // }]
                 }
             },
             props: {
-                cb: {
-                    type: Function,
+                //  数据集合
+                list: {
+                    type: Array,
+                    required: true,
+                },
+                // 表头集合
+                keys: {
+                    type: Array,
                     required: true,
                 }
             },

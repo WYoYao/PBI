@@ -87,6 +87,7 @@
 
         },
         mounted: function () {
+            this.selected = _.map(_.filter(this.datasource, 'selected'), 'code');
             this.computewidth();
         },
         beforeDestroy: function () {

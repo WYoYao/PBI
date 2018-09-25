@@ -98,6 +98,8 @@ singleController.push([
         url: "GetAllEnergyModelOfProject",
         argu: {},
         cb: function () {
+
+
             return _.range(20).map((item, index) => ({                //类型：Object  必有字段  备注：无
                 "buildingLocalName": index == 0 ? '主建筑' : `建筑${index}`,                //类型：String  必有字段  备注：无
                 "buildingLocalId": `buildingLocalId${index}`,                //类型：String  必有字段  备注：无
@@ -221,12 +223,39 @@ singleController.push([
         name: "queryTable",
         url: "restObjectService/queryObjectByClass",
         argu: {},
-        cb: function () {
-            return _.range(240).map((item, index) => {
-                return {
-                    x: new Date("2018-08-28 00:00:00").setHours(index),
-                    y: _.random(10000)
+        cb: function (argu) {
+
+            var diff = (+new Date(argu.paramList[0].timeFrom) - new Date(argu.paramList[0].timeTo)) / {
+                1: (60 * 60 * 1000),
+                2: 24 * (60 * 60 * 1000),
+                4: 30 * (60 * 60 * 1000),
+                5: 365 * (60 * 60 * 1000),
+            }[argu.timeType]
+
+            return _.range(parseInt(diff)).map((item, index) => {
+
+                if (argu.timeType == 1) {
+                    return {
+                        x: new Date(argu.paramList[0].timeTo).setHours(index),
+                        y: _.random(10000)
+                    }
+                } else if (argu.timeType == 2) {
+                    return {
+                        x: new Date(argu.paramList[0].timeTo).setDate(index),
+                        y: _.random(10000)
+                    }
+                } else if (argu.timeType == 4) {
+                    return {
+                        x: new Date(argu.paramList[0].timeTo).setMonth(index),
+                        y: _.random(10000)
+                    }
+                } else if (argu.timeType == 5) {
+                    return {
+                        x: new Date(argu.paramList[0].timeTo).setFullYear(index),
+                        y: _.random(10000)
+                    }
                 }
+
             })
         }
     }

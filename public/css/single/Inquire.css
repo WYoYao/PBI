@@ -107,7 +107,8 @@
           flex: 150;
           border-bottom: 1px solid #D9E2E8; }
         #app .right .content .l .tb {
-          flex: 310; }
+          flex: 310;
+          overflow: auto; }
     #app .right .tab {
       box-sizing: border-box;
       height: 50px;

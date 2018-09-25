@@ -7,7 +7,8 @@ $(function () {
                 {
                     name: "图表",
                     code: 0,
-                    lock: true
+                    lock: true,
+                    selected: true,
                 }, {
                     name: "报表",
                     code: 1,
@@ -37,6 +38,7 @@ $(function () {
                 {
                     name: "总量",
                     code: 0,
+                    selected: true
                 },
                 {
                     name: "单平米",
@@ -52,6 +54,7 @@ $(function () {
                 {
                     name: "能耗",
                     code: 0,
+                    selected: true
                 },
                 {
                     name: "费用",
@@ -69,14 +72,17 @@ $(function () {
                 tables: [{
                     name: "图表",
                     code: 0,
-                    lock: true
-                }, {
-                    name: "报表",
-                    code: 1,
+                    selected: true,
                 }],
                 auxiliarys: [],
-                areas: [],
-                energy: [],
+                areas: [{
+                    name: "总量",
+                    code: 0,
+                }],
+                energy: [{
+                    name: "能耗",
+                    code: 0,
+                }],
             },
             // 分项模型
             energyModelList: [],
@@ -96,10 +102,29 @@ $(function () {
             timer: {
 
             },
+
             queryRes: null,
+            queryDeatil: null
         },
         methods: {
-            //  查询按钮
+            // 转换时间粒度
+            timeType2: function (startTime, endTime) {
+                var _that = this;
+                var diff = + new Date(_that.timer.endTime) - new Date(_that.timer.startTime);
+                //数据聚合时间类型1-时，2-天，4-月，5-年
+                if (diff < (7 * 24 * 60 * 60 * 1000)) {
+                    return 1;
+                } else if (diff < (31 * 24 * 60 * 60 * 1000)) {
+                    return 2;
+                } else if (diff < (365 * 24 * 60 * 60 * 1000)) {
+                    return 4;
+                } else {
+                    return 5;
+                }
+
+                return 1;
+            },
+            //  查询按钮shun
             queryData: function () {
 
                 // 分项
@@ -176,7 +201,7 @@ $(function () {
                                 zoomType: 'x',
                                 events: {
                                     selection: function (event) {
-
+                                        debugger;
                                         var extremesObject = event.xAxis[0],
                                             min = extremesObject.min,
                                             max = extremesObject.max,
@@ -184,7 +209,8 @@ $(function () {
                                             xAxis = this.xAxis[0];
                                         Highcharts.each(this.series[0].data, function (d) {
                                             if (d.x > min && d.x < max) {
-                                                detailData.push([d.x, d.y]);
+
+                                                detailData.push({ x: d.x, y: d.y });
                                             }
                                         });
                                         xAxis.removePlotBand('mask-before');
@@ -195,9 +221,14 @@ $(function () {
                                             color: 'rgba(0, 0, 0, 0.2)'
                                         });
 
-                                        _that.detailTable.series[0].setData(detailData);
 
-                                        // detailChart.series[0].setData(detailData);
+                                        _that.queryDeatil = detailData;
+
+                                        _that.detailTable.axes[0].setCategories(_.map(detailData, 'x'));
+                                        _that.detailTable.series[0].setData(_.map(detailData, 'y'));
+
+                                        // _that.detailTable.series[0].setData(detailData);
+
                                         return false;
                                     }
                                 }
@@ -223,7 +254,15 @@ $(function () {
                                     },
                                     formatter: function () {
                                         var xdate = new Date(this.value);
-                                        return xdate.format('h:m');
+
+                                        var type = _that.timeType2(_that.timer.startTime, _that.timer.endTime)
+
+                                        return {
+                                            1: xdate.format('yyyy-MM-dd hh:mm'),
+                                            2: xdate.format('yyyy-MM-dd'),
+                                            4: xdate.format('yyyy-MM'),
+                                            5: xdate.format('yyyy'),
+                                        }[type];
                                     },
                                     enabled: true,
                                 },
@@ -273,7 +312,10 @@ $(function () {
             // 创建单个图表
             createDetail: function (res) {
 
-                this.detailTable = pchart.initColumnHistogram({
+                var _that = this;
+
+                //  同时记录返回的对应的数量
+                _that.detailTable = pchart.initColumnHistogram({
                     title: {
                         text: '月平均降雨量'
                     },
@@ -289,11 +331,19 @@ $(function () {
                             },
                             formatter: function () {
                                 var xdate = new Date(this.value);
-                                return xdate.format('h:m');
+
+                                var type = _that.timeType2(_that.timer.startTime, _that.timer.endTime)
+
+                                return {
+                                    1: xdate.format('yyyy-MM-dd hh:mm'),
+                                    2: xdate.format('yyyy-MM-dd'),
+                                    4: xdate.format('yyyy-MM'),
+                                    5: xdate.format('yyyy'),
+                                }[type];
                             },
                             enabled: true,
                         },
-                        type: "datetime",
+                        // type: "datetime",
                     },
                     container: "chart",
                     series: [{ data: res }]
@@ -304,16 +354,25 @@ $(function () {
 
                 var _that = this;
 
-                // 查询上面的单位
-                console.log(_that.query);
-                // 查询对应的项目模型
-                console.log(_that.energyProject);
+                var argu = {
+                    "projectId": app.energyProject.projectId,                //类型：String  必有字段  备注：项目id
+                    "buildingLocalId": app.energyModel.buildingLocalId,                //类型：String  必有字段  备注：建筑本地编码
+                    "energyModelLocalId": app.energyModel.energyModelId,                //类型：String  必有字段  备注：能耗模型本地编码
+                    "timeType": _that.timeType2(app.timer.startTime, app.timer.endTime),                //类型：Number  必有字段  备注：数据聚合时间类型1-时，2-天，4-月，5-年
+                    "dataKind": _.get(app.query.areas, '[0].code'),                //类型：Number  必有字段  备注：1-总能耗；2-单平米能耗；
+                    "dataType": _.get(app.query.energy, '[0].code'),                //类型：Number  必有字段  备注：1-能耗；2-费用；3-CO2排放量；4-标煤
+                    "paramList": [                //类型：Array  必有字段  备注：无
+                        {                //类型：Object  必有字段  备注：无
+                            "energyItemLocalId": _.map(app.suboptionModel, 'localId').join(''),                //类型：String  必有字段  备注：分项本地编码
+                            "timeFrom": new Date(app.timer.endTime).format('yyyy-MM-dd hh:mm:ss'),                //类型：String  必有字段  备注：开始时间yyyy-MM-dd HH:mm:ss（>=）
+                            "timeTo": new Date(app.timer.startTime).format('yyyy-MM-dd hh:mm:ss')                //类型：String  必有字段  备注：结束时间yyyy-MM-dd HH:mm:ss（<）
+                        }
+                    ]
+                }
 
-                console.log(_that.suboptionModel);
+                console.log(`请求的参数${JSON.stringify(argu)}`);
 
-                console.log(_that.timer);
-
-                singleController.queryTable().then(function (res) {
+                singleController.queryTable(argu).then(function (res) {
                     // 保存渲染的表格的数据
                     _that.queryRes = res;
 
@@ -326,7 +385,7 @@ $(function () {
             //  时间控件点击选择事件
             timeClick: function (argu) {
                 this.timer = argu;
-                console.log(argu);
+                // console.log(argu);
             }
         },
         computed: {
@@ -347,6 +406,40 @@ $(function () {
             },
             canQuery: function () {
 
+            },
+            // 用于遍历的表哥时候需要的内容
+            compuTables: function () {
+                var _that = this;
+                var keys = [];
+                var list = [];
+
+                // 如果查询内容不存在直接返回
+                if (!_that.queryDeatil) return {
+                    list: list,
+                    keys: keys,
+                }
+
+                //表头信息
+                keys = keys.concat([{
+                    name: '时间',
+                    key: "time",
+                }, {
+                    name: _.get(_that.suboptionModel, "[0].name") + "(kWh)",
+                    key: "value",
+                }])
+
+                // 表依赖的数据
+                list = _that.queryDeatil.map(function (item) {
+                    return {
+                        time: new Date(item[0]).format("yyyy-MM-dd mm:hh:ss"),
+                        value: item[1]
+                    }
+                })
+
+                return {
+                    list: list,
+                    keys: keys,
+                }
             }
         }
     });

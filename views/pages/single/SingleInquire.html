@@ -87,7 +87,8 @@
                 <div id="chart" ref="chart" class="chart"></div>
                 <div ref="masterChart" class="zom"></div>
                 <div class="tb" v-show="_.filter(query.tables,{code:1}).length">
-                    <inquiretable></inquiretable>
+                    <inquiretable :list="compuTables.list" :keys="compuTables.keys">
+                    </inquiretable>
                 </div>
             </div>
             <div class="r">
