@@ -84,7 +84,7 @@ $(function () {
             },
             selected:function (obj,event) {//选择某一个分项
                 var  value=$("#hasSelectedObject").psel();
-                console.log(value);
+                
                 this.objectSelectShow=false;
             },
             selCalendarTime:function () {//时间选择
@@ -122,7 +122,7 @@ $(function () {
                 $("#projects").precover();
                 multiplePopData.queryData.projectSelected=[];
                 multiplePopData.selectProjectCount=0;
-                console.log(multiplePopData.queryData.projectSelected);
+                
             },
             reverseSelect:function () {//反选
                 var projectsCopy=multiplePopData.queryData.projectSelected;

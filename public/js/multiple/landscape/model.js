@@ -113,7 +113,7 @@ $(function () {
                 }
             },
             getTableTypes: function () {
-                console.log(arguments);
+                
             },
             computeWidth: function () {
                 //  计算宽度是否够容纳
@@ -187,7 +187,7 @@ $(function () {
             },
             queryTabel: function () { //查询图表入口
                 var that = this;
-                console.log(that.query);
+                
                 this.drawChartData();
             },
             onlineExplainEnter: function () { //在线说明
@@ -204,7 +204,7 @@ $(function () {
         beforeMount: function () {},
         mounted: function () {
             var that = this;
-            console.log("aaa");
+            
             // this.drawChartData();
             //添加表头
             that.reportFromTitle = [{

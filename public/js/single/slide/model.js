@@ -205,7 +205,7 @@ $(function () {
                 this.searchConditionObj.subentrySaveArr = [];
 
                 this.subentryDisabled = true; //添加分项启用
-                console.log(this.searchConditionObj.projectSaveObj);
+                
             },
 
             //添加时间相关
@@ -213,7 +213,7 @@ $(function () {
                 var that = this;
                 var time = $("#selectTimeLine").psel();
                 that.searchConditionObj.timeSaveArr = [time];
-                console.log(that.searchConditionObj.timeSaveArr);
+                
             },
             energyModelTree: function (data, parent_id) { //格式化分项树
                 var that = this;
@@ -233,12 +233,12 @@ $(function () {
             },
             addSubentryFn: function (item) { //添加分项
                 var that = this;
-                console.log(arguments);
+                
                 that.searchConditionObj.subentrySaveArr = [{
                     obj_id: arguments[0].obj_id,
                     obj_name: arguments[0].obj_name
                 }];
-                console.log('添加分项');
+                
             },
             addSubetryShow: function () { //选择分项弹出框
                 var that = this;
@@ -256,9 +256,9 @@ $(function () {
                     that.subentryTree = _.clone(res);
                     that.subentryTree = that.energyModelTree(that.subentryTree, -1);
                     that.showSubentryTemp = true;
-                    console.log(that.subentryTree);
+                    
                 })
-                console.log(this.currentSubentryList);
+                
             },
 
             setYAxisShowFn: function () { //显示设置Y轴坐标弹出框
@@ -268,7 +268,7 @@ $(function () {
                 this.setYAxisShow = false;
             },
             setYdataFn: function (item1, item2) { //确认设置Y轴坐标
-                console.log(item1, item2);
+                
                 this.setYAxisShow = false;
             },
             drawingChartData: function (obj) { //绘制柱状图
@@ -293,7 +293,7 @@ $(function () {
             addSubetryCallBack: function (item) { //选择分项回调
                 this.currentSubentryList = item;
 
-                console.log(this.currentSubentryList);
+                
                 this.addSubentryTxt = item[0].name;
                 this.searchConditionObj.subentrySaveArr = item;
                 this.showSubentryTemp = false;
@@ -327,8 +327,8 @@ $(function () {
             },
             createHandlerClick: function (type) { //导航选中选项
                 var that = this;
-                // console.log( _that.query);
-                // console.log(arr);
+                // 
+                // 
                 return function (arr) {
                     debugger
                     that.query[type] = arr;
@@ -382,7 +382,7 @@ $(function () {
             },
             AssemblyParameterList: function (obj) {//选中选项后构造请求数据
                 var that = this;
-                console.log(obj);
+                
                 var val = that.searchConditionObj;
 
                 var paramList = {};
@@ -402,7 +402,7 @@ $(function () {
                                 timeTo: new Date(val.timeSaveArr[0].endTime).format("yyyy-MM-dd hh:mm:ss"),
                             }
 
-                            console.log(paramList);
+                            
                             if(that.scChartShow){//图表是否显示
                                 that.getChartListFn(paramList, unit[0].code, measurement[0].code, dimensionality[0].code);
                             }
@@ -415,7 +415,7 @@ $(function () {
             },
             confirmSearchListFn: function () { //查询表格数据请求
                 var that = this;
-                console.log(that.searchConditionObj);
+                
                 var val = that.searchConditionObj;
                 if (val.projectSaveObj.hasOwnProperty('id') && val.projectSaveObj.id != '') { //存在项目id ， 模型id
                     //存在时间 第一项不能为请选择时间
@@ -444,11 +444,11 @@ $(function () {
                             var timeType = ptool.formatGranularityToJava($("#selectTimeLine"));
                             //获取图表数据请求
                             that.getChartListFn(paramList, timeType);
-                            console.log(paramList);
+                            
                         }
 
                     } else {
-                        console.log("请选择时间");
+                        
                     }
                 }
 
@@ -467,9 +467,9 @@ $(function () {
                     dataType: _dataType, //能耗  费用
                     paramList: paramList
                 };
-                console.log(queryParam);
+                
                 singleSlideController.GetItemSlidingEnergyByTime(queryParam).then(function (res) {
-                    console.log(res);
+                    
                     that.dataListSubentry = res;
                     that.drawingChartData(res);
                     that.noDataChartShow = false;

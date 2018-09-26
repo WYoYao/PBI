@@ -144,7 +144,7 @@
                     var index = this.selectList.indexOf(id);
                     index == -1 ? this.selectList.push(id) : this.selectList.splice(index, 1);
                     this.result = _.clone(this.selectList);
-                    console.log(this.selectList);
+
                 },
                 //  点击属性菜单图标  显示展开项
                 clickplus: function (id) {
@@ -159,7 +159,7 @@
                     dd = _that.treeTransArr(_that.treedata).filter(function (item) {
                         return _that.selectList.indexOf(item[_that.modelkey]) != -1;
                     })
-                    console.log(dd);
+
                     _that.cb(
                         _that.treeTransArr(_that.treedata).filter(function (item) {
                             return _that.selectList.indexOf(item[_that.modelkey]) != -1;
@@ -172,14 +172,13 @@
                     var _that = this;
                     item.isSelected = !item.isSelected;
                     this.searchResult = _.clone(this.searchResult);
-                    console.log(this.searchResult);
+
                     var index = _that.selectList.indexOf(item[_that.modelkey]);
                     // 有则删除无则添加
                     index == -1 ? _that.selectList.push(item[_that.modelkey]) : _that.selectList.splice(
                         index, 1);
                     _that.result = _that.selectList;
-                    debugger
-                    // console.log(_that.result);
+
                 },
                 treeTransArr: function (tree) {
                     var that = this;
@@ -207,7 +206,7 @@
                             that.selectList = _.clone(res._result);
                             // that.shows = _.clone(res._result);
                             // that.result = res._result;
-                            console.log(that.selectList);
+
 
                             break;
 
@@ -217,7 +216,7 @@
                             that.selectList = _.clone(res._result);
                             // that.shows = _.clone(res._result);
                             // that.result = res._result;
-                            console.log(that.selectList);
+
 
                             break;
 
@@ -227,7 +226,7 @@
                             that.selectList = _.clone(res._result);
                             // that.shows = _.clone(res._result);
                             // that.result = res._result;
-                            console.log(that.selectList);
+
 
                             break;
                     }
@@ -301,7 +300,7 @@
                             item.isSelected = false;
                         }
                     })
-                    // console.log(that.searchResult);
+
                 },
                 selectList: function () {
                     this.disabledMethods();
@@ -311,7 +310,7 @@
                 var that = this;
                 this.selectList = this.result;
 
-                // console.log(data);
+
                 that.treedata = _.clone(that.subtree);
                 that.searchList = that.treeTransArr(that.treedata);
                 that.treedata = mTreeInit(that.treedata, '', '', 1);
@@ -355,10 +354,10 @@
                     })
                 });
                 that.shows = _.clone(comArr);
-                console.log(that.shows);
 
-                // console.log(this.result);
-                console.log(this.selectList);
+
+
+
 
             },
             mounted: function () {
@@ -366,7 +365,7 @@
                 // that.selectList = [];
                 this.disabledMethods();
 
-                console.log("subentry")
+
 
             }
 

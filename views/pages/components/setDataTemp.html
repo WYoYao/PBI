@@ -75,31 +75,31 @@
         max 最大值数组  min最小值数组  cb点击确定后的回调函数 cancle 取消回调函数
         */
         props: [
-            "max", "min", "cb" ,"cancle"
+            "max", "min", "cb", "cancle"
         ],
         methods: {
             checkItem: function (model, item, index) {
-                if (index == 0){
-                    if(!item.isSelected){
+                if (index == 0) {
+                    if (!item.isSelected) {
                         model[index].isSelected = !model[index].isSelected;
-                        model[index+1].isSelected = !model[index +1 ].isSelected;
+                        model[index + 1].isSelected = !model[index + 1].isSelected;
                     }
-                   
-                }else{
-                    if(!item.isSelected){
+
+                } else {
+                    if (!item.isSelected) {
                         model[index].isSelected = !model[index].isSelected;
-                        model[index-1].isSelected = !model[index-1].isSelected;
+                        model[index - 1].isSelected = !model[index - 1].isSelected;
                     }
-                    
+
                 }
-                console.log(this.max);
+
             },
-            submit:function(item1,item2){
+            submit: function (item1, item2) {
                 this.cb(
-                    item1.filter(function(item){
+                    item1.filter(function (item) {
                         return item.isSelected;
                     }),
-                    item2.filter(function(item){
+                    item2.filter(function (item) {
                         return item.isSelected;
                     })
                 );
@@ -145,31 +145,38 @@
         padding-left: 20px;
         padding-top: 20px;
     }
-    .setData .setDataBox .setDataCommit{
+
+    .setData .setDataBox .setDataCommit {
         position: absolute;
         bottom: 10px;
         left: 50%;
         transform: translateX(-50%);
     }
-    .setData .setDataDiv .title{
-        height:30px;
-        line-height:30px;
-        font-size:16px;
+
+    .setData .setDataDiv .title {
+        height: 30px;
+        line-height: 30px;
+        font-size: 16px;
     }
-    .setData .setDataDiv .content .option{
-        display:flex;
+
+    .setData .setDataDiv .content .option {
+        display: flex;
         flex-flow: row nowrap;
-        height:30px;
+        height: 30px;
         align-items: center;
-    }.setData .setDataDiv .content .option  >em{
-        display:block;
-        margin-right:10px
     }
-    .setData .setDataDiv .content .option >span >input{
-        height:30px;
+
+    .setData .setDataDiv .content .option>em {
+        display: block;
+        margin-right: 10px
     }
-    .setData .setDataDiv .content .desc{
-        margin-top:10px;
-        margin-bottom:20px;
+
+    .setData .setDataDiv .content .option>span>input {
+        height: 30px;
+    }
+
+    .setData .setDataDiv .content .desc {
+        margin-top: 10px;
+        margin-bottom: 20px;
     }
 </style>

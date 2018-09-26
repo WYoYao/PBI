@@ -11,7 +11,7 @@
             <!-- 返回图标 Start -->
             <div class="left">
                 <!-- <a href="/entry" class="back icon">I</a> -->
-                <a href="/entry" class="back">
+                <a href="/bi" class="back">
                     <pbutton-white icon="I" shape="rectangle"></pbutton-white>
                 </a>
                 <span title="选择故事版" class="textover text">选择故事版</span>
@@ -33,7 +33,7 @@
         <!-- 头部End -->
 
         <div class="content">
-            <iframe ref="iframe" class="if" src="/entry?type=<%=(type)%>&&sorm=Single" frameborder="0"></iframe>
+            <iframe ref="iframe" class="if" src="/bi?type=<%=(type)%>&&sorm=Single" frameborder="0"></iframe>
         </div>
     </div>
 
@@ -55,8 +55,8 @@
                     methods: {
                         HandlerClickUrl: function (type, sorm) {
                             this.type = type;
-                            history.pushState(200, null, "/entry?type=" + type + "")
-                            $(this.$refs.iframe).attr("src", "/entry?type=" + type + "&&sorm=" + sorm + "")
+                            history.pushState(200, null, "/bi?type=" + type + "")
+                            $(this.$refs.iframe).attr("src", "/bi?type=" + type + "&&sorm=" + sorm + "")
                         }
                     }
                 })

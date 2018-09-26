@@ -88,7 +88,7 @@ $(function () {
                 name: "自定义",
                 value: "0",
                 unit: "kwh"
-            }, ],
+            },],
 
             setMin: [{
                 isSelected: true,
@@ -100,7 +100,7 @@ $(function () {
                 name: "自定义",
                 value: "0",
                 unit: "kwh"
-            }, ],
+            },],
 
             setYAxisShow: false, //是否显示坐标
 
@@ -113,7 +113,7 @@ $(function () {
         methods: {
             tableOptionChangeFn: function (data, item) {
                 var that = this;
-                // console.log($(e.target));
+
                 if (data && data.length > 0) {
                     data.forEach(function (x) {
                         x.checked = false;
@@ -133,7 +133,7 @@ $(function () {
                 if (that.qParamList && that.qParamList.length > 0 && timeType) {
                     that.getChartListFn(that.qParamList, timeType);
                 }
-                console.log(op);
+
 
             },
             showChatFn: function () { //显示图表
@@ -177,7 +177,7 @@ $(function () {
                 this.searchConditionObj.subentrySaveArr = [];
 
                 this.subentryDisabled = true; //添加分项启用
-                console.log(this.searchConditionObj.projectSaveObj);
+
             },
             addProjectFn: function () { //添加项目
                 this.searchConditionObj.projectSaveObj = {
@@ -192,7 +192,7 @@ $(function () {
                     text: "请选择时间",
                     type: "default"
                 });
-                console.log('T+1');
+
             },
             deleteTimeFn: function (item, index) { //删除当前时间
                 var that = this;
@@ -200,12 +200,12 @@ $(function () {
             },
             addSubentryFn: function (item) { //添加分项
                 var that = this;
-                console.log(arguments);
+
                 that.searchConditionObj.subentrySaveArr = [{
                     obj_id: arguments[0].obj_id,
                     obj_name: arguments[0].obj_name
                 }];
-                console.log('添加分项');
+
             },
             addSubetryShow: function () { //选择分项弹出框
                 var that = this;
@@ -223,9 +223,9 @@ $(function () {
                     that.subentryTree = _.clone(res);
                     that.subentryTree = that.energyModelTree(that.subentryTree, -1);
                     that.showSubentryTemp = true;
-                    console.log(that.subentryTree);
+
                 })
-                console.log(this.currentSubentryList);
+
             },
             addSubetryHide: function () {
                 this.showSubentryTemp = false;
@@ -233,7 +233,7 @@ $(function () {
             addSubetryCallBack: function (item) { //选择分项回调
                 this.currentSubentryList = item;
 
-                console.log(this.currentSubentryList);
+
                 this.addSubentryTxt = "已选" + item.length + "个分项";
                 this.searchConditionObj.subentrySaveArr = item;
                 this.showSubentryTemp = false;
@@ -252,7 +252,7 @@ $(function () {
                     // timeDateObj['text'] = timeInfo;
                     // that.searchConditionObj.timeSaveArr[index]['saveTimeObj'] = timeDateObj || {};
                     // that.searchConditionObj.timeSaveArr[index]['text'] = timeInfo || '';
-                    console.log(timeDateObj);
+
                     var tipFn = function () {
                         $("#globalnotice").pshow({
                             text: "对比不同时间的数据需要保持时间间隔一致",
@@ -272,7 +272,7 @@ $(function () {
 
                 }
                 $("#choiceTimePop").hide();
-                console.log($("#choiceTime").psel());
+
 
             },
             energyModelTree: function (data, parent_id) { //格式化分项树
@@ -299,7 +299,7 @@ $(function () {
             */
             checkTimeType: function (arr, obj, fn) {
                 if (JSON.stringify(obj) == '{}') {
-                    console.log('传入对象是空对象');
+
                     return false;
                 }
                 if (arr && arr.length == 0 || arr.length == 1) {
@@ -341,9 +341,9 @@ $(function () {
                     dataType: _dataType,
                     paramList: paramList
                 };
-                console.log(queryParam);
+
                 singleCompareController.ItemEnergyByTime(queryParam).then(function (res) {
-                    console.log(res);
+
                     that.dataListSubentry = res;
                     that.drawingChartData(res);
                     that.noDataChartShow = false;
@@ -353,7 +353,7 @@ $(function () {
                     setTimeout(function () {
                         if (lineChart1) {
                             that.cRecordList = that.transRecordListFn(res, lineChart1);
-                            console.log(that.cRecordList);
+
                         }
                     }, 0)
 
@@ -377,7 +377,7 @@ $(function () {
                     }, 0)
                     return num;
                 });
-                console.log(colorArr, numArr);
+
                 var arr1 = [];
                 arr.forEach(function (item, index) {
                     arr1.push({
@@ -402,7 +402,7 @@ $(function () {
                 return arr1;
             },
             deleteRecordFn: function (item) { //删除右侧列表当前项
-                console.log(item);
+
                 var that = this;
                 var itemLocalId = item.subentry.energyItemLocalId;
                 var res = [];
@@ -423,7 +423,7 @@ $(function () {
                     that.cRecordList = [];
                 }
 
-                console.log(that.dataListSubentry, itemLocalId);
+
             },
             transGridRenderListFn: function (arr) { //后台返回的数据格式转换成表格渲染数据格式
                 var arr1 = [];
@@ -504,16 +504,16 @@ $(function () {
                 this.setYAxisShow = false;
             },
             setYdataFn: function (item1, item2) { //确认设置Y轴坐标
-                console.log(item1, item2);
+
                 this.setYAxisShow = false;
             },
             showTimerPop: function (item, index, e) { //弹出时间控件
                 var that = this;
-                console.log(item);
+
                 var top = $(e.target).offset().top;
                 var left = $(e.target).offset().left;
                 var isShow = $("#choiceTimePop .per-calendar-con").is(":hidden");
-                console.log(isShow);
+
                 if (isShow) {
                     $("#choiceTimePop").css({
                         "left": left,
@@ -525,7 +525,7 @@ $(function () {
                 //存储当前选中的时间索引
                 that.timeCurrObj.index = index;
 
-                console.log($(e.target).offset())
+
             },
             downloadChart: function () { //下载图表
                 this.downLoadBlockIsShow = !this.downLoadBlockIsShow;
@@ -551,7 +551,7 @@ $(function () {
                             });
                         item.name = item.id || '项目A-暖通空调1';
                     })
-                    console.log(_list);
+
                     var series = _list;
                     var chart1 = pchart.initLine({
                         yAxis: {
@@ -624,7 +624,7 @@ $(function () {
                             var timeType = ptool.formatGranularityToJava($("#time"));
                             //获取图表数据请求
                             that.getChartListFn(paramList, timeType);
-                            console.log(paramList);
+
                         }
 
                     }

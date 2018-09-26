@@ -8,11 +8,11 @@ var multiplePopEvent={
     },
     selectObject:function (item) {
         var value=$("#selectObject").psel().text;
-        console.log(value);
+        
         multiplePopData.queryData.objectSelected=value;
     },
     selectProjectCount:function (event) {
-        console.log("666");
+        
     },
     checkAll:function (event) {
         var $target=$(event.target);

@@ -40,7 +40,7 @@ var Controller = function () {
 
 
             if (_.has(_this, name)) {
-                console.log(name + "\u4E0E\u73B0\u6709\u7684\u5C5E\u6027\u91CD\u590D,\u5DF2\u5408\u5E76\u3002");
+
             };
 
             _this[name] = function () {
@@ -225,37 +225,51 @@ singleController.push([
         argu: {},
         cb: function (argu) {
 
-            var diff = (+new Date(argu.paramList[0].timeFrom) - new Date(argu.paramList[0].timeTo)) / {
+            var diff = (+new Date(argu.paramList[0].timeTo) - new Date(argu.paramList[0].timeFrom)) / {
                 1: (60 * 60 * 1000),
                 2: 24 * (60 * 60 * 1000),
                 4: 30 * (60 * 60 * 1000),
                 5: 365 * (60 * 60 * 1000),
             }[argu.timeType]
 
-            return _.range(parseInt(diff)).map((item, index) => {
+            console.log(argu);
 
-                if (argu.timeType == 1) {
-                    return {
-                        x: new Date(argu.paramList[0].timeTo).setHours(index),
-                        y: _.random(10000)
-                    }
-                } else if (argu.timeType == 2) {
-                    return {
-                        x: new Date(argu.paramList[0].timeTo).setDate(index),
-                        y: _.random(10000)
-                    }
-                } else if (argu.timeType == 4) {
-                    return {
-                        x: new Date(argu.paramList[0].timeTo).setMonth(index),
-                        y: _.random(10000)
-                    }
-                } else if (argu.timeType == 5) {
-                    return {
-                        x: new Date(argu.paramList[0].timeTo).setFullYear(index),
-                        y: _.random(10000)
-                    }
+            return _.range(argu.paramList.length).map(() => {
+                return {
+                    "energyItemLocalId": "mock",        //类型：String  必有字段  备注：分项本地编码
+                    "timeFrom": "mock",                //类型：String  必有字段  备注：开始时间yyyy-MM-dd HH:mm:ss（>=）
+                    "timeTo": "mock",                //类型：String  必有字段  备注：结束时间yyyy-MM-dd HH:mm:ss（<）
+                    "minData": 100,                //类型：Number  必有字段  备注：最小值
+                    "maxData": 9000,                //类型：Number  必有字段  备注：最大值
+                    "avgData": 6000,                //类型：Number  必有字段  备注：平均值
+                    "midData": 5000,                //类型：Number  必有字段  备注：中位数
+                    "sumData": 100000,                //类型：Number  必有字段  备注：求和
+                    dataList: _.range(parseInt(diff)).map((item, index) => {
+
+                        if (argu.timeType == 1) {
+                            return {
+                                time: new Date(argu.paramList[0].timeTo).setHours(index),
+                                data: _.random(10000)
+                            }
+                        } else if (argu.timeType == 2) {
+                            return {
+                                time: new Date(argu.paramList[0].timeTo).setDate(index),
+                                data: _.random(10000)
+                            }
+                        } else if (argu.timeType == 4) {
+                            return {
+                                time: new Date(argu.paramList[0].timeTo).setMonth(index),
+                                data: _.random(10000)
+                            }
+                        } else if (argu.timeType == 5) {
+                            return {
+                                time: new Date(argu.paramList[0].timeTo).setFullYear(index),
+                                data: _.random(10000)
+                            }
+                        }
+
+                    })
                 }
-
             })
         }
     }

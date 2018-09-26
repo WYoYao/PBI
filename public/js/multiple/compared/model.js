@@ -64,31 +64,31 @@ $(function () {
 
             //设置图表纵坐标
             setMax: [{
-                    isSelected: true,
-                    name: "默认",
-                    value: "0",
-                    unit: "kwh"
-                },
-                {
-                    isSelected: false,
-                    name: "自定义",
-                    value: "0",
-                    unit: "kwh"
-                },
+                isSelected: true,
+                name: "默认",
+                value: "0",
+                unit: "kwh"
+            },
+            {
+                isSelected: false,
+                name: "自定义",
+                value: "0",
+                unit: "kwh"
+            },
             ],
 
             setMin: [{
-                    isSelected: true,
-                    name: "默认",
-                    value: "0",
-                    unit: "kwh"
-                },
-                {
-                    isSelected: false,
-                    name: "自定义",
-                    value: "0",
-                    unit: "kwh"
-                },
+                isSelected: true,
+                name: "默认",
+                value: "0",
+                unit: "kwh"
+            },
+            {
+                isSelected: false,
+                name: "自定义",
+                value: "0",
+                unit: "kwh"
+            },
             ],
 
             setYAxisShow: false, //是否显示坐标
@@ -102,7 +102,7 @@ $(function () {
         methods: {
             addProjectShow: function () {
                 this.showProjectTemp = true;
-                console.log(this.currProjectResult);
+
             },
             addProjectHide: function () {
                 this.showProjectTemp = false;
@@ -110,7 +110,7 @@ $(function () {
             addProjectCallBack: function (item) { //选择项目回调
                 this.currProjectResult = item;
 
-                console.log(this.currProjectResult);
+
                 this.addProjectTxt = "已选" + item.length + "个分项";
                 this.searchConditionObj.projectSaveObj = item;
                 this.showProjectTemp = false;
@@ -119,13 +119,12 @@ $(function () {
             // confirmCb: function (list) { //添加项目回调
             //     this.currProjectResult = list;
             //     this.showProjectTemp = false;
-            //     console.log(list, list.length, this.currProjectResult);
             //     // debugger;
             // },
 
             addSubetryShow: function () {
                 this.showSubentryTemp = true;
-                console.log(this.currentSubentryList);
+
             },
             addSubetryHide: function () {
                 this.showSubentryTemp = false;
@@ -133,7 +132,7 @@ $(function () {
             addSubetryCallBack: function (item) { //选择分项回调
                 this.currentSubentryList = item;
 
-                console.log(this.currentSubentryList);
+
                 this.addSubentryTxt = "已选" + item.length + "个项目";
                 this.searchConditionObj.projectSaveObj = item;
                 this.showSubentryTemp = false;
@@ -159,7 +158,7 @@ $(function () {
             },
             notMatchSubentryPopShow: function (item, index, cIndex) { //显示未匹配的项目分项
                 var that = this;
-                console.log(item, index, cIndex);
+
                 //存储当前选中的分项父级索引
                 that.notMatchSubCurrObj.index = index;
 
@@ -170,7 +169,7 @@ $(function () {
                 that.notMatchSubCurrTemp = true;
 
                 that.notMatchSubCurrList = item.checkedSub && item.checkedSub.length > 0 ? item.checkedSub : [];
-                console.log(that.notMatchSubCurrList)
+
             },
             notMatchSubentryPopHide: function () { //隐藏未匹配分项选择
                 var that = this;
@@ -178,7 +177,7 @@ $(function () {
             },
             notMatchSubentryCB: function (item) { //未匹配分项回调
                 var that = this;
-                console.log(item);
+
                 var _index = that.notMatchSubCurrObj.index;
                 var _cIndex = that.notMatchSubCurrObj.cIndex;
                 that.searchConditionObj.notMatchSubentryArr[_index]["subArrSaveList"][_cIndex].checkedSub = item;
@@ -203,7 +202,7 @@ $(function () {
                     timeId: ptool.produceId(),
                     text: "请选择时间"
                 });
-                console.log('T+1');
+
             },
             setYAxisShowFn: function () { //显示设置Y轴坐标弹出框
                 this.setYAxisShow = true;
@@ -212,7 +211,7 @@ $(function () {
                 this.setYAxisShow = false;
             },
             setYdataFn: function (item1, item2) { //确认设置Y轴坐标
-                console.log(item1, item2);
+
                 this.setYAxisShow = false;
             },
             deleteTimeFn: function (item, index) { //删除当前时间
@@ -221,12 +220,10 @@ $(function () {
             },
             // addSubentryFn: function (item) { //添加分项
             //     var that = this;
-            //     console.log(arguments);
             //     that.searchConditionObj.subentrySaveArr = [{
             //         obj_id: arguments[0].obj_id,
             //         obj_name: arguments[0].obj_name
             //     }];
-            //     console.log('添加分项');
             // },
             confirmCurrTime: function () { //确认选中时间
                 var that = this;
@@ -242,7 +239,7 @@ $(function () {
                     // timeDateObj['text'] = timeInfo;
                     // that.searchConditionObj.timeSaveArr[index]['saveTimeObj'] = timeDateObj || {};
                     // that.searchConditionObj.timeSaveArr[index]['text'] = timeInfo || '';
-                    console.log(timeDateObj);
+
                     var tipFn = function () {
                         $("#globalnotice").pshow({
                             text: "对比不同时间的数据需要保持时间间隔一致",
@@ -262,7 +259,7 @@ $(function () {
 
                 }
                 $("#choiceTimePop").hide();
-                console.log($("#choiceTime").psel());
+
 
             },
             /*
@@ -272,7 +269,7 @@ $(function () {
             */
             checkTimeType: function (arr, obj, fn) {
                 if (JSON.stringify(obj) == '{}') {
-                    console.log('传入对象是空对象');
+
                     return false;
                 }
                 if (arr && arr.length == 0) {
@@ -295,15 +292,15 @@ $(function () {
                 }
             },
             confirmCommitFn: function () { //确定生成报表
-                console.log("sc")
+
             },
             showTimerPop: function (item, index, e) { //弹出时间控件
                 var that = this;
-                console.log(item);
+
                 var top = $(e.target).offset().top;
                 var left = $(e.target).offset().left;
                 var isShow = $("#choiceTimePop .per-calendar-con").is(":hidden");
-                console.log(isShow);
+
                 if (isShow) {
                     $("#choiceTimePop").css({
                         "left": left,
@@ -315,7 +312,7 @@ $(function () {
                 //存储当前选中的时间索引
                 that.timeCurrObj.index = index;
 
-                console.log($(e.target).offset())
+
             },
             downloadChart: function () { //下载图表
                 this.downLoadBlockIsShow = !this.downLoadBlockIsShow;
@@ -344,9 +341,9 @@ $(function () {
                     dataType: _dataType,
                     paramList: paramList
                 };
-                console.log(queryParam);
+
                 multCompareController.ItemEnergyByTime(queryParam).then(function (res) {
-                    console.log(res);
+
                     that.dataListSubentry = res;
                     that.drawingChartData(res);
                     that.noDataChartShow = false;
@@ -356,7 +353,7 @@ $(function () {
                     setTimeout(function () {
                         if (lineChart1) {
                             that.cRecordList = that.transRecordListFn(res, lineChart1);
-                            console.log(that.cRecordList);
+
                         }
                     }, 0)
 
@@ -378,7 +375,7 @@ $(function () {
                             });
                         item.name = item.id || '项目A-暖通空调1';
                     })
-                    console.log(_list);
+
                     var series = _list;
                     var chart1 = pchart.initLine({
                         yAxis: {
@@ -451,7 +448,7 @@ $(function () {
                             var timeType = ptool.formatGranularityToJava($("#time"));
                             //获取图表数据请求
                             that.getChartListFn(paramList, timeType);
-                            console.log(paramList);
+
                         }
 
                     }
@@ -491,7 +488,7 @@ $(function () {
                             obj_name: "自动扶梯222",
                         }]
                     }]
-                }, ]
+                },]
             }];
 
             // 画图
@@ -499,29 +496,29 @@ $(function () {
 
             //添加表头
             that.reportFromTitle = [{
-                    name: "时间",
-                    width: "130px"
-                },
-                {
-                    name: "暖通空调",
-                    width: "130px"
-                },
-                {
-                    name: "暖通空调2",
-                    width: "130px"
-                },
-                {
-                    name: "时间",
-                    width: "130px"
-                },
-                {
-                    name: "暖通空调",
-                    width: "130px"
-                },
-                {
-                    name: "暖通空调2",
-                    width: "130px"
-                },
+                name: "时间",
+                width: "130px"
+            },
+            {
+                name: "暖通空调",
+                width: "130px"
+            },
+            {
+                name: "暖通空调2",
+                width: "130px"
+            },
+            {
+                name: "时间",
+                width: "130px"
+            },
+            {
+                name: "暖通空调",
+                width: "130px"
+            },
+            {
+                name: "暖通空调2",
+                width: "130px"
+            },
             ];
             that.reportFromContent = [
                 [
@@ -544,59 +541,59 @@ $(function () {
             ];
 
             that.cRecordList = [{
-                    time: {
-                        st: "2018.8.8",
-                        et: "2018.8.8"
-                    },
-                    value: {
-                        number: "111",
-                        unit: "kwh"
-                    },
-                    subentry: {
-                        obj_name: "暖通空调",
-                        obj_id: "aaa"
-                    },
-                    base: {
-                        width: "20%",
-                        color: "#ff6666"
-                    },
+                time: {
+                    st: "2018.8.8",
+                    et: "2018.8.8"
                 },
-                {
-                    time: {
-                        st: "2018.8.8",
-                        et: "2018.8.8"
-                    },
-                    value: {
-                        number: "111",
-                        unit: "kwh"
-                    },
-                    subentry: {
-                        obj_name: "暖通空调",
-                        obj_id: "aaa"
-                    },
-                    base: {
-                        width: "60%",
-                        color: "#d9e2e8"
-                    },
+                value: {
+                    number: "111",
+                    unit: "kwh"
                 },
-                {
-                    time: {
-                        st: "2018.8.8",
-                        et: "2018.8.8"
-                    },
-                    value: {
-                        number: "111",
-                        unit: "kwh"
-                    },
-                    subentry: {
-                        obj_name: "暖通空调",
-                        obj_id: "aaa"
-                    },
-                    base: {
-                        width: "80%",
-                        color: "#ddd111"
-                    },
+                subentry: {
+                    obj_name: "暖通空调",
+                    obj_id: "aaa"
                 },
+                base: {
+                    width: "20%",
+                    color: "#ff6666"
+                },
+            },
+            {
+                time: {
+                    st: "2018.8.8",
+                    et: "2018.8.8"
+                },
+                value: {
+                    number: "111",
+                    unit: "kwh"
+                },
+                subentry: {
+                    obj_name: "暖通空调",
+                    obj_id: "aaa"
+                },
+                base: {
+                    width: "60%",
+                    color: "#d9e2e8"
+                },
+            },
+            {
+                time: {
+                    st: "2018.8.8",
+                    et: "2018.8.8"
+                },
+                value: {
+                    number: "111",
+                    unit: "kwh"
+                },
+                subentry: {
+                    obj_name: "暖通空调",
+                    obj_id: "aaa"
+                },
+                base: {
+                    width: "80%",
+                    color: "#ddd111"
+                },
+            },
 
             ]
         }

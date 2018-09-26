@@ -133,7 +133,7 @@
                     var index = this.selectList.indexOf(id);
                     index == -1 ? this.selectList.push(id) : this.selectList.splice(index, 1);
                     this.result = this.selectList;
-                    // console.log(this.selectList);
+
                 },
                 //  点击属性菜单图标  显示展开项
                 clickplus: function (id) {
@@ -158,7 +158,7 @@
                     index == -1 ? _that.selectList.push(item[_that.modelkey]) : _that.selectList.splice(
                         index, 1);
                     this.result = this.selectList;
-                    console.log(_that.result);
+
                 },
                 treeTransArr: function (tree) {
                     var that = this;
@@ -186,7 +186,7 @@
                             that.selectList = _.clone(res._result);
                             // that.shows = _.clone(res._result);
                             that.result = res._result;
-                            console.log(that.selectList);
+
                             break;
 
                         case 'clear':
@@ -195,7 +195,7 @@
                             that.selectList = _.clone(res._result);
                             // that.shows = _.clone(res._result);
                             that.result = res._result;
-                            console.log(that.selectList);
+
                             break;
 
                         case 'invert':
@@ -204,7 +204,7 @@
                             that.selectList = _.clone(res._result);
                             // that.shows = _.clone(res._result);
                             that.result = res._result;
-                            console.log(that.selectList);
+
                             break;
                     }
 
@@ -277,7 +277,7 @@
                             item.isSelected = false;
                         }
                     })
-                    console.log(that.searchResult);
+
                 },
                 result: function () {
                     this.disabledMethods();
@@ -290,8 +290,8 @@
 
 
                 // this.shows =  JSON.parse(JSON.stringify(this.result));
-                console.log(this.result);
-                console.log(this.selectList)
+
+
                 //Ajax请求获取项目数据并处理
                 that.treedata = [{
                     "obj_id": "a11",
@@ -321,35 +321,35 @@
 
                         }]
                     }]
-                }, ];
+                },];
                 that.treedata = mTreeInit(that.treedata, '', '', 1);
                 var _res = [];
                 _res = that.result.map(function (item) {
                     return getNames(that.treedata, [], item);
                 });
 
-                function  getNames(array, childs, obj_id) {    
-                    for (var  i = 0; i < array.length; i++)     {        
-                        var  item = array[i];        
-                        if (item.obj_id == obj_id) {            
-                            childs.push(item);            
-                            return  childs;        
-                        }        
-                        if (item.child_objs && item.child_objs.length > 0) {                       
-                            childs.push(item);            
-                            var  rs = getNames(item.child_objs, childs, obj_id);            
-                            if (rs) {                
-                                return  rs;            
-                            }            
+                function getNames(array, childs, obj_id) {
+                    for (var i = 0; i < array.length; i++) {
+                        var item = array[i];
+                        if (item.obj_id == obj_id) {
+                            childs.push(item);
+                            return childs;
+                        }
+                        if (item.child_objs && item.child_objs.length > 0) {
+                            childs.push(item);
+                            var rs = getNames(item.child_objs, childs, obj_id);
+                            if (rs) {
+                                return rs;
+                            }
                             else {
-                                var  index  = childs.indexOf(item);
+                                var index = childs.indexOf(item);
                                 if (index > -1) {
-                                    childs.splice(index,  1);
-                                }            
-                            }        
-                        }    
-                    }    
-                    return  false;
+                                    childs.splice(index, 1);
+                                }
+                            }
+                        }
+                    }
+                    return false;
                 }
                 var comArr = [];
                 _.forEach(_res, function (item) {
@@ -364,7 +364,7 @@
                     })
                 });
                 that.shows = _.clone(comArr);
-                console.log(that.shows);
+
             },
             mounted: function () {
                 var that = this;
