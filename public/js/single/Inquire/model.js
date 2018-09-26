@@ -3,20 +3,17 @@ $(function () {
         el: "#app",
         data: {
             // 图标报表
-            tableTypes: [
-                {
-                    name: "图表",
-                    code: 0,
-                    lock: true,
-                    selected: true,
-                }, {
-                    name: "报表",
-                    code: 1,
-                }
-            ],
+            tableTypes: [{
+                name: "图表",
+                code: 0,
+                lock: true,
+                selected: true,
+            }, {
+                name: "报表",
+                code: 1,
+            }],
             // 辅助线
-            auxiliaryTypes: [
-                {
+            auxiliaryTypes: [{
                     name: "最大值",
                     code: "maxData",
                     color: pcolor[0]
@@ -38,8 +35,7 @@ $(function () {
                 },
             ],
             // 面积单位
-            areaTypres: [
-                {
+            areaTypres: [{
                     name: "总量",
                     code: 0,
                     selected: true
@@ -54,8 +50,7 @@ $(function () {
                 },
             ],
             // 能源类型
-            energyTypes: [
-                {
+            energyTypes: [{
                     name: "能耗",
                     code: 0,
                     selected: true
@@ -115,7 +110,7 @@ $(function () {
             // 转换时间粒度
             timeType2: function (startTime, endTime) {
                 var _that = this;
-                var diff = + new Date(endTime) - new Date(startTime);
+                var diff = +new Date(endTime) - new Date(startTime);
                 //数据聚合时间类型1-时，2-天，4-月，5-年
                 if (diff < (7 * 24 * 60 * 60 * 1000)) {
                     return 1;
@@ -169,13 +164,13 @@ $(function () {
                         _that.getChilds(_that.suboptionModel[0].content);
                     } else {
 
-                        // 销毁图表
-                        // 父级的对应的表
-                        if (_.isFunction(_.get(_that.masterTable, 'destroy'))) _that.masterTable.destroy();
-                        // 详情对应的表
-                        if (_.isFunction(_.get(_that.detailTable, 'destroy'))) _that.detailTable.destroy();
+                        // // 销毁图表
+                        // // 父级的对应的表
+                        // if (_.isFunction(_.get(_that.masterTable, 'destroy'))) _that.masterTable.destroy();
+                        // // 详情对应的表
+                        // if (_.isFunction(_.get(_that.detailTable, 'destroy'))) _that.detailTable.destroy();
 
-                        // 重新查询数据
+                        // // 重新查询数据
                         _that.createMaster(_.cloneDeep(_that.queryRes)).then(_that.createDetail)
 
                     }
@@ -260,9 +255,126 @@ $(function () {
                 this.suboptionModel = arr;
 
             },
-            // 父级图表子图表是柱状的情况下的滑动事件
+            // 父级图表子图表是層疊的情况下的滑动事件
+            chartColumnarClick: function (that, chart, event) {
+                var _that = that;
+                var extremesObject = event.xAxis[0],
+                    min = extremesObject.min,
+                    max = extremesObject.max,
+                    timeTo,
+                    timeFrom,
+                    detailData = [],
+                    xAxis = chart.xAxis[0];
+
+
+                Highcharts.each(chart.series[0].data, function (d, index) {
+
+                    if (index == 0) {
+                        timeTo = d.x;
+                        timeFrom = d.x;
+                    }
+
+                    if (d.x > min && d.x < max) {
+
+                        if (d.x < timeFrom) {
+                            timeFrom = d.x;
+                        }
+                        if (d.x > timeTo) {
+                            timeTo = d.x;
+                        }
+                    }
+                });
+                xAxis.removePlotBand('mask-before');
+                xAxis.addPlotBand({
+                    id: 'mask-before',
+                    from: max,
+                    to: min,
+                    color: 'rgba(0, 0, 0, 0.2)'
+                });
+
+
+                singleController.queryTable(
+                    _that.getQueryArgu(_that.timeType2(min, max), new Date(timeFrom).format("yyyy-MM-dd hh:mm:00"), new Date(timeTo).format("yyyy-MM-dd hh:mm:00"))
+                ).then(function (res) {
+                    _that.queryDeatilBak = res[0];
+                    _that.queryDeatil = res[0].dataList.map(function (item) {
+                        return {
+                            x: item.time,
+                            y: item.data,
+                        }
+                    });
+
+                    _that.detailTable.axes[0].setCategories(_.map(_that.queryDeatil, 'x'));
+                    _that.detailTable.series[0].setData(_.map(_that.queryDeatil, 'y'));
+
+
+                })
+                return false;
+            },
+            // 层叠滑动的事件
+            chartSlideClick:function (that, chart, event) {
+                var _that = that;
+                var extremesObject = event.xAxis[0],
+                    min = extremesObject.min,
+                    max = extremesObject.max,
+                    timeTo,
+                    timeFrom,
+                    detailData = [],
+                    xAxis = chart.xAxis[0];
+
+
+                Highcharts.each(chart.series[0].data, function (d, index) {
+
+                    if (index == 0) {
+                        timeTo = d.x;
+                        timeFrom = d.x;
+                    }
+
+                    if (d.x > min && d.x < max) {
+
+                        if (d.x < timeFrom) {
+                            timeFrom = d.x;
+                        }
+                        if (d.x > timeTo) {
+                            timeTo = d.x;
+                        }
+                    }
+                });
+                xAxis.removePlotBand('mask-before');
+                xAxis.addPlotBand({
+                    id: 'mask-before',
+                    from: max,
+                    to: min,
+                    color: 'rgba(0, 0, 0, 0.2)'
+                });
+
+
+                console.log(max,min);
+
+                // singleController.queryTable(
+                //     _that.getQueryArgu(_that.timeType2(min, max), new Date(timeFrom).format("yyyy-MM-dd hh:mm:00"), new Date(timeTo).format("yyyy-MM-dd hh:mm:00"))
+                // ).then(function (res) {
+                //     _that.queryDeatilBak = res[0];
+                //     _that.queryDeatil = res[0].dataList.map(function (item) {
+                //         return {
+                //             x: item.time,
+                //             y: item.data,
+                //         }
+                //     });
+
+                //     _that.detailTable.axes[0].setCategories(_.map(_that.queryDeatil, 'x'));
+                //     _that.detailTable.series[0].setData(_.map(_that.queryDeatil, 'y'));
+
+                // })
+                return false;
+            },
+            // 邦定父级的选择事件
+            bindChartEvent: function (event) {
+                var _that = this;
+                _that.masterTable.hcEvents.selection = [event.bind(_that.masterTable, _that, _that.masterTable)];
+            },
             // 创建整体图表
-            createMaster: function (res, charClick) {
+            createMaster: function (res, selection) {
 
                 var _that = this;
 
@@ -277,61 +389,7 @@ $(function () {
                             chart: {
                                 zoomType: 'x',
                                 events: {
-                                    selection: function (event) {
-
-                                        var extremesObject = event.xAxis[0],
-                                            min = extremesObject.min,
-                                            max = extremesObject.max,
-                                            timeTo,
-                                            timeFrom,
-                                            detailData = [],
-                                            xAxis = this.xAxis[0];
-
-
-                                        Highcharts.each(this.series[0].data, function (d, index) {
-
-                                            if (index == 0) {
-                                                timeTo = d.x;
-                                                timeFrom = d.x;
-                                            }
-
-                                            if (d.x > min && d.x < max) {
-
-                                                if (d.x < timeFrom) {
-                                                    timeFrom = d.x;
-                                                }
-                                                if (d.x > timeTo) {
-                                                    timeTo = d.x;
-                                                }
-                                            }
-                                        });
-                                        xAxis.removePlotBand('mask-before');
-                                        xAxis.addPlotBand({
-                                            id: 'mask-before',
-                                            from: max,
-                                            to: min,
-                                            color: 'rgba(0, 0, 0, 0.2)'
-                                        });
-
-
-                                        singleController.queryTable(
-                                            _that.getQueryArgu(_that.timeType2(min, max), new Date(timeFrom).format("yyyy-MM-dd hh:mm:00"), new Date(timeTo).format("yyyy-MM-dd hh:mm:00"))
-                                        ).then(function (res) {
-                                            _that.queryDeatilBak = res[0];
-                                            _that.queryDeatil = res[0].dataList.map(function (item) {
-                                                return {
-                                                    x: item.time,
-                                                    y: item.data,
-                                                }
-                                            });
-
-                                            _that.detailTable.axes[0].setCategories(_.map(_that.queryDeatil, 'x'));
-                                            _that.detailTable.series[0].setData(_.map(_that.queryDeatil, 'y'));
-
-
-                                        })
-                                        return false;
-                                    }
+                                    selection: selection
                                 }
                             },
                             title: {
@@ -363,7 +421,7 @@ $(function () {
                                             2: xdate.format('yyyy-MM-dd'),
                                             4: xdate.format('yyyy-MM'),
                                             5: xdate.format('yyyy'),
-                                        }[type];
+                                        } [type];
                                     },
                                     enabled: true,
                                 },
@@ -402,6 +460,7 @@ $(function () {
                                 data: res
                             }],
                         }, function () {
+
                             resolve(res)
                         });
                     }
@@ -417,44 +476,129 @@ $(function () {
                 // 详情对应的表
                 if (_.isFunction(_.get(_that.detailTable, 'destroy'))) _that.detailTable.destroy();
 
-                //  同时记录返回的对应的数量
-                _that.detailTable = pchart.initColumnHistogram({
-                    title: {
-                        text: '月平均降雨量'
-                    },
-                    xAxis: {
+                return new Promise(function (resolve) {
+                    //  同时记录返回的对应的数量
+                    _that.detailTable = pchart.initColumnHistogram({
                         title: {
-                            y: -1 * ($("#chart").height() - 50),
-                            align: 'high',
-                            text: '单位：kWh',
+                            text: '月平均降雨量'
                         },
-                        labels: {
-                            style: {
-                                fontFamily: 'Arial,"微软雅黑",sans-serif'
+                        xAxis: {
+                            title: {
+                                y: -1 * ($("#chart").height() - 50),
+                                align: 'high',
+                                text: '单位：kWh',
                             },
-                            formatter: function () {
-                                var xdate = new Date(this.value);
+                            labels: {
+                                style: {
+                                    fontFamily: 'Arial,"微软雅黑",sans-serif'
+                                },
+                                formatter: function () {
+                                    var xdate = new Date(this.value);
 
-                                var type = _that.timeType2(_that.timer.startTime, _that.timer.endTime)
+                                    var type = _that.timeType2(_that.timer.startTime, _that.timer.endTime)
 
-                                return {
-                                    1: xdate.format('yyyy-MM-dd hh:mm'),
-                                    2: xdate.format('yyyy-MM-dd'),
-                                    4: xdate.format('yyyy-MM'),
-                                    5: xdate.format('yyyy'),
-                                }[type];
+                                    return {
+                                        1: xdate.format('yyyy-MM-dd hh:mm'),
+                                        2: xdate.format('yyyy-MM-dd'),
+                                        4: xdate.format('yyyy-MM'),
+                                        5: xdate.format('yyyy'),
+                                    } [type];
+                                },
+                                enabled: true,
                             },
-                            enabled: true,
+                            // type: "datetime",
                         },
-                        // type: "datetime",
-                    },
-                    container: "chart",
-                    series: [{ data: res }]
+                        container: _that.$refs.chart,
+                        series: [{
+                            data: res
+                        }]
+                    });
+
+                    _that.bindChartEvent(_that.chartColumnarClick);
+                    resolve(res);
                 })
+
             },
             // 创建层层叠样式表
             createCascadingStyle: function (el, series, categories) {
-
+                var _that = this;
+                return new Promise(function (resolve) {
+                    // 销毁图表
+                    // 父级的对应的表
+                    try {
+                        if (_.isFunction(_.get(_that.detailTable, 'destroy'))) _that.detailTable.destroy();
+                    } catch (error) {
+                        
+                    }finally{
+                        _that.detailTable = Highcharts.chart(_that.$refs.chart, {
+                            chart: {
+                                type: 'column'
+                            },
+                            title: {
+                                text: '堆叠柱形图'
+                            },
+                            xAxis: {
+                                categories: categories.map(function (item) {
+                                    return new Date(item).format('yyyy-MM-dd hh:mm:ss');
+                                })
+                            },
+                            yAxis: {
+                                min: 0,
+                                title: {
+                                    text: ''
+                                },
+                                stackLabels: { // 堆叠数据标签
+                                    enabled: true,
+                                    style: {
+                                        fontWeight: 'bold',
+                                        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                                    }
+                                }
+                            },
+                            legend: {
+                                align: 'right',
+                                x: -30,
+                                verticalAlign: 'top',
+                                y: 25,
+                                floating: true,
+                                backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+                                borderColor: '#CCC',
+                                borderWidth: 1,
+                                shadow: false
+                            },
+                            tooltip: {
+                                formatter: function () {
+                                    return '<b>' + this.x + '</b><br/>' +
+                                        this.series.name + ': ' + this.y + '<br/>' +
+                                        '总量: ' + this.point.stackTotal;
+                                }
+                            },
+                            plotOptions: {
+                                column: {
+                                    stacking: 'normal',
+                                    dataLabels: {
+                                        enabled: true,
+                                        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+                                        style: {
+                                            // 如果不需要数据标签阴影，可以将 textOutline 设置为 'none'
+                                            textOutline: '1px 1px black'
+                                        }
+                                    }
+                                }
+                            },
+                            series: series.map(function (item) {
+                                return{
+                                    name:item.name.name,
+                                    data:item.data,
+                                }
+                            })
+                        }, function () {
+                            // 绑定父图表的滑动事件
+                            _that.bindChartEvent(_that.chartSlideClick);
+                        });
+                    }
+                    
+                })
             },
             // 添加赋值线
             addLines: function (arr, chart) {
@@ -463,7 +607,9 @@ $(function () {
 
                 //  循环所有的线有就绘制没有就移除
                 _that.auxiliaryTypes.forEach(function (item) {
-                    var obj = _.find(arr, { code: item.code });
+                    var obj = _.find(arr, {
+                        code: item.code
+                    });
                     if (_.isUndefined(obj)) {
 
                         chart.yAxis[0].removePlotLine(item.code);
@@ -493,17 +639,17 @@ $(function () {
                 var _that = this;
 
                 return {
-                    "projectId": app.energyProject.projectId,                //类型：String  必有字段  备注：项目id
-                    "buildingLocalId": app.energyModel.buildingLocalId,                //类型：String  必有字段  备注：建筑本地编码
-                    "energyModelLocalId": app.energyModel.energyModelId,                //类型：String  必有字段  备注：能耗模型本地编码
-                    "timeType": timeType ? timeType : _that.timeType2(app.timer.startTime, app.timer.endTime),                //类型：Number  必有字段  备注：数据聚合时间类型1-时，2-天，4-月，5-年
-                    "dataKind": _.get(app.query.areas, '[0].code'),                //类型：Number  必有字段  备注：1-总能耗；2-单平米能耗；
-                    "dataType": _.get(app.query.energy, '[0].code'),                //类型：Number  必有字段  备注：1-能耗；2-费用；3-CO2排放量；4-标煤
-                    "paramList": [                //类型：Array  必有字段  备注：无
-                        {                //类型：Object  必有字段  备注：无
-                            "energyItemLocalId": _.map(app.suboptionModel, 'localId').join(''),                //类型：String  必有字段  备注：分项本地编码
-                            "timeFrom": timeFrom ? timeFrom : new Date(app.timer.startTime).format('yyyy-MM-dd hh:mm:ss'),                //类型：String  必有字段  备注：开始时间yyyy-MM-dd HH:mm:ss（>=）
-                            "timeTo": timeTo ? timeTo : new Date(app.timer.endTime).format('yyyy-MM-dd hh:mm:ss')                //类型：String  必有字段  备注：结束时间yyyy-MM-dd HH:mm:ss（<）
+                    "projectId": app.energyProject.projectId, //类型：String  必有字段  备注：项目id
+                    "buildingLocalId": app.energyModel.buildingLocalId, //类型：String  必有字段  备注：建筑本地编码
+                    "energyModelLocalId": app.energyModel.energyModelId, //类型：String  必有字段  备注：能耗模型本地编码
+                    "timeType": timeType ? timeType : _that.timeType2(app.timer.startTime, app.timer.endTime), //类型：Number  必有字段  备注：数据聚合时间类型1-时，2-天，4-月，5-年
+                    "dataKind": _.get(app.query.areas, '[0].code'), //类型：Number  必有字段  备注：1-总能耗；2-单平米能耗；
+                    "dataType": _.get(app.query.energy, '[0].code'), //类型：Number  必有字段  备注：1-能耗；2-费用；3-CO2排放量；4-标煤
+                    "paramList": [ //类型：Array  必有字段  备注：无
+                        { //类型：Object  必有字段  备注：无
+                            "energyItemLocalId": _.map(app.suboptionModel, 'localId').join(''), //类型：String  必有字段  备注：分项本地编码
+                            "timeFrom": timeFrom ? timeFrom : new Date(app.timer.startTime).format('yyyy-MM-dd hh:mm:ss'), //类型：String  必有字段  备注：开始时间yyyy-MM-dd HH:mm:ss（>=）
+                            "timeTo": timeTo ? timeTo : new Date(app.timer.endTime).format('yyyy-MM-dd hh:mm:ss') //类型：String  必有字段  备注：结束时间yyyy-MM-dd HH:mm:ss（<）
                         }
                     ]
                 }
@@ -527,11 +673,15 @@ $(function () {
                         }
                     });
 
+                    _that.queryDeatil = _.cloneDeep(_that.queryRes);
+
                     //  渲染的主表格
                     return _that.createMaster(_.cloneDeep(_that.queryRes));
 
                     //  渲染的渲染的对应子表格
-                }).then(_that.createDetail)
+                }).then(_that.createDetail).then(function () {
+
+                })
             },
             //  时间控件点击选择事件
             timeClick: function (argu) {
@@ -540,18 +690,24 @@ $(function () {
             },
             // 获取分享模型信息
             getItemByEnergyModelList: function (localId) {
-                return _.find(this.energyModelList, { localId: localId });
+                return _.find(this.energyModelList, {
+                    localId: localId
+                });
             }
         },
         computed: {
             energyModelTree: function () {
                 var _that = this;
-                return _.filter(_that.energyModelList, { parentLocalId: false })
+                return _.filter(_that.energyModelList, {
+                        parentLocalId: false
+                    })
                     .map(function (info) {
 
                         var item = _.clone(info);
 
-                        item.content = _.filter(_that.energyModelList, { parentLocalId: item.localId });
+                        item.content = _.filter(_that.energyModelList, {
+                            parentLocalId: item.localId
+                        });
 
                         if (_.isArray(item.content) && item.content.length) {
                             item.content = item.content.map(arguments.callee);
