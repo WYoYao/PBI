@@ -54,7 +54,7 @@ var Controller = function () {
                         setTimeout(function () {
 
                             resolve(_.isFunction(convert) ? convert(cb(argus)) : cb(argus));
-                        }, _.random(1000));
+                        }, _.random(1));
                     });
                 } else {
 
@@ -219,6 +219,31 @@ singleController.push([
         }
     },
     {
+        //  获取辅助数据
+        name: "GetAssistantData",
+        url: "GetAssistantData",
+        argu: {},
+        cb: function (argu) {
+
+            return;
+        }
+    },
+    {
+        name: "ItemEnergyCompare",
+        url: "ItemEnergyCompare",
+        argu: {},
+        cb: function (argu) {
+            console.log(argu);
+
+            return [                //类型：Array  必有字段  备注：无
+                {                //类型：Object  必有字段  备注：无
+                    "circleData": _.random(5000),                //类型：Number  可有字段  备注：环比能耗值
+                    "sameData": _.random(5000)              //类型：Number  可有字段  备注：同比能耗值
+                }
+            ];
+        }
+    },
+    {
         // 获取表格信息
         name: "queryTable",
         url: "restObjectService/queryObjectByClass",
@@ -232,39 +257,39 @@ singleController.push([
                 5: 365 * (60 * 60 * 1000),
             }[argu.timeType]
 
-            console.log(argu);
 
-            return _.range(argu.paramList.length).map(() => {
+
+            return _.range(argu.paramList.length).map((x, index) => {
                 return {
-                    "energyItemLocalId": "mock",        //类型：String  必有字段  备注：分项本地编码
+                    "energyItemLocalId": argu.paramList[index],        //类型：String  必有字段  备注：分项本地编码
                     "timeFrom": "mock",                //类型：String  必有字段  备注：开始时间yyyy-MM-dd HH:mm:ss（>=）
                     "timeTo": "mock",                //类型：String  必有字段  备注：结束时间yyyy-MM-dd HH:mm:ss（<）
                     "minData": 100,                //类型：Number  必有字段  备注：最小值
                     "maxData": 9000,                //类型：Number  必有字段  备注：最大值
                     "avgData": 6000,                //类型：Number  必有字段  备注：平均值
                     "midData": 5000,                //类型：Number  必有字段  备注：中位数
-                    "sumData": 100000,                //类型：Number  必有字段  备注：求和
+                    "sumData": _.random(5000),                //类型：Number  必有字段  备注：求和
                     dataList: _.range(parseInt(diff)).map((item, index) => {
 
                         if (argu.timeType == 1) {
                             return {
                                 time: new Date(argu.paramList[0].timeTo).setHours(index),
-                                data: _.random(10000)
+                                data: _.random(5000)
                             }
                         } else if (argu.timeType == 2) {
                             return {
                                 time: new Date(argu.paramList[0].timeTo).setDate(index),
-                                data: _.random(10000)
+                                data: _.random(5000)
                             }
                         } else if (argu.timeType == 4) {
                             return {
                                 time: new Date(argu.paramList[0].timeTo).setMonth(index),
-                                data: _.random(10000)
+                                data: _.random(5000)
                             }
                         } else if (argu.timeType == 5) {
                             return {
                                 time: new Date(argu.paramList[0].timeTo).setFullYear(index),
-                                data: _.random(10000)
+                                data: _.random(5000)
                             }
                         }
 

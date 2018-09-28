@@ -55,7 +55,7 @@ $(function () {
                 name: "自定义",
                 value: "0",
                 unit: "kwh"
-            }, ],
+            },],
 
             setMin: [{
                 isSelected: true,
@@ -67,7 +67,7 @@ $(function () {
                 name: "自定义",
                 value: "0",
                 unit: "kwh"
-            }, ],
+            },],
 
             noDataChartShow: true, //无数据展示
 
@@ -88,7 +88,7 @@ $(function () {
                 }]
             },
 
-            gridRenderList :[],//表格列表数据
+            gridRenderList: [],//表格列表数据
             //顶部筛选条件
             // 图标报表
             tableTypes: [{
@@ -100,58 +100,58 @@ $(function () {
             }],
             // 计量方式
             measurementTypes: [{
-                    name: "总量",
-                    code: 1,
-                },
-                {
-                    name: "单平米能耗",
-                    code: 2,
-                },
+                name: "总量",
+                code: 1,
+            },
+            {
+                name: "单平米能耗",
+                code: 2,
+            },
             ],
             //单位
             unitTypes: [{
-                    name: "能耗",
-                    code: 1,
-                },
-                {
-                    name: "费用",
-                    code: 2,
-                },
-                {
-                    name: "碳排放量",
-                    code: 3,
-                },
-                {
-                    name: "标煤",
-                    code: 4,
-                },
+                name: "能耗",
+                code: 1,
+            },
+            {
+                name: "费用",
+                code: 2,
+            },
+            {
+                name: "碳排放量",
+                code: 3,
+            },
+            {
+                name: "标煤",
+                code: 4,
+            },
             ],
             //区分维度
             dimensionalityTypes: [{
-                    name: "滑动按月",
-                    code: 2,
-                },
-                {
-                    name: "滑动按日",
-                    code: 1,
-                }
+                name: "滑动按月",
+                code: 2,
+            },
+            {
+                name: "滑动按日",
+                code: 1,
+            }
             ],
             //常用计算
             calculateTypes: [{
-                    name: "最大值",
-                    code: 0,
-                },
-                {
-                    name: "最小值",
-                    code: 1,
-                },
-                {
-                    name: "平均值",
-                    code: 2
-                }, {
-                    name: "中位数",
-                    code: 3
-                }
+                name: "最大值",
+                code: 0,
+            },
+            {
+                name: "最小值",
+                code: 1,
+            },
+            {
+                name: "平均值",
+                code: 2
+            }, {
+                name: "中位数",
+                code: 3
+            }
             ],
 
             // 是否显示缩略下拉
@@ -176,7 +176,7 @@ $(function () {
 
             onlineExplainFlag: false, //是否显示在线提示信息
 
-            energyPointList:[],//能量拐点列表
+            energyPointList: [],//能量拐点列表
 
         },
         methods: {
@@ -205,7 +205,7 @@ $(function () {
                 this.searchConditionObj.subentrySaveArr = [];
 
                 this.subentryDisabled = true; //添加分项启用
-                
+
             },
 
             //添加时间相关
@@ -213,7 +213,7 @@ $(function () {
                 var that = this;
                 var time = $("#selectTimeLine").psel();
                 that.searchConditionObj.timeSaveArr = [time];
-                
+
             },
             energyModelTree: function (data, parent_id) { //格式化分项树
                 var that = this;
@@ -233,12 +233,12 @@ $(function () {
             },
             addSubentryFn: function (item) { //添加分项
                 var that = this;
-                
+
                 that.searchConditionObj.subentrySaveArr = [{
                     obj_id: arguments[0].obj_id,
                     obj_name: arguments[0].obj_name
                 }];
-                
+
             },
             addSubetryShow: function () { //选择分项弹出框
                 var that = this;
@@ -256,9 +256,9 @@ $(function () {
                     that.subentryTree = _.clone(res);
                     that.subentryTree = that.energyModelTree(that.subentryTree, -1);
                     that.showSubentryTemp = true;
-                    
+
                 })
-                
+
             },
 
             setYAxisShowFn: function () { //显示设置Y轴坐标弹出框
@@ -268,7 +268,7 @@ $(function () {
                 this.setYAxisShow = false;
             },
             setYdataFn: function (item1, item2) { //确认设置Y轴坐标
-                
+
                 this.setYAxisShow = false;
             },
             drawingChartData: function (obj) { //绘制柱状图
@@ -293,7 +293,7 @@ $(function () {
             addSubetryCallBack: function (item) { //选择分项回调
                 this.currentSubentryList = item;
 
-                
+
                 this.addSubentryTxt = item[0].name;
                 this.searchConditionObj.subentrySaveArr = item;
                 this.showSubentryTemp = false;
@@ -341,9 +341,9 @@ $(function () {
                 var arr1 = [];
 
                 var energyItemLocalId = that.searchConditionObj.subentrySaveArr[0].localId;
-                arr.forEach(function(item){
+                arr.forEach(function (item) {
                     arr1.push({
-                        dataListArr:[{content:item.dataList,name:energyItemLocalId}]
+                        dataListArr: [{ content: item.dataList, name: energyItemLocalId }]
                     });
                 })
                 arr1.forEach(function (item) {
@@ -382,7 +382,7 @@ $(function () {
             },
             AssemblyParameterList: function (obj) {//选中选项后构造请求数据
                 var that = this;
-                
+
                 var val = that.searchConditionObj;
 
                 var paramList = {};
@@ -402,11 +402,11 @@ $(function () {
                                 timeTo: new Date(val.timeSaveArr[0].endTime).format("yyyy-MM-dd hh:mm:ss"),
                             }
 
-                            
-                            if(that.scChartShow){//图表是否显示
+
+                            if (that.scChartShow) {//图表是否显示
                                 that.getChartListFn(paramList, unit[0].code, measurement[0].code, dimensionality[0].code);
                             }
-                           
+
                         }
                     }
                 }
@@ -415,7 +415,7 @@ $(function () {
             },
             confirmSearchListFn: function () { //查询表格数据请求
                 var that = this;
-                
+
                 var val = that.searchConditionObj;
                 if (val.projectSaveObj.hasOwnProperty('id') && val.projectSaveObj.id != '') { //存在项目id ， 模型id
                     //存在时间 第一项不能为请选择时间
@@ -444,11 +444,11 @@ $(function () {
                             var timeType = ptool.formatGranularityToJava($("#selectTimeLine"));
                             //获取图表数据请求
                             that.getChartListFn(paramList, timeType);
-                            
+
                         }
 
                     } else {
-                        
+
                     }
                 }
 
@@ -467,9 +467,9 @@ $(function () {
                     dataType: _dataType, //能耗  费用
                     paramList: paramList
                 };
-                
+
                 singleSlideController.GetItemSlidingEnergyByTime(queryParam).then(function (res) {
-                    
+
                     that.dataListSubentry = res;
                     that.drawingChartData(res);
                     that.noDataChartShow = false;
@@ -521,7 +521,7 @@ $(function () {
                             obj_name: "自动扶梯222",
                         }]
                     }]
-                }, ]
+                },]
             }];
 
         },
