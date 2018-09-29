@@ -1,0 +1,40 @@
+@charset "utf-8";
+@import "../publicSrc/public";
+// 中文
+.multtimer {
+    max-height: 240px;
+    padding-bottom: 8px;
+    .per-iconbutton-grayBorder,
+    .per-squarebutton-grayBorder {
+        display: none;
+    }
+    .per-calendar-title {
+        padding: 0;
+    }
+    .per-calendar-text {
+        width: 210px;
+    }
+    .line {
+        position: relative;
+        margin-bottom: 10px;
+        .remove {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 28px;
+            width: 30px;
+            border: 1px solid #cacaca;
+            border-left: none;
+            line-height: 30px;
+            text-align: center;
+            cursor: pointer;
+            color: #6f8fb5;
+        }
+        .btn {
+            height: 30px;
+            &>div {
+                width: 100%;
+            }
+        }
+    }
+}

@@ -95,7 +95,7 @@
                 }]
             },
         }, {
-            name: "GetEnergyModelTreeOfBuilding",//获取分项树
+            name: "GetEnergyModelTreeOfBuilding", //获取分项树
             url: "GetEnergyModelTreeOfBuilding",
             isNotJava: true,
             data: function () {
@@ -115,7 +115,7 @@
                     },
                 ];
             }
-        }]
+        }, ]
     }
     var cteatePromise = function (arr) {
         return arr.link.reduce(function (obj, link) {

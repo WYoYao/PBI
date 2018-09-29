@@ -82,5 +82,10 @@ module.exports = {
                 url: "pages/multiple/MultipleLandscape"
             }
         ]
-    }
+    },
+    /*系统管理内的菜单配置，code必须以m_开头*/
+    manageMenuType: [{
+        name: '电耗模型设置',
+        code: 'm_powerenergymodel'
+    }]
 }

@@ -207,7 +207,8 @@
         cancle：隐藏分项组件
         result：点开组件选中结果项
      -->
-    <msubentry v-if="showSubentryTemp" :subtree="subentryTree" :search="searchSubentry" :cb="addSubetryCallBack" :cancle="addSubetryHide" :result="_.map(currentSubentryList,'localId')">
+    <msubentry v-if="showSubentryTemp" :subtree="subentryTree" :search="searchSubentry" :cb="addSubetryCallBack"
+        :cancle="addSubetryHide" :result="_.map(currentSubentryList,'localId')">
 
     </msubentry>
 

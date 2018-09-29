@@ -207,7 +207,8 @@ $(function () {
                 superparent: "",
                 // 
                 series: [],
-            }
+            },
+            pie: null
         },
         methods: {
             // 隐藏最大值最小值弹窗
@@ -494,7 +495,7 @@ $(function () {
                 if (_.find(app.query.areas, { code: 0 })) _that.queryParent(_that.selector.timeFrom, _that.selector.timeTo);
 
                 singleController.queryTable(
-                    _that.getQueryArgu(_that.timeType2(timeFrom, timeTo), new Date(timeFrom).format("yyyy-MM-dd hh:mm:00"), new Date(timeTo).format("yyyy-MM-dd hh:mm:00"))
+                    _that.getQueryArgu(new Date(timeFrom).format("yyyy-MM-dd hh:mm:00"), new Date(timeTo).format("yyyy-MM-dd hh:mm:00"), _that.timeType2(timeFrom, timeTo))
                 ).then(function (res) {
                     _that.queryDeatilBak = _.cloneDeep(res[0]);
 
@@ -512,6 +513,11 @@ $(function () {
 
                     _that.detailTable.axes[0].setCategories(_.map(_that.queryDeatil, 'x'));
                     _that.detailTable.series[0].setData(_.map(_that.queryDeatil, 'y'));
+
+                    // 如果辅助线已经选择了内容绘制辅助线
+                    if (_that.helpSelected != null) {
+                        _that.helpClick(_.find(_that.helpData, { code: _that.helpSelected }));
+                    }
 
                 })
                 return false;
@@ -559,7 +565,7 @@ $(function () {
 
                 //  为表格保存对应的值
                 singleController.queryTable(
-                    _that.getQueryArgu(_that.timeType2(timeFrom, timeTo), new Date(timeFrom).format("yyyy-MM-dd hh:mm:00"), new Date(timeTo).format("yyyy-MM-dd hh:mm:00"))
+                    _that.getQueryArgu(new Date(timeFrom).format("yyyy-MM-dd hh:mm:00"), new Date(timeTo).format("yyyy-MM-dd hh:mm:00"), _that.timeType2(timeFrom, timeTo))
                 ).then(function (res) {
                     _that.queryDeatilBak = _.cloneDeep(res[0]);
                     _that.queryDeatil = res[0].dataList.map(function (item) {
@@ -590,6 +596,9 @@ $(function () {
                     timeFrom: _that.timer.startTime,
                     timeTo: _that.timer.endTime,
                 }
+
+                //清空辅助线
+                _that.helpSelected = null;
 
                 return new Promise(function (resolve) {
                     {
@@ -707,7 +716,8 @@ $(function () {
                         },
                         container: _that.$refs.chart,
                         series: [{
-                            data: res
+                            data: res,
+                            name: _.get(_that.query, "energy[0].name", ''),
                         }]
                     });
 
@@ -728,6 +738,11 @@ $(function () {
 
                     // 添加对应的线
                     _that.keepCreateLines();
+
+                    // 如果辅助线已经选择了内容绘制辅助线
+                    if (_that.helpSelected != null) {
+                        _that.helpClick(_.find(_that.helpData, { code: _that.helpSelected }));
+                    }
                     resolve(res);
                 })
 
@@ -775,6 +790,12 @@ $(function () {
                             _that.bindChartEvent(_that.chartSlideClick);
                             // 添加对应的线
                             _that.keepCreateLines();
+
+
+                            // 如果辅助线已经选择了内容绘制辅助线
+                            if (_that.helpSelected != null) {
+                                _that.helpClick(_.find(_that.helpData, { code: _that.helpSelected }));
+                            }
 
                             //  保存最大值最小值
                             _that.max = _that.detailTable.yAxis[0].getExtremes().max;
@@ -991,13 +1012,46 @@ $(function () {
                 var _that = this;
 
                 _that.Reference.series = res.map(function (item) {
+
                     return {
                         x: _.get(_.find(_that.energyModelList, { localId: item.energyItemLocalId }), 'name', '--'),
                         y: item.sumData
                     }
-                })
+                });
 
-                console.log(_that.Reference.series);
+                try {
+                    if (_that.pie && _.get(_that.pie, 'destroy')) {
+                        _that.pie.destroy()
+                    }
+                } catch (error) {
+
+                } finally {
+
+                    _that.pie = pchart.initPie({
+                        yAxis: { title: { text: '' } },
+                        container: _that.$refs.pie,
+                        series: [{
+                            data: _.cloneDeep(_that.Reference.series),
+                            point: {
+                                events: {
+                                    click: function () { }
+                                }
+                            }
+                        }],
+                        legend: false
+                    });
+
+                }
+
+
+                // return pchart.initDoughnutPie({
+                //     // yAxis: { title: { text: 'kWh' } },
+                //     container: _that.$refs.pie,
+                //     series: series,
+                //     title: { text: '' },
+                //     subtitle: { text: '1008' },
+                //     titleUnit: { text: 'kWh' }
+                // });
             },
             // 返回的统一的小数点
             fix2: function (num) {
@@ -1009,6 +1063,34 @@ $(function () {
 
                 if (num < 1) return num.toFixed(3);
                 return num.toFixed(1);
+            },
+            helpClick: function (item) {
+                var _that = this;
+                var code = item.code;
+                _that.helpSelected = code;
+
+                var argu = {
+                    projectId: _that.energyProject.projectId,
+                    dataType: code,
+                    timeType: _that.timeType2(_that.selector.timeFrom, _that.selector.timeTo),
+                    timeFrom: _that.selector.timeFrom,
+                    timeTo: _that.selector.timeTo
+                }
+
+                singleController.GetAssistantData(argu).then(function (res) {
+
+                    _that.detailTable.series.forEach(function (item) {
+                        if (item.type == 'line') item.remove();
+                    })
+
+                    _that.detailTable.addSeries({
+                        type: "line",
+                        color: pcolor.cd[1],
+                        name: item.name,
+                        data: _.map(res, 'data')
+                    })
+                })
+
             }
         },
         watch: {
@@ -1099,7 +1181,7 @@ $(function () {
 
         app.computeWidth();
 
-        app.createCharts();
+        // app.createCharts();
     })
 
 

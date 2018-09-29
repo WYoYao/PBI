@@ -225,7 +225,41 @@ singleController.push([
         argu: {},
         cb: function (argu) {
 
-            return;
+            if (0 <= argu.dataType && argu.dataType < 5) {
+                return _.range(parseInt((argu.timeTo - argu.timeFrom) / (60 * 60 * 1000 * (argu.timeType ? 1 : 24))))
+                    .map(function (item, index) {
+                        return {
+                            time: + new Date(argu.timeTo) + (index * 60 * 60 * 1000 * (argu.timeType ? 1 : 24)),
+                            data: _.random(1, 5000)
+                        }
+                    }).map(function (item) {
+                        item.time = new Date(item.time).format('yyyy-MM-dd hh:mm:ss');
+                        return item;
+                    })
+            } else if (argu.dataType == 5) {
+                return _.range(parseInt((argu.timeTo - argu.timeFrom) / (60 * 60 * 1000 * (argu.timeType ? 1 : 24))))
+                    .map(function () {
+                        return {
+                            time: + new Date(argu.timeTo) + (index * 60 * 60 * 1000 * (argu.timeType ? 1 : 24)),
+                            data: _.random(1, 9)
+                        }
+                    }).map(function (item) {
+                        item.time = new Date(item.time).format('yyyy-MM-dd hh:mm:ss');
+                        return item;
+                    })
+            } else if (argu.dataType == 6) {
+                return _.range(2)
+                    .map(function () {
+                        return {
+                            time: + new Date(argu.timeTo) + (index * 60 * 60 * 1000 * (argu.timeType ? 1 : 24)),
+                            data: _.random(0, 1)
+                        }
+                    }).map(function (item) {
+                        item.time = new Date(item.time).format('yyyy-MM-dd hh:mm:ss');
+                        return item;
+                    })
+            }
+
         }
     },
     {
@@ -261,7 +295,7 @@ singleController.push([
 
             return _.range(argu.paramList.length).map((x, index) => {
                 return {
-                    "energyItemLocalId": argu.paramList[index],        //类型：String  必有字段  备注：分项本地编码
+                    "energyItemLocalId": argu.paramList[index].energyItemLocalId,        //类型：String  必有字段  备注：分项本地编码
                     "timeFrom": "mock",                //类型：String  必有字段  备注：开始时间yyyy-MM-dd HH:mm:ss（>=）
                     "timeTo": "mock",                //类型：String  必有字段  备注：结束时间yyyy-MM-dd HH:mm:ss（<）
                     "minData": 100,                //类型：Number  必有字段  备注：最小值
@@ -269,30 +303,29 @@ singleController.push([
                     "avgData": 6000,                //类型：Number  必有字段  备注：平均值
                     "midData": 5000,                //类型：Number  必有字段  备注：中位数
                     "sumData": _.random(5000),                //类型：Number  必有字段  备注：求和
-                    dataList: _.range(parseInt(diff)).map((item, index) => {
+                    dataList: _.range(Math.round(diff)).map((item, index) => {
 
                         if (argu.timeType == 1) {
                             return {
-                                time: new Date(argu.paramList[0].timeTo).setHours(index),
+                                time: new Date(argu.paramList[0].timeFrom).setHours(index),
                                 data: _.random(5000)
                             }
                         } else if (argu.timeType == 2) {
                             return {
-                                time: new Date(argu.paramList[0].timeTo).setDate(index),
+                                time: new Date(argu.paramList[0].timeFrom).setDate(index),
                                 data: _.random(5000)
                             }
                         } else if (argu.timeType == 4) {
                             return {
-                                time: new Date(argu.paramList[0].timeTo).setMonth(index),
+                                time: new Date(argu.paramList[0].timeFrom).setMonth(index),
                                 data: _.random(5000)
                             }
                         } else if (argu.timeType == 5) {
                             return {
-                                time: new Date(argu.paramList[0].timeTo).setFullYear(index),
+                                time: new Date(argu.paramList[0].timeFrom).setFullYear(index),
                                 data: _.random(5000)
                             }
                         }
-
                     })
                 }
             })

@@ -1,1 +1,110 @@
-SingleHeatMap
+<% include ../../template/pageHead.html %>
+<% include ../../pages/components/index.html %>
+<link rel="stylesheet" href="../../css/single/heatmap.css">
+
+<div id="app">
+    <!-- 左侧内容 Start -->
+    <div class="left">
+        <!-- 筛选项目Start -->
+        <div class="section clear">
+            <span class="title">
+                筛选项目
+            </span>
+            <div class="block">
+                <div class="line">
+                    <div @click.stop="showEnergyModel=!showEnergyModel" class="project">
+                        <em class="textover" v-if="_.get(energyProject,'projectName')" :title="_.get(energyProject,'projectName')"
+                            v-text="_.get(energyProject,'projectName')"></em>
+                        <template v-if="energyProject&&energyModel">></template>
+                        <em class="textover" v-if="_.get(energyModel,'energyModelName')" :title="_.get(energyModel,'energyModelName')"
+                            v-text="_.get(energyModel,'energyModelName')"></em>
+                        <template v-if="!(energyProject&&energyModel)">请选择能耗模型</template>
+                    </div>
+                    <energymodel ref="energymodel" v-if="showEnergyModel" :propsprojectids="[energyProject['projectId']]"
+                        :propsmodelids="[energyModel['energyModelId']]" :cancel="handlercancelenergyModel" :cb="handlerclickenergyModel"></energymodel>
+                    </energymodel>
+                </div>
+            </div>
+        </div>
+        <!-- 筛选项目End -->
+
+        <!-- 筛选时间Start -->
+        <div class="section">
+            <span class="title">
+                筛选时间
+            </span>
+            <!-- 单个时间选择控件 Start -->
+            <multtimer :cb="timeClick"></multtimer>
+            <!-- 单个时间选择控件 End -->
+        </div>
+        <!-- 筛选时间End -->
+        <!-- 选择分项Start -->
+        <div class="section" style="height: 50px;padding:0;">
+            <suboption :cb="handlerclickSuboption" :tree="energyModelTree"></suboption>
+        </div>
+        <!-- 选择分项End -->
+        <!-- 查询按钮 Start -->
+        <div class="section footbtn" :pdisabled="!suboptionModel.length || !timer.length" @click.stop="suboptionModel.length?submitQuery():void 0">
+            <pbutton-blue text="查询"></pbutton-blue>
+        </div>
+        <!-- 查询按钮 End -->
+
+    </div>
+    <!-- 左侧内容 End -->
+    <!-- 右侧内容 Start -->
+    <div class="right">
+
+        <div ref="tab" class="tab">
+
+            <vcheckbox ref="vcheckbox" :icon="'M'" :title="'布局'" :datasource="tableTypes" :iscombox="iscombox"
+                :computewidth="computeWidth" :primarykey="'code'" :name="'name'" :selected="query.tables" :cb="createHandlerClick('tables')"></vcheckbox>
+
+            <cobxs ref="cobxs" :icon="'%'" :title="'单位'" :datasource="areaTypres" :iscombox="iscombox" :computewidth="computeWidth"
+                :primarykey="'code'" :name="'name'" :selected="query.areas" :cb="createHandlerClick('areas')"></cobxs>
+
+            <cobxs ref="cobxs1" :icon="'g'" :title="'能源'" :datasource="energyTypes" :iscombox="iscombox" :computewidth="computeWidth"
+                :primarykey="'code'" :name="'name'" :selected="query.energy" :cb="createHandlerClick('energy')"></cobxs>
+
+            <!--  下载Icon Start -->
+            <div ref="iconlist" class="iconlist">
+                <div class="vg">
+                    <pbutton-white icon="D" shape="rectangle"></pbutton-white>
+                </div>
+                <div class="vg">
+                    <pbutton-white icon="!" shape="rectangle"></pbutton-white>
+                </div>
+            </div>
+            <!--  下载Icon End -->
+
+        </div>
+
+        <!-- 图表 和 辅助信息 Start -->
+        <div class="content">
+            <div class="l">
+                <div id="chart" class="chart">
+                    <div class="item" v-for="(item,index) in res" :ref="'chart'+index">
+
+                    </div>
+                </div>
+                <div class="tb" v-show="!isAreas()">
+
+                </div>
+            </div>
+            <div class="r">
+                <div class="title">
+                    <span>已选择项</span>
+                </div>
+                <!-- 引入 时间 + 项目  +  分项  生成的记录  需组件-->
+                <ctrecord :list-data="selecteds" :type="'compare'" :deletecb="deleteRecordFn"></ctrecord>
+            </div>
+        </div>
+        <!-- 图表 和 辅助信息 End -->
+
+    </div>
+    <!-- 右侧内容 End -->
+</div>
+
+<script src="../../js/single/Inquire/controller.js"></script>
+<script src="../../js/single/heatmap/model.js"></script>
+
+<% include ../../template/pageFoot.html %>

@@ -117,7 +117,8 @@
                 </div>
                 <!--  Tab切换 End  -->
                 <!-- 单平米能耗Start -->
-                <div class="tab_slide_block" v-if="helpTab && !_.isUndefined(_.find(query.areas,{code:1}))">
+                <div class="tab_slide_block" v-if="_.get(queryDeatil,'length') && !_.isUndefined(_.find(query.areas,{code:1}))"
+                    v-show="helpTab">
                     <span class="tab_slide_block_title">
                         能耗统计
                     </span>
@@ -169,7 +170,8 @@
                 </div>
                 <!-- 单平米能耗End -->
                 <!-- 能耗Start -->
-                <div class="tab_slide_block" v-if="helpTab && !_.isUndefined(_.find(query.areas,{code:0}))">
+                <div class="tab_slide_block" v-if="_.get(queryDeatil,'length') && !_.isUndefined(_.find(query.areas,{code:0}))"
+                    v-show="helpTab">
                     <span class="tab_slide_block_title">
                         能耗统计
                     </span>
@@ -251,7 +253,8 @@
                 </div>
                 <!-- 能耗End -->
                 <!-- 下级能耗分项Start -->
-                <div class="tab_slide_block" v-if="helpTab && !_.isUndefined(_.find(query.areas,{code:2}))">
+                <div class="tab_slide_block" v-if="_.get(queryDeatil,'length') && !_.isUndefined(_.find(query.areas,{code:2}))"
+                    v-show="helpTab">
                     <span class="tab_slide_block_title">
                         能耗统计
                     </span>
@@ -259,11 +262,23 @@
                         总能耗
                     </span>
                     <span class="tab_slide_block_bignumber">
-                        <em v-text="_.get(Reference,'total')"></em> <em class="unit">kWh/㎡</em>
+                        <em v-text="_.sum( _.map(Reference.series,'y'))"></em> <em class="unit">kWh/㎡</em>
                     </span>
                     <span class="tab_slide_block_title">
                         下级能耗占比
                     </span>
+                    <div class="circle">
+                        <div class="circle_item">
+                            <span class="circle_item_title">
+                                占上级能耗比例
+                            </span>
+                            <div class="circle_item_chart" style="width:200px;height:180px" @mouseover.captrue.stop="console.log(123)"
+                                ref="pie">
+
+                            </div>
+                        </div>
+                    </div>
+                    <inquirelist :list="Reference.series" :name="'x'" :value="'y'"></inquirelist>
                 </div>
                 <!-- 下级能耗分项End -->
                 <!-- 室内环境Start -->
@@ -271,7 +286,7 @@
                     <div class=" item fst">室外环境</div>
 
 
-                    <div class="item" v-for="(item,index) in abledHelpList" @click.stop="helpSelected=item.code" :class="helpSelected == item.code?'on':''"
+                    <div class="item" v-for="(item,index) in abledHelpList" @click.stop="helpClick(item)" :class="helpSelected == item.code?'on':''"
                         :title="item.name" v-text="item.name"></div>
                 </div>
                 <!-- 室内环境End -->

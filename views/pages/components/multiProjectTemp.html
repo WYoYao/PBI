@@ -9,14 +9,37 @@
                 <div class="searchBlock">
                     <div class="box">
                         <!-- <div class="per-searchbox-icon">f</div> -->
-                        <input type="text" v-model="search" placeholder="输入关键字搜索">
-                        <div clear="" class="input_x" v-if="search.length >0" @click="search = ''">x</div>
+                        <div class="searchB">
+                            <input type="text" class="input" v-model="search" placeholder="输入关键字搜索">
+                            <div clear="" class="input_x" v-if="search.length >0" @click="search = ''">x</div>
+                        </div>
+                        <section>
+                            <pcombobox-normal bind="true"  istree="true" sel="itemClick">
+                                <header placeholder="'管理区：全部'"></header>
+                                <item datasource="manageAreaList" text="managePartitionName" child="managePartitionChildren" pronametoissel="issel" orientation="right"></item>
+                            </pcombobox-normal>
+        
+                        </section>
+                        <section>
+                            <pcombobox-normal bind="true" sel="weatherArea" >
+                                <header placeholder="'气候区：全部'" prefix="气候区："></header>
+                                <item datasource="weatherAreaList" text="name"></item>
+                            </pcombobox-normal>
+        
+                        </section>
+                        <section>
+                            <pcombobox-normal bind="true" sel="projectType" >
+                                <header placeholder="'项目类型：全部'" prefix="项目类型："></header>
+                                <item datasource="projectTypeList" text="name"></item>
+                            </pcombobox-normal>
+        
+                        </section>
                     </div>
                 </div>
                 <div class="operat">
                     <div class="left">
                         <span v-text="result.length">0</span>/
-                        <span v-text="searchList.length">120</span>
+                        <span v-text="searchList.length">0</span>
                     </div>
                     <div class="right" v-if="searchResult && searchResult.length == 0">
                         <ul>
@@ -34,24 +57,22 @@
                         </li>
                     </ul>
                 </div>
-                <div v-if="searchResult.length == 0" class="mstemp" :data="JSON.stringify(treedata)">
-                    <div class="option" id="treedata">
-                        <!--
-                            vcontent:树节点父级变量名称
-                            vname:树节点变量名称
-                            vkey:树节点变量key
-                            list:数据源
-                            click : 选项点击事件
-                            selectedlist : 已选列表
-                            clickplus :展开选项点击事件
-                            showlist：展示列表
-                            issingle：是否单选  false时 为多选
-                        -->
-                        <multipletree ref="multipletree" :vcontent="modelcontent" :vname="modelname" :vkey="modelkey" :list="treedata" :click="handlerClickModel"
-                            :selectedlist="selectList" :clickplus="clickplus" :showlist="shows" :issingle="false"></multipletree>
-
+                <div class="mstemp" v-if="searchResult && searchResult.length == 0">
+                    <div class="option" v-for="item in treedata">
+                        <div class="pList" v-for="data in item.projectList">
+                            <h4 class="title">
+                                <span class="per-tree-arrow" v-text="data.isOpen ? 'b' : 'r'" @click="data.isOpen = !data.isOpen"></span>
+                                <em  v-text="data.funtionType"></em>
+                            </h4>
+                            <ul class="opList" v-show="data.isOpen">
+                                <li v-for="info in data.projects" @click="handlerClick(info)">
+                                    <div v-text="info.projectLocalName"></div>
+                                    <em class="per-checkbox_input" :class="{'per-checkbox-checked' : info.isSelected}"></em>
+                                </li>
+                            </ul>
+                        </div>
+                       
                     </div>
-
                 </div>
             </div>
 
@@ -69,9 +90,10 @@
     </div>
 
 </script>
-
+<script src="../../../js/multiple/compared/controller.js"></script>
 <script>
     $(function () {
+
         Vue.component('mproject', {
             template: '#multiple-project-template',
             props: {
@@ -110,9 +132,14 @@
 
                     // 根据model接口定义的常量
                     modelcontent: 'child_objs',
-                    modelname: 'obj_name',
-                    modelkey: 'obj_id',
+                    modelname: 'projectLocalName',
+                    modelkey: 'projectLocalID',
 
+                    manageAreaList: [], //管理区列表  tree
+
+                    weatherAreaList: [], //气候区列表  array
+
+                    projectTypeList: [], //项目类型列表 array
 
                 }
             },
@@ -128,13 +155,6 @@
                 searchFn: function () { //触发搜索
                     this.searchKey = $("#searchInput").pval();
                 },
-
-                handlerClickModel: function (id) { //每个选项点击事件
-                    var index = this.selectList.indexOf(id);
-                    index == -1 ? this.selectList.push(id) : this.selectList.splice(index, 1);
-                    this.result = this.selectList;
-
-                },
                 //  点击属性菜单图标  显示展开项
                 clickplus: function (id) {
                     var index = this.shows.indexOf(id);
@@ -145,10 +165,9 @@
                 submit: function (ids) {
 
                     var _that = this;
-                    _that.cb(
-                        this.treeTransArr(this.treedata).filter(function (item) {
-                            return _that.selectList.indexOf(item[_that.modelkey]) != -1;
-                        }))
+                    _that.cb(this.treeTransArr(this.treedata).filter(function (item) {
+                        return _that.selectList.indexOf(item[_that.modelkey]) != -1;
+                    }))
                 },
                 handlerClick: function (item) {
                     var _that = this;
@@ -157,21 +176,26 @@
                     // 有则删除无则添加
                     index == -1 ? _that.selectList.push(item[_that.modelkey]) : _that.selectList.splice(
                         index, 1);
-                    this.result = this.selectList;
+                    console.log(_that.result == _that.selectList);
+                    _that.result = _.clone(_that.selectList);
+                    // debugger
 
                 },
                 treeTransArr: function (tree) {
                     var that = this;
-                    return tree.reduce(function (con, item) {
-
-                        var callee = arguments.callee;
-
-                        con.push(item);
-
-                        if (_.isArray(item[that.modelcontent]) && item[that.modelcontent].length)
-                            item[that.modelcontent].reduce(callee, con)
-                        return con;
-                    }, []);
+                    var arr = [];
+                    tree.forEach(function (item) {
+                        item.projectList.forEach(function (data) {
+                            data.projects.forEach(function (info) {
+                                arr.push({
+                                    projectLocalID: info.projectLocalID,
+                                    projectLocalName: info.projectLocalName,
+                                    isSelected: false
+                                });
+                            })
+                        })
+                    });
+                    return arr;
                 },
                 choiceProjectCommon: function (state) { //全选、反选、清除
                     // return this.operatSate = state;
@@ -215,15 +239,40 @@
                         _result = [];
 
                     if (state === 'all') { //全选
+                        tree.forEach(function (item) {
+                            item.projectList.forEach(function (data) {
+                                data.projects.forEach(function (info) {
+                                    info.isSelected = true;
+                                })
+                            })
+                        });
                         _result = _tree.map(function (item) {
                             return item[that.modelkey];
                         })
                     } else if (state === 'clear') { //取消选中
+                        tree.forEach(function (item) {
+                            item.projectList.forEach(function (data) {
+                                data.projects.forEach(function (info) {
+                                    info.isSelected = false;;
+                                })
+                            })
+                        });
                         _result = [];
                     } else if (state === 'invert') { //反选
                         _result = [];
                         var _currList = currList.length > 0 ? currList : [];
                         if (_currList && _currList.length > 0) { //存在已选
+                            tree.forEach(function (item) {
+                                item.projectList.forEach(function (data) {
+                                    data.projects.forEach(function (info) {
+                                        if (_currList.indexOf(info[that.modelkey]) == '-1') {
+                                            info.isSelected = true;
+                                        }else{
+                                            info.isSelected = false;;
+                                        }
+                                    })
+                                })
+                            });
                             _tree.forEach(function (item) {
                                 if (_currList.indexOf(item[that.modelkey]) == '-1') {
                                     _result.push(item[that.modelkey]);
@@ -232,6 +281,13 @@
                             });
 
                         } else {
+                            tree.forEach(function (item) {
+                                item.projectList.forEach(function (data) {
+                                    data.projects.forEach(function (info) {
+                                        info.isSelected = true;
+                                    })
+                                })
+                            });
                             _result = _tree.map(function (item) {
                                 return item[that.modelkey];
                             })
@@ -279,98 +335,97 @@
                     })
 
                 },
-                result: function () {
-                    this.disabledMethods();
-                },
+                result: {
+                    handler: function (newVal, oldVal) {
+                        // debugger;
+                        this.disabledMethods();
+                    },
+                    deep: true
+                }
+
             },
             beforeMount: function () {
                 var that = this;
-                this.selectList = this.result;
+                this.result = _.cloneDeep(this.result);
+                // debugger;
+                this.selectList = _.cloneDeep(this.result);
 
 
 
                 // this.shows =  JSON.parse(JSON.stringify(this.result));
 
-
                 //Ajax请求获取项目数据并处理
-                that.treedata = [{
-                    "obj_id": "a11",
-                    "obj_name": "建筑类型1",
-                    "child_objs": [{
-                        "obj_id": "a22",
-                        "obj_name": "建筑类型a1",
-                        "obj_type": "p3",
-                        "child_objs": [{
-                            "obj_id": "a33",
-                            "obj_name": "项目a",
-                            "obj_type": "p3",
-
-                        }]
-                    }]
-                }, {
-                    "obj_id": "b11",
-                    "obj_name": "建筑类型2",
-                    "child_objs": [{
-                        "obj_id": "b22",
-                        "obj_name": "建筑类型b1",
-                        "obj_type": "p3",
-                        "child_objs": [{
-                            "obj_id": "b33",
-                            "obj_name": "项目b",
-                            "obj_type": "p3",
-
-                        }]
-                    }]
-                },];
-                that.treedata = mTreeInit(that.treedata, '', '', 1);
-                var _res = [];
-                _res = that.result.map(function (item) {
-                    return getNames(that.treedata, [], item);
+                //管理分区
+                multCompareController.listManagementPartitionsService({}).then(function (res) {
+                    (function add(arr){
+                        var add = arguments.callee;
+                        for(var i=0;i<arr.length;i++){
+                            var json = arr[i];
+                            json.issel = true;
+                            if(json.managePartitionChildren && json.managePartitionChildren.length >0){
+                                add(json.managePartitionChildren);
+                            }
+                        }
+                    })(res)
+                    that.manageAreaList = res;
+                    console.log(that.manageAreaList);
+                    // debugger;
+                });
+                //气候区
+                multCompareController.listClimateZoneService({}).then(function (res) {
+                    that.weatherAreaList = res;
+                    console.log(that.weatherAreaList);
+                });
+                //项目类型
+                multCompareController.listFunctionTypesService({}).then(function (res) {
+                    that.projectTypeList = res;
+                    console.log(that.projectTypeList);
                 });
 
-                function getNames(array, childs, obj_id) {
-                    for (var i = 0; i < array.length; i++) {
-                        var item = array[i];
-                        if (item.obj_id == obj_id) {
-                            childs.push(item);
-                            return childs;
-                        }
-                        if (item.child_objs && item.child_objs.length > 0) {
-                            childs.push(item);
-                            var rs = getNames(item.child_objs, childs, obj_id);
-                            if (rs) {
-                                return rs;
-                            }
-                            else {
-                                var index = childs.indexOf(item);
-                                if (index > -1) {
-                                    childs.splice(index, 1);
-                                }
-                            }
-                        }
-                    }
-                    return false;
-                }
-                var comArr = [];
-                _.forEach(_res, function (item) {
-                    var jsArr = _.map(item, 'obj_id');
-                    _.forEach(jsArr, function (info) {
-                        var index = comArr.indexOf(info);
-                        // 有则删除无则添加
-                        if (index == -1) {
-                            comArr.push(info)
-                        }
-
+                //多项目列表
+                multCompareController.listAccountProjects({}).then(function (res) {
+                    _.forEach(res, function (item) {
+                        _.forEach(item.projectList, function (info) {
+                            info['isOpen'] = false;
+                            _.forEach(info.projects, function (pro) {
+                                pro.isSelected = false;
+                            })
+                        })
                     })
-                });
-                that.shows = _.clone(comArr);
 
+                    that.treedata = _.cloneDeep(res);
+                    that.searchList = that.treeTransArr(that.treedata);
+
+                    // 通过判断已选结果 选中数据中当前选项并打开对应的层级
+                    if(that.result && that.result.length >0){
+                        //选中当前项
+                        _.forEach(that.treedata,function(item){
+                            _.forEach(item.projectList,function(data){
+                                _.forEach(data.projects,function(info){
+                                    if(that.result.indexOf(info.projectLocalID) !='-1'){
+                                        info.isSelected = true;
+                                        data.isOpen = true;
+                                    }
+                                })
+                            })
+                        })
+                    }
+
+
+
+                    // console.log(JSON.stringify(that.searchList) + "*");
+                    console.log(that.treedata);
+                })
             },
             mounted: function () {
                 var that = this;
                 // that.selectList = [];
                 this.disabledMethods();
-                that.searchList = that.treeTransArr(that.treedata);
+
+
+
+
+
 
             }
 
@@ -379,40 +434,7 @@
     })
 </script>
 <script>
-    window.randomRangeId = function (num) { //生成随机数
 
-        var that = this;
-        var returnStr = "",
-            charStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        for (var i = 0; i < num; i++) {
-            var index = Math.round(Math.random() * (charStr.length - 1));
-            returnStr += charStr.substring(index, index + 1);
-        }
-        return returnStr;
-    }
-    window.mTreeInit = function (arr, parentId, placeholder, lv) {
-        //默认赋值树数据
-        var that = this;
-        var mTreeInit = arguments.callee;
-
-        arr = arr.map(function (item) {
-            item.lv = lv;
-            item.placeholder = placeholder || "";
-            item.parentId = parentId || "";
-            item.id = randomRangeId(10);
-            item.selected = false;
-
-            if (item.child_objs && item.child_objs.length) {
-                mTreeInit(item.child_objs, item.obj_id, item.placeholder, lv + 1);
-            } else {
-                item.child_objs = [];
-            }
-
-            return item;
-        });
-
-        return arr;
-    }
 </script>
 <style>
     .mproject {
@@ -427,7 +449,7 @@
     }
 
     .mproject>.mtemplate {
-        width: 600px;
+        width: 800px;
         position: absolute;
         left: 50%;
         top: 50%;
@@ -493,6 +515,47 @@
         background: #f8f8f8;
     }
 
+    .option .pList .title {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        height: 30px;
+        line-height: 30px;
+        padding-left: 20px;
+        border-bottom: 1px solid #d9e2e8;
+    }
+
+    .option .pList .title>span {
+        display: block;
+        margin-top: 0;
+    }
+
+    .option .pList .title>em {
+        display: block;
+    }
+
+    .option .pList .opList {}
+
+    .option .pList .opList>li {
+        display: flex;
+        flex-flow: row nowrap;
+        border-bottom: 1px solid #d9e2e8;
+        height: 30px;
+        line-height: 30px;
+        align-items: center;
+    }
+
+    .option .pList .opList>li>div {
+        width: 88%;
+        padding-left: 40px;
+        cursor: pointer;
+    }
+
+    .option .pList .opList>li>em {
+        display: block;
+        /* width:14%; */
+    }
+
     .pullDownList>ul>li {
         text-indent: 24px;
         height: 30px;
@@ -530,13 +593,20 @@
     .searchBlock .box {
         height: 30px;
         position: relative;
+        display: flex;
+        flex-flow: row nowrap;
     }
 
-    .searchBlock .box>input {
+    .searchBlock .box>.searchB {
+        width: 260px;
+        margin-right: 10px;
+    }
+
+    .searchBlock .box>.searchB .input {
         width: 260px;
     }
 
-    .searchBlock .box>.input_x {
+    .searchBlock .box>.searchB .input_x {
         width: 14px;
         height: 14px;
         background: #d9d9d9;
@@ -550,6 +620,11 @@
         font-size: 12px;
         text-align: center;
         line-height: 14px;
+    }
+
+    .searchBlock .box>section {
+        width: 150px;
+        margin-right: 20px;
     }
 
     /* 搜索列表 */

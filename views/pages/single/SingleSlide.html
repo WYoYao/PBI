@@ -48,17 +48,12 @@
             <div class="title">
                 选择分项
             </div>
-            <div class="content">
-                <div class="choiceSubentry">
-                    <!-- <ptree-normal datasource="subentryTree" sel="singleCompare.addSubentryFn" number="2">
-                                    <item itemid="obj_id" text="obj_name" child="child" issearch="true" disabled="dis"></item>
-                                    <panel width="242" height="300"></panel>
-                                </ptree-normal> -->
-                    <div class="addSubentry" v-text="addSubentryTxt" class="content" :item="JSON.stringify(subentryDisabled)"
-                        :class="{disabled:!subentryDisabled}" @click="addSubetryShow">
-                        添加分项
-                    </div>
+            <div>
+                <!-- 选择分项Start -->
+                <div class="section choiceSubentry" style="height: 50px;padding-top:10px;margin-bottom:20px;">
+                    <suboption :cb="addSubetryCallBack" :tree="subentryTree"></suboption>
                 </div>
+                
             </div>
         </div>
 
@@ -153,7 +148,8 @@
 
         subentryTree：数据源
      -->
-    <suboption v-if="showSubentryTemp" :cb="addSubetryCallBack" :tree="subentryTree"></suboption>
+
+    <!-- <suboption v-if="showSubentryTemp" :cb="addSubetryCallBack" :tree="subentryTree"></suboption> -->
 
 
     <!-- 设置纵坐标组件 -->

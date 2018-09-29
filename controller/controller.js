@@ -3,9 +3,8 @@ function controller() {
 	this.tool = require('common/tool');
 	this.realRestClient = require('common/executeRequest');
 	this.responseTool = require('common/responseTool');
+	this.menu = require("../menu.js");
 }
-
-var menu = require("../menu.js");
 
 controller.prototype.entry = function (req, res, next) {
 	var _this = this;
@@ -16,7 +15,7 @@ controller.prototype.entry = function (req, res, next) {
 
 
 
-		var list = menu.multiple.contents.concat(menu.single.contents).filter(function (item) {
+		var list = _this.menu.multiple.contents.concat(_this.menu.single.contents).filter(function (item) {
 			return item.type == type;
 		});
 
@@ -26,21 +25,21 @@ controller.prototype.entry = function (req, res, next) {
 			res.render("./pages/content", {
 				host: commonLibUrl,
 				type: list[0].type,
-				menu: menu,
+				menu: _this.menu,
 				projects: user.projects
 			});
 		} else if (list.length && list[0] && list[0].url && sorm) {
 			res.render(list[0].url, {
 				host: commonLibUrl,
 				type: list[0].type,
-				menu: menu,
+				menu: _this.menu,
 				projects: user.projects
 			});
 		} else {
 			res.render('./pages/entry', {
 				host: commonLibUrl,
 				type: "",
-				menu: menu,
+				menu: _this.menu,
 				projects: user.projects,
 				user: user
 			});
@@ -53,15 +52,17 @@ controller.prototype.renderPage = function (req, res, next) {
 	return function (req, res, next) {
 		var pageId = req.params.pageid;
 		var user = req.session[_this.tool.userSessionName] || {};
-		switch (pageId) {
-			/*系统管理*/
-			case 'manage':
-				if ((user.authorObj || {}).bimanager) res.render('pages/manage/index.html', {
-					host: commonLibUrl
-				});
-				else _this.responseTool.sendDecline(res, '无权访问');
-				break;
-		};
+		var energyStoreArr = _this.menu.single.contents.concat(_this.menu.multiple.contents);
+		if (pageId.indexOf('m_') == 0) {
+			if (!(user.authorObj || {}).bimanager) _this.responseTool.sendDecline(res, '无权访问');
+			else res.render('pages/manage/' + pageId + '.html', {
+				host: commonLibUrl,
+				manageMenu: _this.menu.manageMenuType || [],
+				energyStoreArr: energyStoreArr
+			});
+			return;
+		}
+		_this.responseTool.sendDecline(res, '无效的请求');
 	};
 };
 

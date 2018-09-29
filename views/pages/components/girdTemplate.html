@@ -54,18 +54,18 @@
 </script>
 <script>
     //滚动时表头固定
-    $(function () {
-        var pre_scrollTop = 0;
-        pre_scrollTop = $("#commonGrid").scrollTop();
-        $("#commonGrid").scroll(function () {
-            // debugger
-            var scrollTop = $("#commonGrid").scrollTop();
-            if (pre_scrollTop != scrollTop) {
-                pre_scrollTop = scrollTop;
-                $("#commonGrid .title").css("top", pre_scrollTop);
-            }
-        })
-    })
+    // $(function () {
+    //     var pre_scrollTop = 0;
+    //     pre_scrollTop = $("#commonGrid").scrollTop();
+    //     $("#commonGrid").scroll(function () {
+    //         // debugger
+    //         var scrollTop = $("#commonGrid").scrollTop();
+    //         if (pre_scrollTop != scrollTop) {
+    //             pre_scrollTop = scrollTop;
+    //             $("#commonGrid .title").css("top", pre_scrollTop);
+    //         }
+    //     })
+    // })
 </script>
 <style>
     .cgrid {
@@ -116,25 +116,26 @@
     }
 
     .cgrid .content {
-        max-height: 100px;
+        /* max-height: 100px; */
         /* margin-top: 30px; */
     }
 
     .cgrid .content ul {
-        /* padding:0 20px; */
+        /* padding: 0 20px; */
         max-width: 100%;
-        /* overflow-x:scroll; */
+        overflow: scroll;
+        height: 200px;
         display: flex;
         flex-flow: column nowrap;
         /* align-items: center; */
-        height: inherit;
+        /* height: inherit; */
         /* background: #fff; */
         border-bottom: 1px solid #d9e2e8;
-        /* border-right: 1px solid #e9e2e8; */
     }
 
     .cgrid .content ul li {
         height: 30px;
+        min-height: 30px;
         line-height: 30px;
         /* margin-left: 20px; */
         /* border-right: 1px solid #d9e2e8; */

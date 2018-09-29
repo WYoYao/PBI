@@ -1,25 +1,4 @@
-<link rel="stylesheet" href="<%=host%>/pcontrol/css/flatBlueSeries_min_2.0.css" />
-<script type="text/javascript" src="<%=host%>/scripts/lib/jquery-2.0.0.min.js"></script>
-<script type="text/javascript" src="<%=host%>/scripts/lib/vue-2.2.0.min.js"></script>
-<script type="text/javascript" src="<%=host%>/scripts/lib/when-3.7.8.min.js"></script>
-<script type="text/javascript" src="<%=host%>/scripts/lib/highcharts.src-6.0.1.js"></script>
-<script type="text/javascript" src="<%=host%>/scripts/lib/highcharts-more.src.js"></script>
-<script type="text/javascript" src="<%=host%>/scripts/tool/pconst.js"></script>
-<script type="text/javascript" src="<%=host%>/scripts/tool/psecret.js"></script>
-<script type="text/javascript" src="<%=host%>/scripts/tool/ptool.js"></script>
-<script type="text/javascript" src="<%=host%>/scripts/tool/pcolor.js"></script>
-<script type="text/javascript" src="<%=host%>/scripts/tool/pajax.js"></script>
-<script type="text/javascript" src="<%=host%>/scripts/extend/Array.js"></script>
-<script type="text/javascript" src="<%=host%>/scripts/extend/Date.js"></script>
-<script type="text/javascript" src="<%=host%>/scripts/extend/jQueryDom.js"></script>
-<script type="text/javascript" src="<%=host%>/scripts/extend/String.js"></script>
-<script type="text/javascript" src="<%=host%>/scripts/extend/Number.js"></script>
-<script type="text/javascript" src="<%=host%>/scripts/extend/Math.js"></script>
-<script type="text/javascript" src="../../../js/public/polyfill.js"></script>
-<script type="text/javascript" src="../../../js/public/lodash.min.js"></script>
-<script type="text/javascript" src="<%=host%>/pcontrol/flatBlueSeries_src_2.0.js"></script>
-<script type="text/javascript" src="<%=host%>/pcontrol/pchart_src_2.0.js"></script>
-<link rel="stylesheet" href="<%=host%>/pcontrol/css/pchart_src_2.0.css" />
+<% include ../../template/pageHead.html %>
 
 <link rel="stylesheet" href="../../css/multiple/multipleCompared.css" />
 <script type="text/javascript" src="../../../js/multiple/compared/model.js"></script>
@@ -75,7 +54,7 @@
             <div class="title">
                 <span>选择分项</span>
                 <div class="branch">
-                    <pswitch-checkbox text="显示所选分项支路信息" name="mask" change="multipleCompare.branchIsShowFn" id="configSubscriptType"></pswitch-checkbox>
+                    <!-- <pswitch-checkbox text="显示所选分项支路信息" name="mask" change="multipleCompare.branchIsShowFn" id="configSubscriptType"></pswitch-checkbox> -->
                 </div>
             </div>
             <div class="content">
@@ -84,7 +63,9 @@
                 </div>
 
             </div>
-            <div class="subentryNotMatch">
+
+            <!-- 支路对比相关 -->
+            <!-- <div class="subentryNotMatch">
                 <span class="sTit"></span>
 
                 <div class="notMatchList" :arr="JSON.stringify(searchConditionObj.notMatchSubentryArr.length)" v-show="searchConditionObj.notMatchSubentryArr.length >0">
@@ -111,16 +92,16 @@
 
                         </div>
                         <div class="addsubentryBtn">
-                            <!-- <pbutton-white bind="true" icon="'J'" text="'添加分项'" @click="addNotMatchSubentry(index)"></pbutton-white> -->
+                            <pbutton-white bind="true" icon="'J'" text="'添加分项'" @click="addNotMatchSubentry(index)"></pbutton-white>
                         </div>
                     </div>
 
                 </div>
 
-            </div>
+            </div> -->
 
             <div class="confirmCommit">
-                <pbutton-blue bind="true" text="'确定'" @click="confirmCommitFn"></pbutton-blue>
+                <pbutton-blue bind="true" text="'确定'" @click="confirmSearchListFn"></pbutton-blue>
             </div>
         </div>
     </div>
@@ -128,24 +109,25 @@
         <div class="topNav">
             <div class="gridOption">
                 <div class="gridOptionItem">
-                    <pswitch-checkbox text="图表" state="true" change=""></pswitch-checkbox>
+                    <pswitch-checkbox text="图表" id="chartId" state="true" change="multipleCompare.showChatFn"></pswitch-checkbox>
                 </div>
                 <div class="gridOptionItem">
-                    <pswitch-checkbox text="报表" state="false" change=""></pswitch-checkbox>
+                    <pswitch-checkbox text="报表" id="reportId" state="false" change="multipleCompare.showReportFn"></pswitch-checkbox>
                 </div>
             </div>
             <div class="numberOption">
                 <ul>
-                    <li class="checked">总量</li>
-                    <li>单平米</li>
+                    <li v-for=" item in tabOptionTwo" :class="{'checked':item.checked}" v-text="item.name" :id="item.code"
+                        @click="tableOptionChangeFn(tabOptionTwo,item)">
+
+                    </li>
                 </ul>
             </div>
             <div class="energyOption">
                 <ul>
-                    <li class="checked">能耗</li>
-                    <li>费用</li>
-                    <li>碳排放量</li>
-                    <li>标煤</li>
+                    <li v-for="item in tabOptionThree" :class="{'checked':item.checked}" v-text="item.name" :id="item.code"
+                        @click="tableOptionChangeFn(tabOptionThree,item)">
+                    </li>
                 </ul>
             </div>
             <div class="operatOption">
@@ -176,8 +158,13 @@
         </div>
         <div class="contentPart">
             <div class="aboutChart">
+                <!-- 没有数据展示 -->
+                <div class="noData" v-show="noDataChartShow">
+                    <h3>meos</h3>
+                    <span>请先在左侧列表选择参数</span>
+                </div>
                 <!-- 引入chart图表 -->
-                <div class="chartOperat">
+                <div class="chartOperat" v-show="scChartShow">
                     <div>
                         <pbutton-blue bind="true" icon="'`'" isborder="false" @click="setYAxisShowFn"></pbutton-blue>
                     </div>
@@ -189,8 +176,8 @@
                 <div id="divLineChart"></div>
 
                 <!-- 引入报表表格-->
-                <div class="reportFrom">
-                    <tgrid :title="reportFromTitle" :from-content="reportFromContent"></tgrid>
+                <div class="reportFrom" id="scReportFrom" v-if="scReportShow">
+                    <tgrid :renderlist="gridRenderList"></tgrid>
                 </div>
             </div>
             <div class="aboutRecord">
@@ -198,7 +185,7 @@
                     <span>已选择项</span>
                 </div>
                 <!-- 引入 时间 + 项目  +  分项  生成的记录  需组件-->
-                <ctrecord :list-data="cRecordList" :type="'compare'"></ctrecord>
+                <ctrecord :list-data="cRecordList" :type="'compare'" :deletecb="deleteRecordFn"></ctrecord>
             </div>
         </div>
     </div>
@@ -212,12 +199,12 @@
 
     <!-- 多选项目模块 -->
     <!-- showProjectTemp 显示隐藏   searchContent 搜索关键字  cb 点击事件回调 cancle组件隐藏 result选中的数据列表 -->
-    <mproject v-if="showProjectTemp" :search="searchContent" :cb="addProjectCallBack" :cancle="addProjectHide" :result="_.map(currProjectResult,'obj_id')">
+    <mproject v-if="showProjectTemp" :search="searchContent" :cb="addProjectCallBack" :cancle="addProjectHide" :result="_.map(currProjectResult,'projectLocalID')">
     </mproject>
 
     <!-- 选择分项 -->
-    <msubentry v-if="showSubentryTemp" :search="searchSubentry" :cb="addSubetryCallBack" :cancle="addSubetryHide"
-        :result="_.map(currentSubentryList,'obj_id')">
+    <msubentry v-if="showSubentryTemp" :subtree="subentryTree" :search="searchSubentry" :cb="addSubetryCallBack"
+        :cancle="addSubetryHide" :result="_.map(currentSubentryList,'localId')">
 
     </msubentry>
 

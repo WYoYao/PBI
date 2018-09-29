@@ -1,0 +1,46 @@
+<% include ../../template/pageHead.html %>
+<link rel="stylesheet" href="../../css/manage/powerEnergyModel.css">
+<script src="../../js/manage/powerEnergyModel/model.js" type="text/javascript"></script>
+<script src="../../js/manage/powerEnergyModel/controller.js" type="text/javascript"></script>
+
+<div class="m_programSet" id="divMaxPowerEnergy">
+    <div class="m_programSet_tab">
+        <ptab-button id="'js_programSet_tab'" datasource="energyStoreArr" text="title" bind="true" sel="powerEnergyModelMthods.storySelEvent"></ptab-button>
+    </div>
+    <div class="m_programSet_bar">
+        <div class="subentryModelYes" v-if="selStory.emFileKey">
+            <span></span>当前已设置的分项模型：<em class="g_colorblue" v-text="selStory.emFileName" @click="downSetedEnergyModel(selStory.emFileKey)"></em>
+        </div>
+        <div class="subentryModelNo" v-if="!selStory.emFileKey">当前没有配置分项模型</div>
+    </div>
+    <div class="m_programSet_set">
+        <h1>请配置分项模型</h1>
+        <div class="m_programSet_radio js-copymodel-models">
+            <div class="m_programSet_radioTemp" v-for="model in energyStoreOfModelArr" v-if="model.storyCode!==selStory.storyCode">
+                <pswitch-radio name="'mask'" change="powerEnergyModelMthods.radioCopyStorySel" bind="true"></pswitch-radio>
+                <span>沿用“<em v-text="model.storyName"></em>”故事版中配置的分项模型：<em class="g_colorblue" v-text="model.emFileName" @click="downSetedEnergyModel(model.emFileKey)"></em></span>
+            </div>
+            <div class="m_programSet_radioTemp">
+                <pswitch-radio name="mask" change="powerEnergyModelMthods.radioCopyStorySel" id="radNewModel"></pswitch-radio>
+                <span>上传分项模型</span>
+            </div>
+        </div>
+        <div class="m_programSet_but">
+            <div class="uploadWrap">
+                <pupload-attachment text="上传分项模型附件" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" id="btnEnergyModelUpload"></pupload-attachment>
+                <pbutton-white text="下载分项模型配置模板" icon="D" disabled="true" id="btnEnergyModelDown" click="powerEnergyModelMthods.energyModelTemplateDown"></pbutton-white>
+            </div>
+            <div class="butWrap">
+                <pbutton-blue text="确定" click="powerEnergyModelMthods.saveEnergyModelEvent"></pbutton-blue>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    powerEnergyModel.energyStroeStr = '<%= JSON.stringify(energyStoreArr) %>';
+    powerEnergyModel.energyStroeStr = powerEnergyModel.energyStroeStr.replace(/\&quot;/g, '"');
+    powerEnergyModel.energyStoreArr = JSON.parse(powerEnergyModel.energyStroeStr);
+</script>
+<% include ../../template/pageFoot.html %>

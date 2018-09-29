@@ -1,0 +1,108 @@
+.g_colorblue {
+    color: #5478a4;
+    cursor:pointer;
+}
+
+.m_programSet {
+    margin: 0px auto;
+    height: 100%;
+    overflow: auto;
+}
+
+.m_programSet_tab {
+    text-align: center;
+    margin-top:20px;
+}
+
+.m_programSet_bar {
+    margin:20px auto 0;
+    padding: 0 12px;
+    box-sizing: border-box;
+    height: 40px;
+    width: 600px;
+    background: #EEEEF0;
+    line-height: 40px;
+}
+.m_programSet_bar .subentryModelYes{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.m_programSet_bar .subentryModelYes>span {
+    float: left;
+    margin-top: 12px;
+    margin-right: 7px;
+    width: 16px;
+    height: 16px;
+    background:url(../../images/manage/excel.png);
+}
+
+.m_programSet_bar .subentryModelNo {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    color: #6D6D6D;
+}
+
+.m_programSet_set {
+    width: 600px;
+    margin: 0 auto;}
+
+.m_programSet_set h1 {
+    height: 50px;
+    line-height: 50px;
+    font-size: 16px;
+}
+
+.m_programSet_radioTemp {
+    height: 34px;
+    margin-left: 5px;
+    position: relative;
+    padding-left: 20px;
+    box-sizing:border-box;
+}
+
+.m_programSet_radioTemp>div {
+    position:absolute;
+    left: 0;
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.m_programSet_radioTemp>span {
+    float: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.m_programSet_but {
+    margin-top: 10px;
+}
+
+.m_programSet_set .uploadWrap,
+.m_programSet_set .butWrap {
+    width: 100%;
+    text-align: center;
+
+}
+
+.m_programSet_set .uploadWrap>div {
+    margin-left: 10px;
+    width: 262px;
+    display: inline-block;
+}
+
+.m_programSet_set .butWrap {
+    margin-top: 40px;
+}
+
+.m_programSet_set .butWrap>div {
+    margin-left: 10px;
+    width: 180px;
+    display: inline-block;
+
+}

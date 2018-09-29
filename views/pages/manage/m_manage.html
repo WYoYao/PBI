@@ -1,0 +1,35 @@
+<% include ../../template/pageHead.html %>
+<!-- 内容部分 -->
+<link rel="stylesheet" href="../../css/public/content.css">
+<link rel="stylesheet" href="../../css/manage/main.css" />
+<script type="text/javascript" src="../../js/manage/main.js"></script>
+<div id="tab">
+    <!-- 头部Start -->
+    <div class="header clear">
+        <!-- 返回图标 Start -->
+        <div class="left" style="width:100%;border-right:none;">
+            <!-- <a href="/entry" class="back icon">I</a> -->
+            <a href="/bi" class="back">
+                <pbutton-white icon="I" shape="rectangle"></pbutton-white>
+            </a>
+            <span title="选择故事版" class="textover text">选择故事版</span>
+        </div>
+    </div>
+    <!-- 头部End -->
+
+    <div class="content">
+        <div id="divManageContent">
+            <div class="pageLeft" id="divManageLeft">
+                <% for(var i=0;i<manageMenu.length;i++){var menu=manageMenu[i]; %>
+                <div class="menuType" onclick="manageEvent.menuSel(event,'<%= menu.code %>')">
+                    <%= menu.name %>
+                </div>
+                <% } %>
+            </div>
+            <div class="pageRight">
+                <iframe ref="iframe" class="if" src="" frameborder="0" id="frameManageRegion"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+<% include ../../template/pageFoot.html %>

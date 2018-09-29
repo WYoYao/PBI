@@ -1,0 +1,14 @@
+.inquirelist .item .top .point {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin: 5px;
+  margin-bottom: 0; }
+.inquirelist .item .bot {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  padding-left: 15px; }
+
+/*# sourceMappingURL=inquirelist.css.map */

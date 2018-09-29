@@ -1,0 +1,79 @@
+<link rel="stylesheet" href="/css/single/multtimer.css">
+<script type="text/html" id="multtimer">
+  <div class="multtimer" @mouseenter="addHandlerClickToWindow">
+   <div class="line" v-for="(item,index) in times">
+       <ptime-calendar :ref="'ptime'+index" orientation="down" sel="timerClick">
+           <panel timetype="wy" double="false" align="left" double="true" startyear="2003" endyear="2018" commontime="['w','pw','y','py']"></panel>
+       </ptime-calendar>
+       <p class="remove" @click.stop="times.splice(index,1)">
+          一
+       </p>
+   </div>
+   <div class="line" v-show="times.length<6">
+       <div class="btn" @click.stop="addTime">
+            <pbutton-white text="添加时间" icon="J"></pbutton-white>
+       </div>
+   </div>
+</div>
+</script>
+<script>
+
+    $(function () {
+        Vue.component('multtimer', {
+            template: "#multtimer",
+            data: function () {
+                return {
+                    // 日期控件中的日期类型
+                    times: []
+                }
+            },
+            props: {
+                cb: {
+                    type: Function,
+                    required: true,
+                }
+            },
+            methods: {
+                // 添加时间段
+                addTime: function () {
+                    var _that = this;
+                    _that.times.push({
+                        timeType: "d",
+                        startTime: new Date().format('yyyy-MM-dd 00:00:00'),
+                        endTime: new Date().format('yyyy-MM-dd 23:59:59'),
+                    });
+
+                    _that.handlerClick();
+                },
+                // 时间选择时间
+                handlerClick: function () {
+                    var _that = this;
+
+                    _that.$nextTick(function () {
+                        _that.times = _that.times.map(function (item, index) {
+                            return $(_that.$refs['ptime' + index]).psel();
+                        });
+
+                        _.isFunction(this.cb) ? this.cb(_that.times) : void 0;
+                    })
+                },
+                // 鼠标移入控件的时候的绑定对应的全局事件
+                addHandlerClickToWindow: function () {
+                    window.timerClick = this.handlerClick;
+                },
+            },
+            computed: {
+
+            },
+            watch: {
+
+            },
+            mounted: function () {
+                this.handlerClick()
+            },
+            beforeMount: function () {
+
+            }
+        })
+    })
+</script>

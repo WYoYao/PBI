@@ -79,7 +79,7 @@ $(function () {
 
 
             columnConfigData: { // 柱状图配置
-                text_title: '这是一个标题',
+                // text_title: '这是一个标题',
                 series: [{
                     name: '功耗',
                     data: [],
@@ -188,6 +188,7 @@ $(function () {
                 this.showEnergyModel = false;
             },
             addProjectCallBack: function (item, item1) { //选择项目回调
+                var that = this;
                 this.projects = item;
                 this.modelids = item1;
                 this.showEnergyModel = false;
@@ -205,6 +206,19 @@ $(function () {
                 this.searchConditionObj.subentrySaveArr = [];
 
                 this.subentryDisabled = true; //添加分项启用
+
+                //获取分项树请求
+                var queryParam = {
+                    buildingLocalId: that.searchConditionObj.projectSaveObj.id,
+                    energyModelLocalId: that.searchConditionObj.projectSaveObj.energyModelId
+                }
+                singleCompareController.GetEnergyModelTreeOfBuilding(queryParam).then(function (res) {
+
+                    that.subentryTree = _.clone(res);
+                    that.subentryTree = that.energyModelTree(that.subentryTree, -1);
+                    that.showSubentryTemp = true;
+                    console.log(that.subentryTree);
+                })
 
             },
 
@@ -240,26 +254,7 @@ $(function () {
                 }];
 
             },
-            addSubetryShow: function () { //选择分项弹出框
-                var that = this;
-                if (!this.subentryDisabled) {
-                    return;
-                }
 
-                //获取分项树请求
-                var queryParam = {
-                    buildingLocalId: that.searchConditionObj.projectSaveObj.id,
-                    energyModelLocalId: that.searchConditionObj.projectSaveObj.energyModelId
-                }
-                singleCompareController.GetEnergyModelTreeOfBuilding(queryParam).then(function (res) {
-
-                    that.subentryTree = _.clone(res);
-                    that.subentryTree = that.energyModelTree(that.subentryTree, -1);
-                    that.showSubentryTemp = true;
-
-                })
-
-            },
 
             setYAxisShowFn: function () { //显示设置Y轴坐标弹出框
                 this.setYAxisShow = true;

@@ -1,0 +1,87 @@
+<link rel="stylesheet" href="/css/single/inquirelist.css">
+<script type="text/html" id="inquirelist">
+
+<ul class="inquirelist">
+    <li class="item" v-for="(item,index) in clist">
+        <div class="top">
+            <em class="point" :style="'background:'+item.color"></em>
+            <em v-text="item.name"></em>
+        </div>
+        <div class="bot">
+            <em v-text="item.value"></em>
+            <em v-text="item.proportion + '%'"></em>
+        </div>
+    </li>
+</ul>
+
+</script>
+<script>
+
+    $(function () {
+        Vue.component('inquirelist', {
+            template: "#inquirelist",
+            data: function () {
+                return {
+
+                }
+            },
+            props: {
+                list: {
+                    type: Array,
+                    required: true,
+                },
+                name: {
+                    type: String
+                },
+                value: {
+                    type: String
+                },
+                proportion: {
+                    type: Number
+                }
+            },
+            methods: {
+                // 返回的统一的小数点
+                fix2: function (num) {
+                    num = parseFloat(num);
+                    if (_.isNaN(num)) return 0;
+
+                    var len = _.get(num.toString().split('.'), '[1].length', 0);
+                    if (len === 0) return num;
+
+                    if (num < 1) return num.toFixed(3);
+                    return num.toFixed(1);
+                }
+            },
+            computed: {
+                clist: function () {
+
+                    var _that = this;
+
+                    var proportion = _that.proportion || _.sum(_.map(_that.list, (_that.value || 'y')));
+
+                    return (this.list || []).map(function (item, index) {
+
+                        var total = item.proportion || _that.fix2(item[_that.value || 'y'] / proportion * 100);
+
+                        return {
+                            name: item[_that.name || 'x'],
+                            value: item[_that.value || 'y'],
+                            proportion: total,
+                            color: item.color || pcolor.cd[index]
+                        }
+                    })
+                }
+            },
+            watch: {
+
+            },
+            mounted: function () {
+
+            },
+            beforeMount: function () {
+
+            }
+        })
+    })
+</script>

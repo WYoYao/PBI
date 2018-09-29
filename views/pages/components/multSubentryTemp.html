@@ -239,7 +239,7 @@
 
                     if (state === 'all') { //全选
                         _result = _tree.map(function (item) {
-                            return item.obj_id;
+                            return item[that.modelkey];
                         })
                     } else if (state === 'clear') { //取消选中
                         _result = [];
@@ -248,15 +248,15 @@
                         var _currList = currList.length > 0 ? currList : [];
                         if (_currList && _currList.length > 0) { //存在已选
                             _tree.forEach(function (item) {
-                                if (_currList.indexOf(item.obj_id) == '-1') {
-                                    _result.push(item.obj_id);
+                                if (_currList.indexOf(item[that.modelkey]) == '-1') {
+                                    _result.push(item[that.modelkey]);
                                 }
 
                             });
 
                         } else {
                             _result = _tree.map(function (item) {
-                                return item.obj_id;
+                                return item[that.modelkey];
                             })
                         }
 
@@ -309,7 +309,7 @@
             beforeMount: function () {
                 var that = this;
                 this.selectList = this.result;
-
+                debugger
 
                 that.treedata = _.clone(that.subtree);
                 that.searchList = that.treeTransArr(that.treedata);
@@ -482,7 +482,9 @@
         margin-top: 0px;
     }
 
-    .option {}
+    .option {
+        height:100%;
+    }
 
     .option .top:hover {
         cursor: pointer;

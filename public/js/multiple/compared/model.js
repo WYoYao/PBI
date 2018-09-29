@@ -2,13 +2,45 @@ $(function () {
     window.multipleCompare = new Vue({
         el: "#multipleComparePage",
         data: {
+            tabOptionTwo: [ //选项2
+                {
+                    name: "总量",
+                    checked: true,
+                    code: "1"
+                },
+                {
+                    name: "单平米",
+                    checked: false,
+                    code: "2"
+                }
+            ],
+            tabOptionThree: [ //选项3
+                {
+                    name: "能耗",
+                    checked: true,
+                    code: "1",
+                }, {
+                    name: "费用",
+                    checked: false,
+                    code: "2",
+                }, {
+                    name: "碳排放量",
+                    checked: false,
+                    code: "3",
+                }, {
+                    name: "标煤",
+                    checked: false,
+                    code: "4",
+                },
+
+            ],
+            scChartShow: false, //是否显示图表
+            scReportShow: false, //是否显示报表
             searchConditionObj: { //选择条件集合，包括选择项目，选择时间，选择分项
-                projectSaveObj: {}, //项目集合
-                timeSaveArr: [
-
-                ], //时间集合
-                subentrySaveArr: [], //分项集合
-
+                projectSaveObj: [], //项目集合
+                timeSaveArr: [], //时间集合
+                subentrySaveArr: [], //能耗模型集合
+                energyModelLocalId: '', //能耗模型id
                 notMatchSubentryArr: [{
                     projectName: "aaa",
                     subArrSaveList: [],
@@ -21,8 +53,7 @@ $(function () {
             choiceProjectList: [], //选择项目列表
             downLoadBlockIsShow: false, //是否显示下载图表
             chartUnit: "kwh",
-            reportFromTitle: [], //表格表头
-            reportFromContent: [], //表格内容
+            gridRenderList: [], //报表渲染数组
 
             cRecordList: [], //生成的记录列表
             timeCurrObj: { //记录当前选择的时间
@@ -62,33 +93,37 @@ $(function () {
 
             notMatchSubCurrList: [], //未匹配分项选中分项数组
 
+            //请求返回数据
+            dataListSubentry: [], //图表返回数据
+
+            noDataChartShow: true, //无数据显示
             //设置图表纵坐标
             setMax: [{
-                isSelected: true,
-                name: "默认",
-                value: "0",
-                unit: "kwh"
-            },
-            {
-                isSelected: false,
-                name: "自定义",
-                value: "0",
-                unit: "kwh"
-            },
+                    isSelected: true,
+                    name: "默认",
+                    value: "0",
+                    unit: "kwh"
+                },
+                {
+                    isSelected: false,
+                    name: "自定义",
+                    value: "0",
+                    unit: "kwh"
+                },
             ],
 
             setMin: [{
-                isSelected: true,
-                name: "默认",
-                value: "0",
-                unit: "kwh"
-            },
-            {
-                isSelected: false,
-                name: "自定义",
-                value: "0",
-                unit: "kwh"
-            },
+                    isSelected: true,
+                    name: "默认",
+                    value: "0",
+                    unit: "kwh"
+                },
+                {
+                    isSelected: false,
+                    name: "自定义",
+                    value: "0",
+                    unit: "kwh"
+                },
             ],
 
             setYAxisShow: false, //是否显示坐标
@@ -100,6 +135,49 @@ $(function () {
 
         },
         methods: {
+            tableOptionChangeFn: function (data, item) {
+                var that = this;
+
+                if (data && data.length > 0) {
+                    data.forEach(function (x) {
+                        x.checked = false;
+                        if (x.code == item.code) {
+                            x.checked = true;
+                        }
+                    })
+                }
+                var op = {};
+                op['two'] = that.tabOptionTwo.filter(function (x) {
+                    return x.checked
+                });
+                op['three'] = that.tabOptionThree.filter(function (x) {
+                    return x.checked
+                });
+                var timeType = ptool.formatGranularityToJava($("#time"));
+                if (that.qParamList && that.qParamList.length > 0 && timeType) {
+                    that.getChartListFn(that.qParamList, timeType);
+                }
+
+
+            },
+            showChatFn: function () { //显示图表
+                if (!$("#reportId").psel()) {
+                    $("#chartId").psel(true);
+                } else {
+                    this.scChartShow = !this.scChartShow;
+                }
+
+                // debugger;
+            },
+            showReportFn: function () { //显示报表
+                if (!$("#chartId").psel()) {
+                    $("#reportId").psel(true);
+                } else {
+                    this.scReportShow = !this.scReportShow;
+                }
+
+            },
+            //添加项目相关
             addProjectShow: function () {
                 this.showProjectTemp = true;
 
@@ -111,7 +189,7 @@ $(function () {
                 this.currProjectResult = item;
 
 
-                this.addProjectTxt = "已选" + item.length + "个分项";
+                this.addProjectTxt = "已选" + item.length + "个项目";
                 this.searchConditionObj.projectSaveObj = item;
                 this.showProjectTemp = false;
                 debugger;
@@ -133,8 +211,8 @@ $(function () {
                 this.currentSubentryList = item;
 
 
-                this.addSubentryTxt = "已选" + item.length + "个项目";
-                this.searchConditionObj.projectSaveObj = item;
+                this.addSubentryTxt = "已选" + item.length + "个分项";
+                this.searchConditionObj.subentrySaveArr = item;
                 this.showSubentryTemp = false;
             },
 
@@ -218,19 +296,12 @@ $(function () {
                 var that = this;
                 that.searchConditionObj.timeSaveArr.splice(index, 1);
             },
-            // addSubentryFn: function (item) { //添加分项
-            //     var that = this;
-            //     that.searchConditionObj.subentrySaveArr = [{
-            //         obj_id: arguments[0].obj_id,
-            //         obj_name: arguments[0].obj_name
-            //     }];
-            // },
             confirmCurrTime: function () { //确认选中时间
                 var that = this;
                 var index = that.timeCurrObj.index;
                 if (index !== '') {
                     var timeDateObj = $("#choiceTime").psel();
-                    var timeInfo = $("#choiceTimePop").find('.counttime').text();
+                    var timeInfo = $("#choiceTimePop").find('.countTime').text();
                     if (timeInfo.indexOf('~') == '-1') {
                         timeDateObj['choiceType'] = 'single';
                     } else {
@@ -291,8 +362,21 @@ $(function () {
                     }
                 }
             },
-            confirmCommitFn: function () { //确定生成报表
-
+            energyModelTree: function (data, parent_id) { //格式化分项树
+                var that = this;
+                var tree = [];
+                var temp;
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].parentLocalId == parent_id) {
+                        var obj = data[i];
+                        temp = that.energyModelTree(data, data[i].localId);
+                        if (temp.length > 0) {
+                            obj.content = temp;
+                        }
+                        tree.push(obj);
+                    }
+                }
+                return tree;
             },
             showTimerPop: function (item, index, e) { //弹出时间控件
                 var that = this;
@@ -314,6 +398,78 @@ $(function () {
 
 
             },
+            transGridRenderListFn: function (arr) { //后台返回的数据格式转换成表格渲染数据格式
+                var arr1 = [];
+                arr.forEach(function (item) {
+                    if (arr1.length == 0) {
+                        arr1.push({
+                            energyItemLocalId: item.energyItemLocalId,
+                            timeFrom: item.timeFrom,
+                            timeTo: item.timeTo,
+                            dataListArr: [{
+                                name: item.energyItemLocalId,
+                                content: item.dataList
+                            }]
+                        });
+                    } else if (arr1.length > 0) {
+                        var flag = false;
+                        arr1.forEach(function (info) {
+                            if (item.timeFrom == info.timeFrom && item.timeTo == info.timeTo) {
+                                flag = true;
+                                info.dataListArr.push({
+                                    name: item.energyItemLocalId,
+                                    content: item.dataList
+                                });
+                            }
+                        })
+                        if (!flag) {
+                            arr1.push({
+                                energyItemLocalId: item.energyItemLocalId,
+                                timeFrom: item.timeFrom,
+                                timeTo: item.timeTo,
+                                dataListArr: [{
+                                    name: item.energyItemLocalId,
+                                    content: item.dataList
+                                }]
+                            });
+                        }
+                    }
+
+                })
+                arr1.forEach(function (item) {
+                    item.dataListArr.forEach(function (info) {
+                        info.time = info.content.map(function (t) {
+                            return t.time;
+                        })
+                    })
+                })
+
+
+                arr1.forEach(function (item) {
+                    item.renderTit = [];
+                    item.renderCon = [];
+                    item.dataListArr.forEach(function (info, index) {
+                        item.renderTit.push({
+                            name: info.name
+                        });
+
+                        info.content.forEach(function (c, i) {
+                            item.renderCon[i] = item.renderCon[i] || [];
+                            item.renderCon[i].push(info.content[i].data);
+                            if (index == 0) {
+                                item.renderCon[i].unshift(info.time[i]);
+                            }
+
+                        })
+
+                    })
+                    item.renderTit.unshift({
+                        name: "时间"
+                    });
+                })
+
+                return arr1;
+            },
             downloadChart: function () { //下载图表
                 this.downLoadBlockIsShow = !this.downLoadBlockIsShow;
             },
@@ -323,9 +479,9 @@ $(function () {
             onlineExplainLeave: function () { //在线说明
                 this.onlineExplainFlag = false;
             },
-            getChartListFn: function (paramList, timeType) { //获取图表请求数据
+            getChartListFn: function (_timeList, timeType) { //获取图表请求数据
                 var that = this;
-                var _buildingLocalId = that.searchConditionObj.projectSaveObj.id;
+                var _projectLocalIdList = that.searchConditionObj.projectSaveObj.id;
                 var _energyModelLocalId = that.searchConditionObj.projectSaveObj.energyModelId;
                 var _dataKind = that.tabOptionTwo.filter(function (item) {
                     return item.checked;
@@ -334,14 +490,14 @@ $(function () {
                     return item.checked;
                 })[0].code;
                 var queryParam = {
-                    buildingLocalId: _buildingLocalId,
+                    projectLocalIdList: _projectLocalIdList,
                     energyModelLocalId: _energyModelLocalId,
                     timeType: timeType,
                     dataKind: _dataKind,
                     dataType: _dataType,
-                    paramList: paramList
+                    timeList: _timeList
                 };
-
+                //获取分项数据
                 multCompareController.ItemEnergyByTime(queryParam).then(function (res) {
 
                     that.dataListSubentry = res;
@@ -359,8 +515,78 @@ $(function () {
 
                 });
 
+                //获取支路数据
+                multCompareController.ListBranchesForEI().then(function(res){
+                    
+                })
+
             },
-            drawingChartData: function (list) {
+            deleteRecordFn: function (item) { //删除右侧列表当前项
+
+                var that = this;
+                var itemLocalId = item.subentry.energyItemLocalId;
+                var res = [];
+                that.dataListSubentry.forEach(function (info) {
+                    if (info.energyItemLocalId != itemLocalId) {
+                        res.push(info);
+                    }
+                });
+                that.dataListSubentry = _.clone(res);
+                if (res && res.length > 0) {
+                    that.drawingChartData(res);
+                    that.gridRenderList = that.transGridRenderListFn(res);
+                    that.cRecordList = that.transRecordListFn(res, lineChart1);
+                } else {
+                    that.gridRenderList = [];
+                    that.scChartShow = false;
+                    that.noDataChartShow = true;
+                    that.cRecordList = [];
+                }
+
+
+            },
+            transRecordListFn: function (arr, lineChart1) { //后台返回数据转换记录列表数据格式
+                // listData ：[{
+                //     time:{st:"",et:""},//时间
+                //     value:{number:"",unit:""},//数值
+                //     subentry:{obj_name:"",obj_id:""},//分项
+                //     base:{width:"",color:""},//基础设置
+                // }]
+                var colorArr = lineChart1.series.map(function (item) {
+                    return item.color;
+                });
+                var numArr = arr.map(function (item) {
+                    var num = item.data.reduce(function (n, info) {
+                        n += Number(info.data);
+                        return n;
+                    }, 0)
+                    return num;
+                });
+
+                var arr1 = [];
+                arr.forEach(function (item, index) {
+                    arr1.push({
+                        time: {
+                            st: item.timeFrom,
+                            et: item.timeTo
+                        },
+                        value: {
+                            num: numArr[index],
+                            unit: "kwh"
+                        },
+                        subentry: {
+                            energyItemLocalName: item.energyItemLocalId,
+                            energyItemLocalId: item.energyItemLocalId
+                        },
+                        base: {
+                            width: "140",
+                            color: colorArr[index]
+                        }
+                    });
+                })
+                return arr1;
+            },
+            drawingChartData: function (list) {//绘制图表
                 var that = this;
                 if (list && list.length > 0) {
                     that.scChartShow = true;
@@ -414,34 +640,18 @@ $(function () {
             confirmSearchListFn: function () { //根据选择条件生成表格
                 var that = this;
                 var val = that.searchConditionObj;
-                if (val.projectSaveObj.hasOwnProperty('id') && val.projectSaveObj.id != '') { //存在项目id ， 模型id
+                if (val.projectSaveObj && val.projectSaveObj.length > 0) { //存在项目id ， 模型id
                     //存在时间 第一项不能为请选择时间
                     if (val.timeSaveArr.length > 0 && JSON.stringify(val.timeSaveArr[0].saveTimeObj) != '{}' && val.timeSaveArr[0].text != '请选择时间') {
 
-                        if (val.subentrySaveArr.length > 0 && val.subentrySaveArr[0].obj_id != '') { //分项id不为空
+                        if (val.subentrySaveArr.length > 0 && val.subentrySaveArr[0].localId != '') { //分项id不为空
                             var paramList = [];
-                            var project = val.projectSaveObj;
                             for (var i = 0, time = val.timeSaveArr; i < time.length; i++) {
-                                for (var j = 0, subentry = val.subentrySaveArr; j < subentry.length; j++) {
-                                    if (time[i] && subentry[j] && time[i].text != "请选择时间") {
-                                        // new Date(1536681599000).format("yyyy-MM-dd hh:mm:ss")  //时间戳转换
-                                        paramList.push({
-                                            // time: time[i],
-                                            // project: project,
-                                            energyItemLocalId: subentry[j].id,
-                                            timeFrom: new Date(time[i].saveTimeObj.startTime).format("yyyy-MM-dd hh:mm:ss"),
-                                            timeTo: new Date(time[i].saveTimeObj.endTime).format("yyyy-MM-dd hh:mm:ss"),
-                                            // value: {
-                                            //     number: "111",
-                                            //     unit: "kwh"
-                                            // },
-                                            // base: {
-                                            //     width: "60%",
-                                            //     color: "#d9e2e8"
-                                            // }
-                                        });
-
-                                    }
+                                if (time[i].text != "请选择时间") {
+                                    paramList.push({
+                                        timeFrom: new Date(time[i].saveTimeObj.startTime).format("yyyy-MM-dd hh:mm:ss"),
+                                        timeTo: new Date(time[i].saveTimeObj.endTime).format("yyyy-MM-dd hh:mm:ss"),
+                                    });
                                 }
                             }
                             that.qParamList = paramList;
@@ -463,139 +673,16 @@ $(function () {
         },
         mounted: function () {
             var that = this;
-            that.subentryTree = [{
-                obj_id: "xxxx",
-                obj_name: "建筑总能耗",
-                child: [{
-                    obj_id: "xxxx1",
-                    obj_name: "动力用电",
-                    child: [{
-                        obj_id: "xxxx11",
-                        obj_name: "电梯",
-                        child: [{
-                            obj_id: "xxx111",
-                            obj_name: "自动扶梯",
-                        }]
-                    }]
-                }, {
-                    obj_id: "xxxx2",
-                    obj_name: "动力用电2",
-                    child: [{
-                        obj_id: "xxxx22",
-                        obj_name: "电梯22",
-                        child: [{
-                            obj_id: "xxx222",
-                            obj_name: "自动扶梯222",
-                        }]
-                    }]
-                },]
-            }];
-
-            // 画图
-            // that.drawingChartData();
-
-            //添加表头
-            that.reportFromTitle = [{
-                name: "时间",
-                width: "130px"
-            },
-            {
-                name: "暖通空调",
-                width: "130px"
-            },
-            {
-                name: "暖通空调2",
-                width: "130px"
-            },
-            {
-                name: "时间",
-                width: "130px"
-            },
-            {
-                name: "暖通空调",
-                width: "130px"
-            },
-            {
-                name: "暖通空调2",
-                width: "130px"
-            },
-            ];
-            that.reportFromContent = [
-                [
-                    '00:00 ~ 00:59', '119.9', '119.9', '119.9', '119.9', '119.9'
-                ],
-                [
-                    '00:00 ~ 00:59', '119.9', '119.9', '119.9', '119.9', '119.9'
-                ],
-                [
-                    '00:00 ~ 00:59', '119.9', '119.9', '119.9', '119.9', '119.9'
-                ],
-                [
-                    '00:00 ~ 00:59', '119.9', '119.9', '119.9', '119.9', '119.9'
-                ],
-                [
-                    '00:00 ~ 00:59', '119.9', '119.9', '119.9', '119.9', '119.9'
-                ]
+            //获取多项目分项树
+            multCompareController.GetEnergyModelTreeOfStory({}).then(function (res) {
+                that.subentryTree = that.energyModelTree(res[0].energyModelTree, '-1');
+                that.searchConditionObj.energyModelLocalId = res[0].energyModelCode;
+                console.log(that.subentryTree);
+            })
 
 
-            ];
-
-            that.cRecordList = [{
-                time: {
-                    st: "2018.8.8",
-                    et: "2018.8.8"
-                },
-                value: {
-                    number: "111",
-                    unit: "kwh"
-                },
-                subentry: {
-                    obj_name: "暖通空调",
-                    obj_id: "aaa"
-                },
-                base: {
-                    width: "20%",
-                    color: "#ff6666"
-                },
-            },
-            {
-                time: {
-                    st: "2018.8.8",
-                    et: "2018.8.8"
-                },
-                value: {
-                    number: "111",
-                    unit: "kwh"
-                },
-                subentry: {
-                    obj_name: "暖通空调",
-                    obj_id: "aaa"
-                },
-                base: {
-                    width: "60%",
-                    color: "#d9e2e8"
-                },
-            },
-            {
-                time: {
-                    st: "2018.8.8",
-                    et: "2018.8.8"
-                },
-                value: {
-                    number: "111",
-                    unit: "kwh"
-                },
-                subentry: {
-                    obj_name: "暖通空调",
-                    obj_id: "aaa"
-                },
-                base: {
-                    width: "80%",
-                    color: "#ddd111"
-                },
-            },
-
-            ]
+            
+            that.cRecordList = []
         }
     });
 

@@ -315,12 +315,13 @@
 /* 包含表格   和  右侧生成的记录 */
 .multipleComparePage .pageRight .contentPart{
     width:100%;
+    height: calc(100% - 60px);
     display: flex;
     flex-flow: row nowrap;
 }
 .multipleComparePage .pageRight .contentPart .aboutChart{
     width: calc(100% - 260px);
-    height: calc(100% - 60px);
+    height: 100%;
     overflow-y: scroll;
     overflow-y: overlay;
     border-right: 1px solid #d9e2e8;
@@ -334,6 +335,27 @@
     align-items: center;
     justify-content: space-between;
     padding:0 20px;
+}
+.multipleComparePage .pageRight .contentPart .aboutChart .noData{
+    width: 400px;
+    height: 100px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -200px;
+    margin-top: -50px;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+}
+.multipleComparePage .pageRight .contentPart .aboutChart .noData >h3{
+    color:#cacaca;
+    font-size:26px;
+}
+.multipleComparePage .pageRight .contentPart .aboutChart .noData >span{
+    color:#637E99;
+    font-size:18px;
+    margin-top:16px;
 }
 .pchart_backcolumn {
     opacity: 0.16;

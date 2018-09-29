@@ -1,36 +1,16 @@
-<link rel="stylesheet" href="<%=host%>/pcontrol/css/flatBlueSeries_min_2.0.css" />
-<script src="<%=host%>/scripts/lib/jquery-2.0.0.min.js"></script>
-<script src="<%=host%>/scripts/lib/vue-2.2.0.min.js"></script>
-<script src="<%=host%>/scripts/lib/when-3.7.8.min.js"></script>
-<script src="<%=host%>/scripts/lib/highcharts.src-6.0.1.js"></script>
-<script src="<%=host%>/scripts/lib/highcharts-more.src.js"></script>
-<script src="<%=host%>/scripts/tool/pconst.js"></script>
-<script src="<%=host%>/scripts/tool/psecret.js"></script>
-<script src="<%=host%>/scripts/tool/ptool.js"></script>
-<script src="<%=host%>/scripts/tool/pcolor.js"></script>
-<script src="<%=host%>/scripts/tool/pajax.js"></script>
-<script src="<%=host%>/scripts/extend/Array.js"></script>
-<script src="<%=host%>/scripts/extend/Date.js"></script>
-<script src="<%=host%>/scripts/extend/jQueryDom.js"></script>
-<script src="<%=host%>/scripts/extend/String.js"></script>
-<script src="<%=host%>/scripts/extend/Number.js"></script>
-<script src="<%=host%>/scripts/extend/Math.js"></script>
-<script src="../../../js/public/polyfill.js"></script>
-<script src="../../../js/public/lodash.min.js"></script>
-<script src="<%=host%>/pcontrol/flatBlueSeries_src_2.0.js"></script>
-<script src="<%=host%>/pcontrol/pchart_src_2.0.js"></script>
-<link rel="stylesheet" href="<%=host%>/pcontrol/css/pchart_src_2.0.css" />
-
-<link rel="stylesheet" href="../../css/single/SingleSlide.css" />
-<script src="../../../js/multiple/slide/model.js"></script>
-<script src="/js/single/Inquire/controller.js"></script>
-<!-- <script src="../../../js/single/slide/controller.js"></script> -->
-
+<!-- 头部 -->
+<% include ../../template/pageHead.html %>
 
 <!-- 图表组件 -->
 <% include ../components/components_slide.html %>
 <!-- 其他组件 -->
 <% include ../components/index.html %>
+
+<!-- 表格模板 -->
+<% include ../components/girdTemplate.html %>
+
+<link rel="stylesheet" href="../../css/single/SingleSlide.css" />
+<link rel="stylesheet" href="../../css/single/Inquire.css">
 
 
 <div id="singleSlidePage" class="singleComparePage">
@@ -40,8 +20,8 @@
                 筛选项目
             </div>
             <div class="content">
-                <div class="choiceProject">
-                    <pbutton-white bind="true" icon="''" text="projectObj.text" @click="projectObj.display = true"></pbutton-white>
+                <div class="addProject" v-text="addProjectTxt" class="content" @click="addProjectShow">
+                    添加项目
                 </div>
             </div>
             <energymodel v-if="showEnergyModel" :propsprojectids="_.map(projects,'projectId')" :propsmodelids="_.map(modelids,'obj_id')"
@@ -68,75 +48,54 @@
                 选择分项
             </div>
             <div class="content">
-                <div class="choiceSubentry">
-                    <ptree-normal datasource="subentryTree" sel="" number="1">
-                        <item itemid="obj_id" text="obj_name" child="child" issearch="true" disabled="dis"></item>
-                        <panel width="242" height="300"></panel>
-                    </ptree-normal>
+                <div class="section choiceSubentry" style="height: 50px;padding-top:10px;margin-bottom:20px;">
+                    <suboption :cb="addSubetryCallBack" :tree="subentryTree"></suboption>
                 </div>
             </div>
         </div>
+
+        <div class="operatBtn">
+            <pbutton-blue bind="true" text="'确定'" @click="confirmSearchListFn"></pbutton-blue>
+        </div>
     </div>
+
     <div class="pageRight">
-        <div class="topNav">
-            <div class="gridOption">
-                <div class="gridOptionItem">
-                    <pswitch-checkbox id="chartType" text="图表" state="true" change="slide.gridOptionChange('chartType')"></pswitch-checkbox>
-                </div>
-                <div class="gridOptionItem">
-                    <pswitch-checkbox id="tableType" text="报表" state="false" change="slide.gridOptionChange('tableType')"></pswitch-checkbox>
-                </div>
-            </div>
-            <div class="energyConsumption">
-                <ul>
-                    <li class="checked" @click="wordSelect('energyConsumption',0)">能耗</li>
-                    <li @click="wordSelect('energyConsumption',1)">单平米能耗</li>
-                    <li @click="wordSelect('energyConsumption',2)">下级能耗</li>
-                </ul>
-            </div>
-            <div class="types">
-                <ul>
-                    <li class="checked" @click="wordSelect('types',0)">能耗</li>
-                    <li @click="wordSelect('types',1)">费用</li>
-                    <li @click="wordSelect('types',2)">碳排放量</li>
-                    <li @click="wordSelect('types',3)">标煤</li>
-                </ul>
-            </div>
-            <div class="monthOrDay">
-                <ul>
-                    <li class="checked" @click="wordSelect('monthOrDay',0)">滑动年按月</li>
-                    <li @click="wordSelect('monthOrDay',1)">滑动年按日</li>
-                </ul>
-            </div>
-            <div class="buildingType">
-                <div class="">
-                    <pswitch-checkbox id="buildingType" text="区分建筑类型" state="false" change="slide.buildingTypeChange"></pswitch-checkbox>
-                </div>
-            </div>
-            <div class="operatOption">
-                <ul class="list">
-                    <li>
-                        <div class="btn">
-                            <pbutton-white bind="true" icon="'D'" @click=""></pbutton-white>
-                        </div>
-                        <div v-if="downLoadBlockIsShow" class="downloadBlock">
-                            <ul>
-                                <li>下载图表</li>
-                                <li>下载报表</li>
-                            </ul>
-                        </div>
+        <div ref="tab" class="tab neck layout">
 
-                    </li>
-                    <li>
-                        <div class="btn">
-                            <pbutton-white bind="true" icon="'N'" @click=""></pbutton-white>
-                        </div>
-                        <div>
+            <vcheckbox ref="vcheckbox1" :icon="'M'" :title="'布局'" :datasource="tableTypes" :iscombox="iscombox"
+                :computewidth="computeWidth" :primarykey="'code'" :name="'name'" :selected="query.table" :cb="createHandlerClick('table')"></vcheckbox>
 
-                        </div>
-                    </li>
-                </ul>
+            <cobxs ref="cobxs1" :icon="'%'" :title="'计量方式'" :datasource="measurementTypes" :iscombox="iscombox"
+                :computewidth="computeWidth" :primarykey="'code'" :name="'name'" :selected="query.measurement" :cb="createHandlerClick('measurement')"></cobxs>
+
+            <cobxs ref="cobxs2" :icon="'g'" :title="'单位'" :datasource="unitTypes" :iscombox="iscombox" :computewidth="computeWidth"
+                :primarykey="'code'" :name="'name'" :selected="query.unit" :cb="createHandlerClick('unit')"></cobxs>
+
+            <cobxs ref="cobxs3" :icon="'g'" :title="'区分维度'" :datasource="dimensionalityTypes" :iscombox="iscombox"
+                :computewidth="computeWidth" :primarykey="'code'" :name="'name'" :selected="query.dimensionality" :cb="createHandlerClick('dimensionality')"></cobxs>
+            <vcheckbox ref="vcheckbox2" :icon="'-'" :title="'常用计算'" :datasource="calculateTypes" :iscombox="iscombox"
+                :computewidth="computeWidth" :primarykey="'code'" :name="'name'" :selected="query.calculate" :cb="createHandlerClick('calculate')"></vcheckbox>
+
+            <!--  下载Icon Start -->
+            <div ref="iconlist" class="iconlist">
+                <div class="vg">
+                    <pbutton-white icon="D" shape="rectangle"></pbutton-white>
+                </div>
+                <div class="vg">
+                    <div class="btn">
+                        <pbutton-white bind="true" icon="'N'" @mouseenter="onlineExplainEnter" @mouseleave="onlineExplainLeave"></pbutton-white>
+                    </div>
+                    <div style="position:relative;" v-if="onlineExplainFlag" @mouseenter="onlineExplainEnter"
+                        @mouseleave="onlineExplainLeave">
+                        <promptmessage :type="1"></promptmessage>
+                    </div>
+
+                </div>
             </div>
+            <!--  下载Icon End -->
+
+
+
         </div>
         <div class="operatOption_">
             <div class="dataVisualization">
@@ -175,7 +134,7 @@
                     </div>
                     <div class="projectCon">
                         <div class="projectTitle">
-                            <span class="iconR" @click="projectsSlideUp">r</span>商业建筑<span class="projectNum" v-html="'<span style=\'color:#02a9d1\'>112</span>个'"></span>
+                            <span class="iconR" @click="">r</span>商业建筑<span class="projectNum" v-html="'<span style=\'color:#02a9d1\'>112</span>个'"></span>
                         </div>
                         <div class="projects">
                             <div class="projectItem">
@@ -203,7 +162,7 @@
                     </div>
                     <div class="projectCon">
                         <div class="projectTitle">
-                            <span class="iconR" @click="projectsSlideUp">r</span>商业建筑<span class="projectNum" v-html="'<span style=\'color:#02a9d1\'>112</span>个'"></span>
+                            <span class="iconR" @click="">r</span>商业建筑<span class="projectNum" v-html="'<span style=\'color:#02a9d1\'>112</span>个'"></span>
                         </div>
                         <div class="projects">
                             <div class="projectItem">
@@ -233,4 +192,14 @@
             </div>
         </div>
     </div>
+
+    <!-- 多选项目模块 -->
+    <!-- showProjectTemp 显示隐藏   searchContent 搜索关键字  cb 点击事件回调 cancle组件隐藏 result选中的数据列表 -->
+    <mproject v-if="showProjectTemp" :search="searchContent" :cb="addProjectCallBack" :cancle="addProjectHide" :result="_.map(currProjectResult,'projectLocalID')">
+    </mproject>
 </div>
+
+<script src="../../../js/multiple/slide/model.js"></script>
+<script src="/js/multiple/compared/controller.js"></script>
+<script src="/js/single/slide/controller.js"></script>
+<script src="/js/single/Inquire/controller.js"></script>

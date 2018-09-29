@@ -1,28 +1,23 @@
 @import "../publicSrc/public";
-
-.suboption{
+.suboption {
     height: 100%;
     width: 100%;
-
-    .layer{
+    .layer {
         position: fixed;
         top: 0;
         bottom: 0;
         right: 0;
         left: 0;
     }
-
-    .sheader{
+    .sheader {
         position: relative;
         height: 30px;
         background: #F7F7F9;
-        padding:10px 20px;
-
-        .input-unit{
+        padding: 10px 20px;
+        .input-unit {
             display: block;
             position: relative;
-
-            .selected{
+            .selected {
                 position: relative;
                 height: 30px;
                 border: 1px solid #D9E2E8;
@@ -31,14 +26,12 @@
                 cursor: pointer;
                 padding-left: 20px;
                 background: #F7F7F9;
-
-                .icon{
+                .icon {
                     right: 1px !important;
                     left: auto;
                 }
             }
-
-            .icon{
+            .icon {
                 position: absolute;
                 left: 0;
                 top: 0;
@@ -48,32 +41,26 @@
                 line-height: 30px;
                 color: #7A94AD;
             }
-
-            .input-div{
+            .input-div {
                 height: 30px;
-
-                input[type="text"]{
+                input[type="text"] {
                     padding-left: 30px;
                 }
             }
         }
     }
-
-    .ptem{
-         position: relative;
-
-         .floatemp{
+    .ptem {
+        position: relative;
+        .floatemp {
             position: absolute;
             top: 0;
             right: -251px;
-            height: 600px;
+            height: 540px;
             z-index: 10;
             border: 1px solid #D9E2E8;
-         }
-
+        }
     }
-
-    .sbody{
+    .sbody {
         height: calc(100% - 50px);
         background: #FFFFFF;
     }
