@@ -293,11 +293,12 @@ singleController.push([
 
 
 
-            return _.range(argu.paramList.length).map((x, index) => {
+            return argu.paramList.map((x, index) => {
+
                 return {
                     "energyItemLocalId": argu.paramList[index].energyItemLocalId,        //类型：String  必有字段  备注：分项本地编码
-                    "timeFrom": "mock",                //类型：String  必有字段  备注：开始时间yyyy-MM-dd HH:mm:ss（>=）
-                    "timeTo": "mock",                //类型：String  必有字段  备注：结束时间yyyy-MM-dd HH:mm:ss（<）
+                    "timeFrom": x.timeFrom,                //类型：String  必有字段  备注：开始时间yyyy-MM-dd HH:mm:ss（>=）
+                    "timeTo": x.timeTo,                //类型：String  必有字段  备注：结束时间yyyy-MM-dd HH:mm:ss（<）
                     "minData": 100,                //类型：Number  必有字段  备注：最小值
                     "maxData": 9000,                //类型：Number  必有字段  备注：最大值
                     "avgData": 6000,                //类型：Number  必有字段  备注：平均值

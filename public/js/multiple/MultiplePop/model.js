@@ -1,11 +1,9 @@
-
-
 $(function () {
-    window.multiplePop=new Vue({
-        el:"#multiplePopContent",
-        data:{
+    window.multiplePop = new Vue({
+        el: "#multiplePopContent",
+        data: {
             scChartShow: false, //是否显示图表
-            scReportShow: false, //是否显示报表
+            scReportShow: true, //是否显示报表
             searchConditionObj: { //选择条件集合，包括选择项目，选择时间，选择分项
                 projectSaveObj: [], //项目集合
                 timeSaveArr: [], //时间集合
@@ -23,7 +21,7 @@ $(function () {
             choiceProjectList: [], //选择项目列表
             downLoadBlockIsShow: false, //是否显示下载图表
             chartUnit: "kwh",
-            
+
             //添加项目
             operatSate: '', //存储选择项目的操作状态
 
@@ -47,6 +45,10 @@ $(function () {
             currentSubentryList: [], //当前选中的分项数组
 
             noDataChartShow: true, //无数据显示
+
+            gridTitles:[],//表格标题
+
+            gridList:[],//表格内容
             //设置图表纵坐标
             setMax: [{
                     isSelected: true,
@@ -95,14 +97,28 @@ $(function () {
                 },
 
             ],
-        
+
+            popColorType: "project", //气泡颜色区分维度类型
+
             setYAxisShow: false, //是否显示坐标
 
             onlineExplainFlag: false, //在线说明显示
 
         },
-        methods:{
-            tableOptionChangeFn:function(){
+        methods: {
+            tableOptionChangeFn: function (data, item) { //切换能耗筛选条件
+                var that = this;
+
+                if (data && data.length > 0) {
+                    data.forEach(function (x) {
+                        x.checked = false;
+                        if (x.code == item.code) {
+                            x.checked = true;
+                        }
+                    })
+                }
+
+                that.confirmSearchListFn(); //筛选条件改变从新获取气泡数据
 
             },
             showChatFn: function () { //显示图表
@@ -153,7 +169,7 @@ $(function () {
                 this.addProjectTxt = "已选" + item.length + "个项目";
                 this.searchConditionObj.projectSaveObj = item;
                 this.showProjectTemp = false;
-                debugger;
+                // debugger;
             },
             // confirmCb: function (list) { //添加项目回调
             //     this.currProjectResult = list;
@@ -176,7 +192,13 @@ $(function () {
                 this.searchConditionObj.subentrySaveArr = item;
                 this.showSubentryTemp = false;
             },
+            //添加时间相关
+            confirmCurrTime: function () {
+                var that = this;
+                var time = $("#selectTimeLine").psel();
+                that.searchConditionObj.timeSaveArr = [time];
 
+            },
             setYAxisShowFn: function () { //显示设置Y轴坐标弹出框
                 this.setYAxisShow = true;
             },
@@ -187,104 +209,277 @@ $(function () {
 
                 this.setYAxisShow = false;
             },
-            checkPopColor:function(model){
-                console.log(model);
+            checkPopColor: function (type) {//筛选条件改变从新获取气泡数据
+                this.popColorType = type;
+                this.confirmSearchListFn(); 
             },
-            confirmSearchListFn: function () { //根据选择条件生成表格
+            transGridRenderListFn: function (arr) { //后台返回的数据格式转换成表格渲染数据格式
+                var that = this; 
+                that.gridTitles = [  //表格标题
+                    {
+                        name:"时间",
+                        key:"time",
+                    },{
+                        name:"项目名称",
+                        key:"project"
+                    },{
+                        name:that.searchConditionObj.subentrySaveArr[0].localId,
+                        key:"subentry"
+                    }
+                ];
+                that.gridList = [];//表格内容
+                arr.forEach(function(item){
+                    var obj = {};
+                    obj.time = new Date(that.searchConditionObj.timeSaveArr[0].startTime).format("yyyy-MM-dd")  +  ' ~ ' + new Date(that.searchConditionObj.timeSaveArr[0].endTime).format("yyyy-MM-dd");
+                    obj.project = item.projectLocalId;
+                    obj.subentry = item.data;
+                    that.gridList.push(obj);
+                })
+                console.log(that.gridTitles,that.gridList);
+            },
+            confirmSearchListFn: function () { //根据选择条件生成表格    
                 var that = this;
                 var val = that.searchConditionObj;
-                // if (val.projectSaveObj && val.projectSaveObj.length > 0) { //存在项目id ， 模型id
-                //     //存在时间 第一项不能为请选择时间
-                //     if (val.timeSaveArr.length > 0 && JSON.stringify(val.timeSaveArr[0].saveTimeObj) != '{}' && val.timeSaveArr[0].text != '请选择时间') {
+                if (val.projectSaveObj && val.projectSaveObj.length > 0) { //存在项目id ， 模型id
+                    //存在时间 第一项不能为请选择时间
+                    if (val.timeSaveArr.length > 0 && JSON.stringify(val.timeSaveArr[0].startTime)) {
 
-                //         if (val.subentrySaveArr.length > 0 && val.subentrySaveArr[0].localId != '') { //分项id不为空
-                //             var paramList = [];
-                //             for (var i = 0, time = val.timeSaveArr; i < time.length; i++) {
-                //                 if (time[i].text != "请选择时间") {
-                //                     paramList.push({
-                //                         timeFrom: new Date(time[i].saveTimeObj.startTime).format("yyyy-MM-dd hh:mm:ss"),
-                //                         timeTo: new Date(time[i].saveTimeObj.endTime).format("yyyy-MM-dd hh:mm:ss"),
-                //                     });
-                //                 }
-                //             }
-                //             that.qParamList = paramList;
-                //             var timeType = ptool.formatGranularityToJava($("#time"));
-                //             //获取图表数据请求
-                //             that.getChartListFn(paramList, timeType);
+                        if (val.subentrySaveArr.length > 0 && val.subentrySaveArr[0].localId != '') { //分项id不为空
+                            var projectLocalIdList = val.projectSaveObj.map(function (item) {
+                                return item.projectLocalID
+                            });
+                            var op = {};
+                            op = that.tabOptionThree.filter(function (x) {
+                                debugger
+                                return x.checked
+                            });
+                            var timeFrom = new Date(val.timeSaveArr[0].startTime).format("yyyy-MM-dd hh:mm:ss");
+                            var timeTo = new Date(val.timeSaveArr[0].endTime).format("yyyy-MM-dd hh:mm:ss");
+                            var queryParam = {
+                                projectLocalIdList: projectLocalIdList, //项目本地编码
+                                energyModelLocalId: val.energyModelLocalId,
+                                energyItemLocalId: val.subentrySaveArr[0].localId,
+                                dataType: op[0].code,
+                                timeFrom: timeFrom,
+                                timeTo: timeTo,
+                            }
+                            console.log(queryParam);
+                            that.getChartListFn(that.popColorType, queryParam);
+                            that.scChartShow = true;
+                            that.noDataChartShow = false;
 
-                //         }
+                            
+                        }
 
-                //     }
-                // }
-                that.getChartListFn();
-                
+                    }
+                }
+
+
             },
-            getChartListFn:function(){
+            getChartListFn: function (type, param) {
                 //获取气泡图数据请求
                 var that = this;
-                multPopController.GetProjectBubbleCompare({}).then(function (res) {
+                multPopController.GetProjectBubbleCompare(param).then(function (res) {
 
                     that.dataListSubentry = res;
-                    that.drawingChartData(res);
+                    that.drawingChartData(type, res);
                     that.noDataChartShow = false;
                     //转换表格数据
-                    that.gridRenderList = that.transGridRenderListFn(res);
-                    //转换右侧数据列表数据
+                    debugger;
+                    that.gridRenderList = that.transGridRenderListFn(res[0].dataList);
 
                 });
             },
-            drawingChartData:function(arr){//气泡图绘制
+            //根据筛选条件类型添加颜色
+            addColor: function (arr) {
+                var num = 0;
+                arr.map(function (info, index) {
+
+                    if (index > 30) {
+                        if (num > 30) {
+                            num = 0;
+                        } else {
+
+                            info.color = pcolor.cd[num];
+                            num++;
+                        }
+
+                    } else {
+                        info.color = pcolor.cd[index];
+                    }
+                    return info;
+                })
+                return arr;
+            },
+
+            //根据code添加转换对应的颜色
+
+            codeTransColor: function (arr, code) {
+                if (arr && arr.length > 0) {
+                    var _code = "";
+                    for (var i = 0; i < arr.length; i++) {
+                        if (arr[i].code == code) {
+                            _code = arr[i].color;
+                            break;
+                        }
+                    }
+                    return _code;
+                }
+            },
+            //根据x轴数据进行排序
+            dataSort: function (property) {
+                return function (a, b) {
+                    var value1 = a[property];
+                    var value2 = b[property];
+                    return value1 - value2;
+                }
+            },
+            //根据项目id查询项目名称
+            projectIdTransProjectName: function (id) {
+                var that = this;
+                // var arr = that.
+            },
+            // type  根据传入type 类型 进行分组 type类型包括 project  weather  manager ;  arr 对应后台返回的气泡图坐标对应的数据数组
+            drawingChartData: function (type, arr) { //气泡图绘制
+                var that = this;
                 var series = [];
                 var data = [];
                 var newArr = arr[0].dataList;
-                newArr.forEach(function(item,index){
+                var xSign = arr[0].avgArea;
+                var ySign = arr[0].avgAreaData;
+
+                var projectType = [];
+
+                var weatherType = [];
+
+                var managerType = [];
+                newArr.forEach(function (item) {
+                    //取得所有项目类型
+                    if (item.funcTypeCode != '' && projectType.indexOf(item.funcTypeCode) == '-1') {
+                        projectType.push(item.funcTypeCode);
+                    }
+                    //取得所有气候区类型
+                    if (item.climateCode != '' && weatherType.indexOf(item.climateCode) == '-1') {
+                        weatherType.push(item.climateCode);
+                    }
+                    //取得所有管理区类型
+                    if (item.manageZone != '' && managerType.indexOf(item.manageZone) == '-1') {
+                        managerType.push(item.manageZone);
+                    }
+
+
+                })
+
+                if (type == "project") {
+                    var projectTypeObj = projectType.map(function (item) {
+                        return {
+                            code: item
+                        }
+                    })
+                    projectTypeObj = that.addColor(projectTypeObj);
+                } else if (type == "weather") {
+                    var weatherTypeObj = weatherType.map(function (item) {
+                        return {
+                            code: item
+                        }
+                    })
+                    weatherTypeObj = that.addColor(weatherTypeObj);
+                } else if (type == "manager") {
+                    var managerTypeObj = managerType.map(function (item) {
+                        return {
+                            code: item
+                        }
+                    })
+                    managerTypeObj = that.addColor(managerTypeObj);
+                }
+
+                console.log(projectType, weatherType, managerType);
+                console.log(projectTypeObj, weatherTypeObj, managerTypeObj);
+                newArr.forEach(function (item, index) {
                     var obj = {
-                        y: item.areaData,
                         x: item.area,
+                        y: item.areaData,
                         z: item.data,
                         xname: '面积',
                         xunit: 'm²',
                         yname: '单平米指标',
                         yunit: 'kWh/㎡',
-                        zname:"能耗",
-                        zunit:"kWh"
+                        zname: '能耗',
+                        zunit: 'kWh',
+                        name: item.projectLocalId,
+                    }
+                    // debugger
+
+                    if (type == 'project' && projectType.length > 0) {
+                        obj.color = that.codeTransColor(projectTypeObj, item.funcTypeCode);
+                    } else if (type == 'weather' && weatherType.length > 0) {
+                        obj.color = that.codeTransColor(weatherTypeObj, item.climateCode);
+                    } else if (type == 'manager' && managerType.length > 0) {
+                        obj.color = that.codeTransColor(managerTypeObj, item.manageZone);
+                    } else if (type == "normal") {
+                        obj.color = "#02a9d1"
                     }
                     data.push(obj);
-                    var seObj = {
-                        data: data,
-                        name: '项目' + index.toString()
-                    };
-                    series.push(seObj);
-                })
-                console.log(series);
-                return pchart.initBubble({
-                    yAxis: { title: { text: 'kWh' } },
-                    container: 'multiPop',
-                    series: series
                 });
-    
-            },
-            transGridRenderListFn:function(){
+                //根据x轴数据进行排序
+                data = data.sort(that.dataSort('x'));
+                debugger
+                var seObj = {
+                    data: data,
+                };
+                series.push(seObj);
+                console.log(series, xSign, ySign);
+                return pchart.initBubble({
+                    container: 'multiPop',
+                    series: series,
+                    yAxis: {
+                        plotLines: [{ //y轴标识线
+                            color: '#cacaca',
+                            width: 2,
+                            value: 100,
+                            dashStyle: 'LongDash',
+                            // label: {
+                            //     text: ySign,
+                            //     align: 'right',
+                            //     x: -10
+                            // }
+                        }]
+                    },
+                    xAxis: {
+                        plotLines: [{ //x轴标识线
+                            color: '#cacaca',
+                            width: 2,
+                            value: 100,
+                            dashStyle: 'LongDash',
+                            // label: {
+                            //     text: xSign + 'kWh/㎡',
+                            //     align: 'right',
+                            //     x: -10
+                            // }
+                        }]
+                    },
+                });
 
             },
+
 
         },
-        beforeMount:function () {
+        beforeMount: function () {
             var that = this;
             //获取分项树
-            multPopController.GetEnergyModelTreeOfStory({}).then(function(res){
+            multPopController.GetEnergyModelTreeOfStory({}).then(function (res) {
                 that.subentryTree = that.energyModelTree(res[0].energyModelTree, '-1');
                 that.searchConditionObj.energyModelLocalId = res[0].energyModelCode;
                 console.log(that.subentryTree);
             })
         },
-        mounted:function () {
+        mounted: function () {
             // this.getAllId(treeData);
             // this.totalProjectCount=multiplePopData.queryData.projectSelected.length;
             // multiplePopData.queryData.projectSelected=[];
 
-            var that=this;
-           
+            var that = this;
+
             // var chart = Highcharts.chart('chartPart', {
             //     chart: {
             //         type: 'bubble',
@@ -349,12 +544,12 @@ $(function () {
             // });
 
         },
-        watch:{},
-        computed:{}
+        watch: {},
+        computed: {}
     });
     //初始化操作
-    var val=$("#multiplePopCalendar").psel();
-    var startTime=new Date(val.startTime).format("yMd000000");
-   var endTime=new Date(val.endTime).format("yMd232359");
+    var val = $("#multiplePopCalendar").psel();
+    var startTime = new Date(val.startTime).format("yMd000000");
+    var endTime = new Date(val.endTime).format("yMd232359");
 
 });

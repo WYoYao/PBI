@@ -8,35 +8,53 @@
             data: function () {
                 return [
                     {                //类型：Object  必有字段  备注：无
-                        "avgAreaData":1,                //类型：Number  必有字段  备注：单平米平均值
-                        "avgArea":1,                //类型：Number  必有字段  备注：面积平均值
+                        "avgAreaData":50,                //类型：Number  必有字段  备注：单平米平均值
+                        "avgArea":50,                //类型：Number  必有字段  备注：面积平均值
                         "dataList":[                //类型：Array  必有字段  备注：无
                             {                //类型：Object  必有字段  备注：无
-                                "projectLocalId":"mock",                //类型：String  必有字段  备注：项目本地编码
+                                "projectLocalId":"aaa",                //类型：String  必有字段  备注：项目本地编码
                                 "data":123.5,                //类型：Number  必有字段  备注：能耗数据
-                                "area":125.5,                //类型：Number  必有字段  备注：项目面积
+                                "area":125,                //类型：Number  必有字段  备注：项目面积
                                 "areaData":1.25,                //类型：Number  必有字段  备注：单平米能耗
-                                "funcTypeCode":"100",                //类型：String  必有字段  备注：项目功能类型编码
-                                "climateCode":"100",                //类型：String  必有字段  备注：气候区编码
-                                "manageZone":"mock"                //类型：String  必有字段  备注：管理分区id
+                                "funcTypeCode":"1",                //类型：String  必有字段  备注：项目功能类型编码
+                                "climateCode":"1",                //类型：String  必有字段  备注：气候区编码
+                                "manageZone":"1"                //类型：String  必有字段  备注：管理分区id
                             },
                             {                //类型：Object  必有字段  备注：无
-                                "projectLocalId":"mock",                //类型：String  必有字段  备注：项目本地编码
+                                "projectLocalId":"bbb",                //类型：String  必有字段  备注：项目本地编码
                                 "data":10,                //类型：Number  必有字段  备注：能耗数据
                                 "area":10,                //类型：Number  必有字段  备注：项目面积
                                 "areaData":5,                //类型：Number  必有字段  备注：单平米能耗
-                                "funcTypeCode":"100",                //类型：String  必有字段  备注：项目功能类型编码
-                                "climateCode":"100",                //类型：String  必有字段  备注：气候区编码
-                                "manageZone":"mock"                //类型：String  必有字段  备注：管理分区id
+                                "funcTypeCode":"2",                //类型：String  必有字段  备注：项目功能类型编码
+                                "climateCode":"1",                //类型：String  必有字段  备注：气候区编码
+                                "manageZone":"2"                //类型：String  必有字段  备注：管理分区id
                             },
                             {                //类型：Object  必有字段  备注：无
-                                "projectLocalId":"mock",                //类型：String  必有字段  备注：项目本地编码
+                                "projectLocalId":"ccc",                //类型：String  必有字段  备注：项目本地编码
                                 "data":50,                //类型：Number  必有字段  备注：能耗数据
                                 "area":50,                //类型：Number  必有字段  备注：项目面积
                                 "areaData":20,                //类型：Number  必有字段  备注：单平米能耗
-                                "funcTypeCode":"100",                //类型：String  必有字段  备注：项目功能类型编码
-                                "climateCode":"100",                //类型：String  必有字段  备注：气候区编码
-                                "manageZone":"mock"                //类型：String  必有字段  备注：管理分区id
+                                "funcTypeCode":"3",                //类型：String  必有字段  备注：项目功能类型编码
+                                "climateCode":"2",                //类型：String  必有字段  备注：气候区编码
+                                "manageZone":"1"                //类型：String  必有字段  备注：管理分区id
+                            },
+                            {                //类型：Object  必有字段  备注：无
+                                "projectLocalId":"bbb",                //类型：String  必有字段  备注：项目本地编码
+                                "data":10,                //类型：Number  必有字段  备注：能耗数据
+                                "area":10,                //类型：Number  必有字段  备注：项目面积
+                                "areaData":5,                //类型：Number  必有字段  备注：单平米能耗
+                                "funcTypeCode":"4",                //类型：String  必有字段  备注：项目功能类型编码
+                                "climateCode":"4",                //类型：String  必有字段  备注：气候区编码
+                                "manageZone":"4"                //类型：String  必有字段  备注：管理分区id
+                            },
+                            {                //类型：Object  必有字段  备注：无
+                                "projectLocalId":"ccc",                //类型：String  必有字段  备注：项目本地编码
+                                "data":50,                //类型：Number  必有字段  备注：能耗数据
+                                "area":50,                //类型：Number  必有字段  备注：项目面积
+                                "areaData":20,                //类型：Number  必有字段  备注：单平米能耗
+                                "funcTypeCode":"5",                //类型：String  必有字段  备注：项目功能类型编码
+                                "climateCode":"5",                //类型：String  必有字段  备注：气候区编码
+                                "manageZone":"5"                //类型：String  必有字段  备注：管理分区id
                             }
                         ]
                     }

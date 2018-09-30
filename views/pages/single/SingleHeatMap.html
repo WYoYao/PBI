@@ -44,7 +44,7 @@
         </div>
         <!-- 选择分项End -->
         <!-- 查询按钮 Start -->
-        <div class="section footbtn" :pdisabled="!suboptionModel.length || !timer.length" @click.stop="suboptionModel.length?submitQuery():void 0">
+        <div class="section footbtn" :pdisabled="canSubmit" @click.stop="canSubmit?submitQuery():void 0">
             <pbutton-blue text="查询"></pbutton-blue>
         </div>
         <!-- 查询按钮 End -->

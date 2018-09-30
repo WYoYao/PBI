@@ -434,12 +434,12 @@ $(function () {
                 _that.createCharts();
             },
             // 查询对应的分项树
-            queryModelTree: function (buildingLocalId, energyModelLocalId) {
+            queryModelTree: function (buildingLocalId, energyModelId) {
 
                 var _that = this;
                 singleController.querySubOption({
                     buildingLocalId: buildingLocalId,
-                    energyModelLocalId: energyModelLocalId
+                    energyModelId: energyModelId
                 }).then(function (res) {
                     _that.energyModelList = res;
                 })
@@ -1112,7 +1112,7 @@ $(function () {
             energyModelTree: function () {
                 var _that = this;
                 return _.filter(_that.energyModelList, {
-                    parentLocalId: false
+                    parentLocalId: "-1"
                 })
                     .map(function (info) {
 

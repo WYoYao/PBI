@@ -113,40 +113,18 @@ $(function () {
 
                 return function (arr) {
 
-                    console.log('createHandlerClick');
+
 
                     _that.query[type] = arr;
 
-                    //  如果是辅助线的时候做的操作
-                    if (type == "auxiliarys") {
+                    //  查询对应的值的单位
+                    if (type == "energy" || type == "areas") {
 
-                        // // 添加对应的线
-                        // _that.keepCreateLines();
+                        // 重新查询数据
+                        _that.createHandlerClick();
 
-                        //  查询对应的值的单位
-                    } else if (type == "energy" || type == "areas") {
-
-                        // // 查询的总数据
-                        // if (_.find(app.query.areas, { code: 0 })) _that.queryParent(_that.selector.timeFrom, _that.selector.timeTo);
-
-                        // _that.createCharts()
 
                     } else {
-
-                        // if (_that.isColumnar()) {
-                        //     // 重新查询数据
-                        //     // 查询参考信息
-                        //     _that.createReference();
-                        //     // 生成对应的图表
-                        //     _that.createMaster(_.cloneDeep(_that.queryRes)).then(function (res) {
-                        //         _that.createDetail(res);
-                        //     })
-                        // } else {
-                        //     // 重新查询数据
-                        //     _that.createMaster(_.cloneDeep(_that.queryRes)).then(function () {
-                        //         _that.createCascadingStyle(_.cloneDeep(_that.queryDeatilBak));
-                        //     })
-                        // }
 
                     }
                 }
@@ -400,8 +378,19 @@ $(function () {
                     localId: localId
                 });
             },
-            deleteRecordFn: function () {
-                console.log(arguments);
+            deleteRecordFn: function (obj) {
+
+                var _that = this;
+
+                var index = _that.selecteds.indexOf(obj);
+
+                _that.res.splice(index, 1);
+
+                _that.argu.paramList.splice(index, 1);
+
+                // _that.res = _that.res.filter(function (item) {
+                //     return !(obj.subentry.energyItemLocalId == item.energyItemLocalId && obj.time.st == item.timeFrom && obj.time.et == item.timeTo)
+                // });
             },
             // 是否显示表格
             isAreas: function () {
@@ -412,9 +401,13 @@ $(function () {
 
         },
         computed: {
+            canSubmit: function () {
+                var _that = this;
+                return !_that.suboptionModel.length || !_that.timer.length;
+            },
             selecteds: function () {
                 var _that = this;
-                debugger;
+
                 if (!_that.argu || !_that.res.length) return [];
 
                 var MAX = _.max(_.map(_that.res, 'sumData'));

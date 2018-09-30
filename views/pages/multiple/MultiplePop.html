@@ -2,6 +2,9 @@
 
 <!-- 选择项目组件 -->
 <% include ../components/index.html %>
+<!-- 表格模板 -->
+<% include ../components/girdTemplate.html %>
+
 <link rel="stylesheet" href="../css/multiple/MultiplePop.css">
 <script src="../../../js/multiple/MultiplePop/model.js"></script>
 <script src="../../../js/multiple/MultiplePop/controller.js"></script>
@@ -26,9 +29,8 @@
             <div class="content">
                 <div class="choiceTime" :arr="JSON.stringify(searchConditionObj.timeSaveArr.length)">
                     <div class="choiceTimeOp">
-                        <ptime-calendar :id="'selectTimeLine'" orientation="down" sel="">
-                            <panel timetype="d" align="left" double="true" startyear="2003" iscommontime="true"
-                                commontime="['d','pd','w','pw','M','pM','y','py']" lock="false"></panel>
+                        <ptime-calendar :id="'selectTimeLine'" orientation="down" sel="multiplePop.confirmCurrTime">
+                            <panel timetype="dwMy" align="left" double="true" startyear="2003"></panel>
                         </ptime-calendar>
                     </div>
                 </div>
@@ -76,16 +78,16 @@
                 <span>气泡颜色区分维度</span>
                 <ul class="list">
                     <li>
-                        <pswitch-radio text="项目类型" state="true" name="mark" change="multiplePop.checkPopColor('1')"></pswitch-radio>
+                        <pswitch-radio text="项目类型" state="true" name="mark" change="multiplePop.checkPopColor('project')"></pswitch-radio>
                     </li>
                     <li>
-                        <pswitch-radio text="气候区" state="false" name="mark" change="multiplePop.checkPopColor('2')"></pswitch-radio>
+                        <pswitch-radio text="气候区" state="false" name="mark" change="multiplePop.checkPopColor('weather')"></pswitch-radio>
                     </li>
                     <li>
-                        <pswitch-radio text="管理区" state="false" name="mark" change="multiplePop.checkPopColor('3')"></pswitch-radio>
+                        <pswitch-radio text="管理区" state="false" name="mark" change="multiplePop.checkPopColor('manager')"></pswitch-radio>
                     </li>
                     <li>
-                        <pswitch-radio text="不分区" state="false" name="mark" change="multiplePop.checkPopColor('4')"></pswitch-radio>
+                        <pswitch-radio text="不分区" state="false" name="mark" change="multiplePop.checkPopColor('normal')"></pswitch-radio>
                     </li>
                 </ul>
             </div>
@@ -123,20 +125,24 @@
                     <span>请先在左侧列表选择参数</span>
                 </div>
                 <!-- 引入chart图表 -->
-                <div class="chartOperat" vv-show="scChartShow">
-                    <div>
+                <div class="chartOperat" v-show="scChartShow">
+                    <div class="edit">
+                        <span>单平米指标（kWh/㎡）</span>
                         <pbutton-blue bind="true" icon="'`'" isborder="false" @click="setYAxisShowFn"></pbutton-blue>
                     </div>
-                    <div>
-                        单位：
-                        <span v-text="chartUnit"></span>
+
+                </div>
+                <div class="chartContent" v-show="scChartShow">
+                    <div id="multiPop"></div>
+                    <div class="chartY">
+                        面积（㎡）
                     </div>
                 </div>
-                <div id="multiPop"></div>
+
 
                 <!-- 引入报表表格-->
                 <div class="reportFrom" id="scReportFrom" v-if="scReportShow">
-                    <tgrid :renderlist="gridRenderList"></tgrid>
+                    <inquiretable :keys="gridTitles" :list="gridList"></inquiretable>
                 </div>
             </div>
             <div class="aboutRecord">

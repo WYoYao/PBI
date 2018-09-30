@@ -351,8 +351,9 @@
     overflow-y: scroll;
     overflow-y: overlay;
     border-right: 1px solid #d9e2e8;
-    background: #f7f7f9;
+    /* background: #f7f7f9; */
     box-sizing: border-box;
+    position: relative;
 }
 .multiplePopContent .pageRight .contentPart .aboutChart .chartOperat{
     height:40px;
@@ -360,7 +361,21 @@
     flex-flow:row nowrap;
     align-items: center;
     justify-content: space-between;
-    padding:0 20px;
+    padding:0 10px;
+}
+.multiplePopContent .pageRight .contentPart .aboutChart .chartContent .chartY{
+    width: 70px;
+    position: absolute;
+    right: 0;
+    top: 406px;
+} 
+.multiplePopContent .pageRight .contentPart .aboutChart .chartOperat .edit{
+    display:flex;
+    flex-flow:column nowrap;
+    margin-top:10px;
+}
+.multiplePopContent .pageRight .contentPart .aboutChart .chartOperat .edit >span{
+    display: block;
 }
 .multiplePopContent .pageRight .contentPart .aboutChart .noData{
     width: 400px;
