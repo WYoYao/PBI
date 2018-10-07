@@ -44,7 +44,7 @@
         </div>
         <!-- 选择分项End -->
         <!-- 查询按钮 Start -->
-        <div class="section footbtn" :pdisabled="canSubmit" @click.stop="canSubmit?submitQuery():void 0">
+        <div class="section footbtn" :pdisabled="!canSubmit" @click.stop="canSubmit?submitQuery():void 0">
             <pbutton-blue text="查询"></pbutton-blue>
         </div>
         <!-- 查询按钮 End -->
@@ -87,7 +87,13 @@
                     </div>
                 </div>
                 <div class="tb" v-show="!isAreas()">
+                    <yeartable v-for="(item,index) in res" v-show="tab_table==index" v-if="_.get(timer,'[0].timeType','')=='y'" :list=item.dataList></yeartable>
+                    <weektable v-for="(item,index) in res" v-show="tab_table==index" v-if="_.get(timer,'[0].timeType','')=='w'" :list=item.dataList></weektable>
+                    <ul class="tab_table">
+                        <li class="tab_table_item" :class="tab_table==index?'on':''"  v-for="(item,index) in res" @click.stop="tab_table=index" v-text="_.get(timer,'['+index+'].name'),''">
 
+                        </li>
+                    </ul>
                 </div>
             </div>
             <div class="r">

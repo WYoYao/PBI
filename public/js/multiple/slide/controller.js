@@ -11,13 +11,15 @@
                     maxData: "100",
                     avgData: "50",
                     midData: "50",
-                    inflectionPoints: [{
-                        time: "2018-01-01",
-                        state: 2
-                    }, {
-                        time: "2018-01-02",
-                        state: 1
-                    }],
+                    inflectionPoints:[
+                        {
+                            time:"2018-01-01",
+                            state:2
+                        },{
+                            time:"2018-01-02",
+                            state:1
+                        }
+                    ],
                     dataList: [{
                             timeSpan: "2016.01~2016.02",
                             data: 150
@@ -49,9 +51,9 @@
                         }, {
                             timeSpan: "2016.11~2016.12",
                             data: 120
-                        },
+                        }, 
                     ],
-
+                   
                 }, ]
             },
         }, ]
@@ -362,48 +364,104 @@ controller.push([{
             } [argu.timeType]
 
 
+            // 不区分
+            if (!argu.showByFuncType) {
+                return [ //类型：Array  必有字段  备注：无
+                    { //类型：Object  必有字段  备注：无
+                        "minData": 100, //类型：Number  必有字段  备注：最小值
+                        "maxData": 9000, //类型：Number  必有字段  备注：最大值
+                        "avgData": 6000, //类型：Number  必有字段  备注：平均值
+                        "midData": 5000, //类型：Number  必有字段  备注：中位数
+                        "sumData": _.random(5000), //类型：Number  必有字段  备注：求和
+                        "sumArea": _.random(5000), //类型：Number  可有字段  备注：各项目该分项总面积
+                        dataList: _.range(Math.round(diff)).map((item, index) => {
 
-            return [ //类型：Array  必有字段  备注：无
-                { //类型：Object  必有字段  备注：无
-                    "minData": 100, //类型：Number  必有字段  备注：最小值
-                    "maxData": 9000, //类型：Number  必有字段  备注：最大值
-                    "avgData": 6000, //类型：Number  必有字段  备注：平均值
-                    "midData": 5000, //类型：Number  必有字段  备注：中位数
-                    "sumData": _.random(5000), //类型：Number  必有字段  备注：求和
-                    "sumArea": _.random(5000), //类型：Number  可有字段  备注：各项目该分项总面积
-                    dataListByTime: _.range(Math.round(diff)).map((item, index) => {
+                            if (argu.timeType == 1) {
+                                return {
+                                    time: new Date(argu.timeFrom).setHours(index),
+                                    data: _.random(5000)
+                                }
+                            } else if (argu.timeType == 2) {
+                                return {
+                                    time: new Date(argu.timeFrom).setDate(index),
+                                    data: _.random(5000)
+                                }
+                            } else if (argu.timeType == 4) {
+                                return {
+                                    time: new Date(argu.timeFrom).setMonth(index),
+                                    data: _.random(5000)
+                                }
+                            } else if (argu.timeType == 5) {
+                                return {
+                                    time: new Date(argu.timeFrom).setFullYear(index),
+                                    data: _.random(5000)
+                                }
+                            }
+                        }),
+                        "projectDataList": argu.projectLocalIdList.map(function (projectLocalId) {
+                            return { //类型：Object  必有字段  备注：无
+                                "projectLocalId": projectLocalId, //类型：String  必有字段  备注：项目本地编码
+                                "projectData": _.random(5000) //类型：Number  必有字段  备注：项目能耗
+                            }
+                        })
+                    }
+                ];
+            } else {
 
-                        if (argu.timeType == 1) {
-                            return {
-                                time: new Date(argu.timeFrom).setHours(index),
-                                data: _.random(5000)
-                            }
-                        } else if (argu.timeType == 2) {
-                            return {
-                                time: new Date(argu.timeFrom).setDate(index),
-                                data: _.random(5000)
-                            }
-                        } else if (argu.timeType == 4) {
-                            return {
-                                time: new Date(argu.timeFrom).setMonth(index),
-                                data: _.random(5000)
-                            }
-                        } else if (argu.timeType == 5) {
-                            return {
-                                time: new Date(argu.timeFrom).setFullYear(index),
-                                data: _.random(5000)
-                            }
-                        }
-                    }),
-                    "dataListByFuncType": argu.projectLocalIdList.map(function (projectLocalId) {
-                        return { //类型：Object  必有字段  备注：无
-                            "projectLocalId": projectLocalId, //类型：String  必有字段  备注：项目本地编码
-                            "data": _.random(5000) //类型：Number  必有字段  备注：项目能耗
-                        }
-                    })
-                }
-            ];
+                return [ //类型：Array  必有字段  备注：集合元素只有一个
+                    { //类型：Object  必有字段  备注：无
+                        "minData": 100, //类型：Number  必有字段  备注：最小值
+                        "maxData": 9000, //类型：Number  必有字段  备注：最大值
+                        "avgData": 6000, //类型：Number  必有字段  备注：平均值
+                        "midData": 5000, //类型：Number  必有字段  备注：中位数
+                        "sumData": _.random(5000), //类型：Number  必有字段  备注：求和
+                        "funcTypeStatic": argu.projectLocalIdList.map(function (item,index) {
+                            return { //类型：Object  必有字段  备注：无
+                                "funcTypeCode": "p"+index%2, //类型：String  必有字段  备注：项目类型编码
+                                "data": _.random(5000), //类型：Number  必有字段  备注：项目类型数据
+                                "ratio": _.random(100), //类型：Number  可有字段  备注：占比
+                                "area": _.random(5000), //类型：String  可有字段  备注：各项目该分项总面积
+                                "projectNum": _.random(5) //类型：String  可有字段  备注：项目数量
+                            };  
+                        }),
+                        "funcTypeDataList":argu.projectLocalIdList.map(function (item,index) {
+                          return { //类型：Object  必有字段  备注：无
+                            "funcTypeCode": "p"+index%2, //类型：String  必有字段  备注：项目类型编码
+                            dataList: _.range(Math.round(diff)).map((item, index) => {
 
+                                if (argu.timeType == 1) {
+                                    return {
+                                        time: new Date(argu.timeFrom).setHours(index),
+                                        data: _.random(5000)
+                                    }
+                                } else if (argu.timeType == 2) {
+                                    return {
+                                        time: new Date(argu.timeFrom).setDate(index),
+                                        data: _.random(5000)
+                                    }
+                                } else if (argu.timeType == 4) {
+                                    return {
+                                        time: new Date(argu.timeFrom).setMonth(index),
+                                        data: _.random(5000)
+                                    }
+                                } else if (argu.timeType == 5) {
+                                    return {
+                                        time: new Date(argu.timeFrom).setFullYear(index),
+                                        data: _.random(5000)
+                                    }
+                                }
+                            }),
+                        }  
+                        }),
+                        "projectDataList": argu.projectLocalIdList.map(function (projectLocalId) {
+                            return { //类型：Object  必有字段  备注：无
+                                "projectLocalId": projectLocalId, //类型：String  必有字段  备注：项目本地编码
+                                "sumData": _.random(10000) //类型：Number  必有字段  备注：项目能耗
+                            };  
+                        })
+                    }
+                ]
+            }
         }
     }
 ])

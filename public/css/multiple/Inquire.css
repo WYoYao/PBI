@@ -45,8 +45,7 @@
             #app .left .section .block .line .project em {
               display: inline-block;
               vertical-align: middle;
-              color: #637E99;
-              max-width: 40%; }
+              color: #637E99; }
         #app .left .section .block .same {
           display: flex;
           flex-flow: row nowrap;
@@ -88,10 +87,116 @@
         width: 260px;
         box-sizing: border-box;
         border-left: 1px solid #D9E2E8; }
-        #app .right .content .r .title {
-          display: block;
-          font-size: 16px;
-          margin-left: 20px; }
+        #app .right .content .r .tab_slide {
+          overflow: hidden; }
+          #app .right .content .r .tab_slide .slide {
+            float: left;
+            width: 50%;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            color: #333333;
+            cursor: pointer;
+            background: #FAFAFA;
+            border-bottom: 1px solid #D9E2E8;
+            box-sizing: border-box; }
+          #app .right .content .r .tab_slide .slide.on {
+            background: #FFFFFF;
+            border-bottom: none; }
+          #app .right .content .r .tab_slide_block {
+            margin: 0 20px;
+            color: #333333; }
+            #app .right .content .r .tab_slide_block_title {
+              display: block;
+              line-height: 3em;
+              font-weight: 900;
+              font-size: 14px; }
+            #app .right .content .r .tab_slide_block_desc {
+              display: block;
+              line-height: 3em;
+              font-size: 14px; }
+            #app .right .content .r .tab_slide_block_bignumber {
+              display: block;
+              font-size: 28px;
+              line-height: 1.4em; }
+              #app .right .content .r .tab_slide_block_bignumber .unit {
+                line-height: 1.4em;
+                font-size: 12px; }
+            #app .right .content .r .tab_slide_block_smallnumber {
+              display: block; }
+              #app .right .content .r .tab_slide_block_smallnumber .num {
+                font-weight: 900;
+                color: #151515;
+                font-size: 20px;
+                line-height: 1.2em; }
+              #app .right .content .r .tab_slide_block_smallnumber .unit {
+                line-height: 1.4em;
+                font-size: 12px; }
+              #app .right .content .r .tab_slide_block_smallnumber .pic {
+                float: right;
+                margin-top: 4px;
+                height: 20px;
+                width: 20px;
+                transform: rotate(-15deg); }
+              #app .right .content .r .tab_slide_block_smallnumber .pdonw {
+                transform: rotate(75deg); }
+              #app .right .content .r .tab_slide_block_smallnumber .rtext {
+                float: right;
+                font-weight: 900;
+                font-size: 20px; }
+              #app .right .content .r .tab_slide_block_smallnumber .up {
+                color: #FF7B7B; }
+              #app .right .content .r .tab_slide_block_smallnumber .down {
+                color: #69C6B3; }
+            #app .right .content .r .tab_slide_block_tip {
+              display: block;
+              line-height: 3em;
+              font-size: 12px;
+              color: #6D6D6D; }
+            #app .right .content .r .tab_slide_block .circle {
+              background: #FBFBFC;
+              display: flex;
+              flex-flow: row nowrap;
+              align-items: center; }
+              #app .right .content .r .tab_slide_block .circle_item {
+                flex: 1;
+                display: flex;
+                flex-flow: column wrap;
+                align-items: center; }
+                #app .right .content .r .tab_slide_block .circle_item_title {
+                  height: 50px;
+                  line-height: 50px;
+                  font-size: 12px;
+                  color: #6D6D6D; }
+                #app .right .content .r .tab_slide_block .circle_item_chart {
+                  position: relative;
+                  height: 100px;
+                  width: 100px; }
+                  #app .right .content .r .tab_slide_block .circle_item_chart .ctitle {
+                    position: absolute;
+                    top: 38%;
+                    width: 100%;
+                    text-align: center;
+                    font-size: 16px;
+                    font-weight: 900;
+                    color: #02A9D1; }
+                    #app .right .content .r .tab_slide_block .circle_item_chart .ctitle .unit {
+                      font-size: 12px;
+                      font-weight: 200; }
+          #app .right .content .r .tab_slide_list .item.fst {
+            background: #FAFAFA;
+            padding-left: 20px; }
+          #app .right .content .r .tab_slide_list .item {
+            display: block;
+            padding-left: 40px;
+            line-height: 30px;
+            font-size: 12px;
+            color: #333333;
+            cursor: pointer;
+            border-bottom: 1px solid #D9E2E8; }
+          #app .right .content .r .tab_slide_list .item.on {
+            background: #02A9D1;
+            color: #FFFFFF; }
       #app .right .content .l {
         position: absolute;
         height: 100%;
@@ -134,29 +239,13 @@
         #app .right .content .l .chart {
           flex: 521;
           box-sizing: border-box;
-          border-bottom: 1px solid #D9E2E8;
-          overflow: auto; }
-          #app .right .content .l .chart .item {
-            height: 236px; }
+          border-bottom: 1px solid #D9E2E8; }
         #app .right .content .l .zom {
           flex: 150;
           border-bottom: 1px solid #D9E2E8; }
         #app .right .content .l .tb {
           flex: 310;
           overflow: auto; }
-        #app .right .content .l .tab_table {
-          display: flex;
-          justify-content: flex-start; }
-          #app .right .content .l .tab_table_item {
-            line-height: 20px;
-            width: 100px;
-            box-sizing: border-box;
-            border: 1px solid #D9E2E8;
-            cursor: pointer;
-            text-align: center;
-            color: #6D6D6D; }
-          #app .right .content .l .tab_table_item.on {
-            color: #02A9D1; }
     #app .right .tab {
       box-sizing: border-box;
       height: 50px;
@@ -240,4 +329,4 @@
     .vcheckbox .combx .title:hover .text {
       color: #02A9D1; }
 
-/*# sourceMappingURL=heatmap.css.map */
+/*# sourceMappingURL=Inquire.css.map */

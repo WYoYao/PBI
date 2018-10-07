@@ -6,7 +6,7 @@
            <panel timetype="dwMy" align="left" double="true" startyear="2003" endyear="2018" commontime="['d','pd','w','pw','M','pM','y','py']"></panel>
        </ptime-calendar>
    </div>
-   <div class="line same">
+   <div class="line same" v-if="!hidebtn">
        <!-- <div class="imgborder on"> -->
         <div class="imgborder" v-for="(item,index) in comsFilter" :class="time.timeType == item.code?'on':''" @click.stop="compareClick(item)">
            <img class="init" :src="item.init" :alt="item.alt">
@@ -52,6 +52,9 @@
                 cb: {
                     type: Function,
                     required: true,
+                },
+                hidebtn:{
+                    type:Boolean
                 }
             },
             methods: {

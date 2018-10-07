@@ -51,8 +51,11 @@
 
                     _that.$nextTick(function () {
                         _that.times = _that.times.map(function (item, index) {
-                            return $(_that.$refs['ptime' + index]).psel();
+
+                            return _.assign({}, $(_that.$refs['ptime' + index]).psel(),{name:$(_that.$refs['ptime' + index]).find('.per-calendar-text').text()})
+                          
                         });
+                   
 
                         _.isFunction(this.cb) ? this.cb(_that.times) : void 0;
                     })

@@ -1,0 +1,84 @@
+<link rel="stylesheet" href="/css/single/yeartable.css">
+<script type="text/html" id="weektable">
+    <div class="weektable">
+
+    <!-- 每一个纵列Start -->
+    <div>
+            <div class="yeartable_header">
+
+            </div>
+
+            <div class="yeartable_body">
+                <div class="yeartable_body_list">
+                    <div class="yeartable_body_list_item">周日</div>
+                    <div class="yeartable_body_list_item">周一</div>
+                    <div class="yeartable_body_list_item">周二</div>
+                    <div class="yeartable_body_list_item">周三</div>
+                    <div class="yeartable_body_list_item">周四</div>
+                    <div class="yeartable_body_list_item">周五</div>
+                    <div class="yeartable_body_list_item">周六</div>
+                </div>
+            </div>
+    </div>
+    <!-- 每一个纵列End -->
+
+        <!-- 每一个纵列Start -->
+        <div v-for="(item,index) in comlist">
+                <div class="yeartable_header" v-text="index">
+                    
+                </div>
+                <div class="yeartable_body">
+                    <div class="yeartable_body_list">
+                        <div class="yeartable_body_list_item" @mouseenter='on=item' :class="item==on?'on':''" v-for="(info,i) in item" :title="new Date(info.time).format('hh:mm:ss')+':'+info.data" v-text="JSON.stringify(info.data)"></div>
+                    </div>
+                </div>
+        </div>
+        <!-- 每一个纵列End -->
+</div>
+</script>
+<script>
+    $(function () {
+        Vue.component('weektable', {
+            template: "#weektable",
+            data: function () {
+                return {
+                    on:null
+                }
+            },
+            props: {
+                list: Array,
+            },
+            methods: {},
+            computed: {
+                comlist: function () {
+
+                    var list = this.list;
+
+                    // 首先根据时间排序
+                    list = list.sort(function (a, b) {
+                        return +a.time - b.time;
+                    });
+
+                    return list.reduce(function (con, item, index) {
+                        var hour = new Date(item.time).getHours();
+
+                        if (!_.isArray(con[hour])) con[hour] = [];
+
+                        con[hour].push(item);
+                        return con;
+                    }, [])
+
+                }
+            },
+            watch: {
+
+            },
+            mounted: function () {
+
+            },
+            beforeMount: function () {
+
+            }
+        })
+    })
+</script>

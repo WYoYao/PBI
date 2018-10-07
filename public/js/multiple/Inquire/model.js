@@ -13,6 +13,8 @@ $(function () {
     var app = new Vue({
         el: "#app",
         data: {
+            // 多项目搜索
+            searchContent: '',
             // 图标报表
             tableTypes: [{
                 name: "图表",
@@ -25,55 +27,64 @@ $(function () {
             }],
             // 辅助线
             auxiliaryTypes: [{
-                name: "最大值",
-                code: "maxData",
-                color: pcolor.cd[0]
-            },
-            {
-                name: "最小值",
-                code: "minData",
-                color: pcolor.cd[1]
-            },
-            {
-                name: "平均值",
-                code: "avgData",
-                color: pcolor.cd[2]
-            },
-            {
-                name: "中位数",
-                code: "midData",
-                color: pcolor.cd[3]
-            },
+                    name: "最大值",
+                    code: "maxData",
+                    color: pcolor.cd[0]
+                },
+                {
+                    name: "最小值",
+                    code: "minData",
+                    color: pcolor.cd[1]
+                },
+                {
+                    name: "平均值",
+                    code: "avgData",
+                    color: pcolor.cd[2]
+                },
+                {
+                    name: "中位数",
+                    code: "midData",
+                    color: pcolor.cd[3]
+                },
             ],
             // 面积单位
             areaTypres: [{
-                name: "总量",
-                code: 0,
-                selected: true
-            },
-            {
-                name: "单平米",
-                code: 1,
-            },
-            {
-                name: "下级拆分",
-                code: 2,
-            },
+                    name: "总能耗",
+                    code: 1,
+                    selected: true
+                },
+                {
+                    name: "单平米",
+                    code: 2,
+                },
+                {
+                    name: "平均单项目",
+                    code: 3,
+                },
             ],
+            // 区分类型
+            distinguish: [{
+                name: "区分类型",
+                code: true,
+            }],
             // 能源类型
             energyTypes: [{
-                name: "能耗",
-                code: 0,
-                selected: true
-            },
-            {
-                name: "费用",
-                code: 1,
-            },
-            {
-                name: "碳排放量标煤",
-                code: 2,
-            },
+                    name: "能耗",
+                    code: 1,
+                    selected: true
+                },
+                {
+                    name: "费用",
+                    code: 2,
+                },
+                {
+                    name: "碳排放量标煤",
+                    code: 3,
+                },
+                {
+                    name: "标煤",
+                    code: 4,
+                },
             ],
             // 是否显示缩略下拉
             iscombox: false,
@@ -93,6 +104,8 @@ $(function () {
                     name: "能耗",
                     code: 0,
                 }],
+                // 是否区分类型
+                distinguish: []
             },
             // 分项模型
             energyModelList: [],
@@ -124,29 +137,31 @@ $(function () {
             setYAxisShow: false,
             //设置图表纵坐标
             setMax: [{
-                isSelected: true,
-                name: "默认",
-                value: MAX,
-                unit: "kwh"
-            },
-            {
-                isSelected: false,
-                name: "自定义",
-                value: MAX,
-                unit: "kwh"
-            }],
+                    isSelected: true,
+                    name: "默认",
+                    value: MAX,
+                    unit: "kwh"
+                },
+                {
+                    isSelected: false,
+                    name: "自定义",
+                    value: MAX,
+                    unit: "kwh"
+                }
+            ],
             setMin: [{
-                isSelected: true,
-                name: "默认",
-                value: MIN,
-                unit: "kwh"
-            },
-            {
-                isSelected: false,
-                name: "自定义",
-                value: MIN,
-                unit: "kwh"
-            }],
+                    isSelected: true,
+                    name: "默认",
+                    value: MIN,
+                    unit: "kwh"
+                },
+                {
+                    isSelected: false,
+                    name: "自定义",
+                    value: MIN,
+                    unit: "kwh"
+                }
+            ],
             // 详细表格的最大值和最小值
             max: MAX,
             min: MIN,
@@ -154,8 +169,7 @@ $(function () {
             helpTab: true,
             // 辅助数据全部的集合
             // 0-焓值；1-温度；2-湿度；3-PM2.5; 4-CO2；5-天气状态；6-日出日落
-            helpData: [
-                {
+            helpData: [{
                     name: "焓值",
                     code: 0,
                     can: [1, 2]
@@ -276,10 +290,23 @@ $(function () {
                     } else if (type == "energy" || type == "areas") {
 
                         // 查询的总数据
-                        if (_.find(app.query.areas, { code: 0 })) _that.queryParent(_that.selector.timeFrom, _that.selector.timeTo);
+                        if (_.find(_that.query.areas, {
+                                code: 0
+                            })) _that.queryParent(_that.selector.timeFrom, _that.selector.timeTo);
 
-                        _that.createCharts()
+                        _that.createCharts();
 
+                    } else if (type == "distinguish") {
+
+                        try {
+                            if (_that.pie && _.get(_that.pie, 'destroy')) {
+                                _that.pie.destroy()
+                            }
+                        } catch (error) {
+        
+                        }
+
+                        _that.createCharts();
                     } else {
 
                         if (_that.isColumnar()) {
@@ -304,97 +331,26 @@ $(function () {
             getChilds: function (arr) {
                 var _that = this;
 
-                // 获取基础数据
-                _that.getSlideData(arr).then(function (series) {
-                    _that.createCascadingStyle(series)
-                        .then(function (data) {
-                            // 创建对应的图标
-                        })
-                })
-
-            },
-            // 获取下级分项的数据
-            /**
-             * arr {Array} 分项集合
-             */
-            getSlideData: function (arr) {
-                var _that = this;
-                // 获取基础查询信息
-                var argu = _that.getQueryArgu();
-                var timeFrom = _that.selector.timeFrom;
-                var timeTo = _that.selector.timeTo;
-                // 查询对应的集合
-                argu.paramList = arr.map(function (item) {
-                    return {
-                        energyItemLocalId: item.localId,
-                        timeFrom: timeFrom,
-                        timeTo: timeTo,
-                    }
-                });
-
-                return new Promise(function (resolve) {
-
-                    singleController.queryTable(argu).then(function (res) {
-
-                        //  查询层叠的时候赋值的参考信息
-                        _that.createSubReference(res);
-                        // var categories = []
-
-                        var series = res.map(function (item, index) {
-
-                            //  获取X 集合
-                            // categories = _.map(item.dataList, 'time').map(function (item) {
-                            //     return new Date(item).format('yyyy-MM-dd hh:mm:ss');
-                            // });
-
-                            // 获取每项的数据集合
-                            return {
-                                name: _that.getItemByEnergyModelList(argu.paramList[index].energyItemLocalId).name,
-                                data: item.dataList.map(function (item, index) {
-                                    return {
-                                        x: new Date(item.time).format('yyyy-MM-dd hh:mm:ss'),
-                                        y: item.data
-                                    }
-                                }),
-                                // data: _.map(item.dataList, 'data'),
-                            }
-                        });
-
-                        //  返回需要渲染的数据
-                        resolve(series);
+                _that.createCascadingStyle(series)
+                    .then(function (data) {
+                        // 创建对应的图标
                     })
-                })
-            },
-            computeWidth: function () {
-                //  计算宽度是否够容纳
 
-                //                      正行宽度                             图表报表          下载详情图表                  辅助线                              平方单位                        能源类型                padding-right
-                this.iscombox = ((this.$refs.tab.clientWidth - this.$refs.vcheckbox.getWidth() - 84 - this.$refs.vcheckbox1.getWidth() - this.$refs.cobxs.getWidth() - this.$refs.cobxs1.getWidth() - 20) < 0);
-            },
-            // 模型面板取消选项
-            handlercancelenergyModel: function () {
-                this.showEnergyModel = false;
-            },
-            // 模型面板弹出选项
-            handlerclickenergyModel: function (projects, arr) {
-                this.energyProject = projects[0];
-                this.energyModel = arr[0];
-                //  模型面板取消选项
-                this.handlercancelenergyModel();
-                //  重新查询对应的分项树
-                this.queryModelTree(this.energyModel.buildingLocalId, this.energyModel.energyModelId);
             },
             //  查询父级和顶级的数据
             queryParent: function (timeFrom, timeTo) {
                 var _that = this;
                 var argu = _that.getQueryArgu();
+
                 argu.timeFrom = timeFrom || argu.timeFrom;
                 argu.timeFrom = timeTo || argu.timeTo;
 
-                var superparent = _.find(_that.energyModelList, { parentLocalId: false });
+                var superparent = _.find(_that.energyModelList, {
+                    parentLocalId: false
+                });
                 argu.energyModelLocalId = superparent.localId;
 
-                singleController.queryTable(argu).then(function (res) {
+                controller.queryTable(argu).then(function (res) {
                     _that.Reference.superparent = _.get(res, '[0].sumData');
                     console.log(_that.Reference.superparent);
                     // console.log("顶级内容");
@@ -406,27 +362,111 @@ $(function () {
                 });
                 argu.energyModelLocalId = parent.localId;
 
-                singleController.queryTable(argu).then(function (res) {
+                controller.queryTable(argu).then(function (res) {
                     _that.Reference.parent = _.get(res, '[0].sumData');
                     console.log(_that.Reference.parent);
                 })
             },
+            // 转换成层叠的数据
+            convertSlideData: function (obj) {
+                var _that = this;
+                var series = obj.funcTypeDataList.map(function (item, index) {
+
+                    // 获取每项的数据集合
+                    return {
+                        name: _that.getItemByBuildModelList(item.funcTypeCode).name,
+                        data: item.dataList.map(function (item, index) {
+                            return {
+                                x: new Date(item.time).format('yyyy-MM-dd hh:mm:ss'),
+                                y: item.data
+                            }
+                        }),
+                        // data: _.map(item.dataList, 'data'),
+                    }
+                });
+
+                return series;
+            },
+            // 获取下级分项的数据
+            /**
+             * arr {Array} 分项集合
+             */
+            getSlideData: function (obj) {
+                var _that = this;
+
+                // 父级直接传递到子页面
+                if (obj && obj.length) {
+
+                    return new Promise(function (resolve) {
+                        _that.queryDeatilBak = obj[0];
+                        _that.Reference.total = obj[0].sumData;
+
+                        //  查询层叠的时候赋值的参考信息
+                        _that.createSubReference(obj[0]);
+                        resolve(_that.convertSlideData(obj[0]))
+                    })
+                } else {
+
+                    // 获取基础查询信息
+                    var argu = _that.getQueryArgu();
+                    argu.timeFrom = _that.selector.timeFrom;
+                    argu.timeTo = _that.selector.timeTo;
+                    argu.timeType = _that.timeType2(argu.timeFrom, argu.timeTo);
+
+
+                    return new Promise(function (resolve) {
+
+                        controller.queryTable(argu).then(function (res) {
+
+                            //  查询层叠的时候赋值的参考信息
+                            _that.createSubReference(res[0]);
+                            _that.queryDeatilBak = res[0];
+                            _that.Reference.total = res[0].sumData;
+                            var series = _that.convertSlideData(res[0])
+
+                            //  返回需要渲染的数据
+                            resolve(series);
+                        })
+                    })
+                }
+            },
+            computeWidth: function () {
+                //  计算宽度是否够容纳
+
+                //                      正行宽度                             图表报表          下载详情图表                  辅助线                       区分类型                             平方单位                        能源类型                padding-right
+                this.iscombox = ((this.$refs.tab.clientWidth - this.$refs.vcheckbox.getWidth() - 84 - this.$refs.vcheckbox1.getWidth() - this.$refs.distinguish.getWidth() - this.$refs.cobxs.getWidth() - this.$refs.cobxs1.getWidth() - 20) < 0);
+            },
+            // 模型面板取消选项
+            handlercancelenergyModel: function () {
+                this.showEnergyModel = false;
+            },
+            // 模型面板弹出选项
+            handlerclickenergyModel: function (projects) {
+                this.energyProject = projects;
+                // this.energyModel = arr[0];
+                //  模型面板取消选项
+                this.handlercancelenergyModel();
+                //  重新查询对应的分项树
+                // this.queryModelTree(this.energyModel.buildingLocalId, this.energyModel.energyModelId);
+            },
+            // 查询对应的图表信息
             submitQuery: function () {
                 var _that = this;
 
-                // 查询的总数据
-                if (_.find(app.query.areas, { code: 0 })) _that.queryParent();
+                // // 查询的总数据
+                if (_.find(_that.query.areas, {
+                        code: 0
+                    })) _that.queryParent();
 
                 // 查询生成表格
                 _that.createCharts();
             },
             // 查询对应的分项树
-            queryModelTree: function (buildingLocalId, energyModelId) {
+            queryModelTree: function () {
 
                 var _that = this;
-                singleController.querySubOption({
-                    buildingLocalId: buildingLocalId,
-                    energyModelId: energyModelId
+                controller.querySubOption({
+                    storyCode: window.parent.document.getElementById("type").value,
                 }).then(function (res) {
                     _that.energyModelList = res;
                 })
@@ -451,10 +491,11 @@ $(function () {
                 Highcharts.each(chart.series[0].data, function (d, index) {
 
 
+
                     if (d.x > min && d.x < max) {
 
-                        if(timeTo===undefined)timeTo = d.x;
-                        if(timeFrom===undefined)timeFrom = d.x;
+                        if (timeTo === undefined) timeTo = d.x;
+                        if (timeFrom === undefined) timeFrom = d.x;
 
                         if (d.x < timeFrom) {
                             timeFrom = d.x;
@@ -477,18 +518,22 @@ $(function () {
                 _that.selector.timeTo = timeTo;
 
 
-                // 查询的总数据
-                if (_.find(app.query.areas, { code: 0 })) _that.queryParent(_that.selector.timeFrom, _that.selector.timeTo);
+                var argu = _that.getQueryArgu();
 
-                singleController.queryTable(
-                    _that.getQueryArgu(new Date(timeFrom).format("yyyy-MM-dd hh:mm:00"), new Date(timeTo).format("yyyy-MM-dd hh:mm:00"), _that.timeType2(timeFrom, timeTo))
+                argu.timeFrom = new Date(timeFrom).format("yyyy-MM-dd hh:mm:00")
+                argu.timeTo = new Date(timeTo).format("yyyy-MM-dd hh:mm:00"),
+                    argu.timeType = _that.timeType2(timeFrom, timeTo);
+
+                controller.queryTable(
+                    argu
                 ).then(function (res) {
+                    _that.Reference.total = res[0].sumData;
                     _that.queryDeatilBak = _.cloneDeep(res[0]);
 
                     // 生成参考信息
-                    _that.createReference(timeFrom, timeTo);
+                    // _that.createReference(timeFrom, timeTo);
                     // 绑定总价
-                    _that.Reference.total = _that.queryDeatilBak.sumData;
+                    // _that.Reference.total = _that.queryDeatilBak.sumData;
 
                     _that.queryDeatil = res[0].dataList.map(function (item) {
                         return {
@@ -502,7 +547,9 @@ $(function () {
 
                     // 如果辅助线已经选择了内容绘制辅助线
                     if (_that.helpSelected != null) {
-                        _that.helpClick(_.find(_that.helpData, { code: _that.helpSelected }));
+                        _that.helpClick(_.find(_that.helpData, {
+                            code: _that.helpSelected
+                        }));
                     }
 
                 })
@@ -525,8 +572,8 @@ $(function () {
 
                     if (d.x > min && d.x < max) {
 
-                        if(timeTo===undefined)timeTo = d.x;
-                        if(timeFrom===undefined)timeFrom = d.x;
+                        if (timeTo === undefined) timeTo = d.x;
+                        if (timeFrom === undefined) timeFrom = d.x;
 
                         if (d.x < timeFrom) {
                             timeFrom = d.x;
@@ -548,21 +595,10 @@ $(function () {
                 _that.selector.timeFrom = timeFrom;
                 _that.selector.timeTo = timeTo;
 
-                //  为表格保存对应的值
-                singleController.queryTable(
-                    _that.getQueryArgu(new Date(timeFrom).format("yyyy-MM-dd hh:mm:00"), new Date(timeTo).format("yyyy-MM-dd hh:mm:00"), _that.timeType2(timeFrom, timeTo))
-                ).then(function (res) {
-                    _that.queryDeatilBak = _.cloneDeep(res[0]);
-                    _that.queryDeatil = res[0].dataList.map(function (item) {
-                        return {
-                            x: item.time,
-                            y: item.data,
-                        }
-                    });
-                })
-
-                // 重新查询对应的数据
-                _that.getChilds(_that.suboptionModel[0].content);
+                // 重新查询层叠的数据
+                _that.getSlideData().then(function (series) {
+                    _that.createCascadingStyle(series);
+                });
 
                 return false;
             },
@@ -726,7 +762,9 @@ $(function () {
 
                     // 如果辅助线已经选择了内容绘制辅助线
                     if (_that.helpSelected != null) {
-                        _that.helpClick(_.find(_that.helpData, { code: _that.helpSelected }));
+                        _that.helpClick(_.find(_that.helpData, {
+                            code: _that.helpSelected
+                        }));
                     }
                     resolve(res);
                 })
@@ -735,9 +773,6 @@ $(function () {
             // 创建层层叠样式表
             createCascadingStyle: function (series) {
                 var _that = this;
-
-                _that.queryDeatilBak = _.cloneDeep(series);
-
 
                 return new Promise(function (resolve) {
                     // 销毁图表
@@ -779,7 +814,9 @@ $(function () {
 
                             // 如果辅助线已经选择了内容绘制辅助线
                             if (_that.helpSelected != null) {
-                                _that.helpClick(_.find(_that.helpData, { code: _that.helpSelected }));
+                                _that.helpClick(_.find(_that.helpData, {
+                                    code: _that.helpSelected
+                                }));
                             }
 
                             //  保存最大值最小值
@@ -838,19 +875,14 @@ $(function () {
                 var _that = this;
 
                 return {
-                    "projectId": app.energyProject.projectId, //类型：String  必有字段  备注：项目id
-                    "buildingLocalId": app.energyModel.buildingLocalId, //类型：String  必有字段  备注：建筑本地编码
-                    "energyModelLocalId": app.energyModel.energyModelId, //类型：String  必有字段  备注：能耗模型本地编码
+                    "projectLocalIdList": _.map(_that.energyProject, 'projectLocalID'), //类型：String  必有字段  备注：项目id
+                    "energyModelLocalId": _that.energyModel.energyModelId, //类型：String  必有字段  备注：能耗模型本地编码
                     "timeType": timeType ? timeType : _that.timeType2(timeFrom || app.timer.startTime, timeTo || app.timer.endTime), //类型：Number  必有字段  备注：数据聚合时间类型1-时，2-天，4-月，5-年
                     "dataKind": _.get(app.query.areas, '[0].code'), //类型：Number  必有字段  备注：1-总能耗；2-单平米能耗；
                     "dataType": _.get(app.query.energy, '[0].code'), //类型：Number  必有字段  备注：1-能耗；2-费用；3-CO2排放量；4-标煤
-                    "paramList": [ //类型：Array  必有字段  备注：无
-                        { //类型：Object  必有字段  备注：无
-                            "energyItemLocalId": _.map(app.suboptionModel, 'localId').join(''), //类型：String  必有字段  备注：分项本地编码
-                            "timeFrom": timeFrom ? timeFrom : new Date(app.timer.startTime).format('yyyy-MM-dd hh:mm:ss'), //类型：String  必有字段  备注：开始时间yyyy-MM-dd HH:mm:ss（>=）
-                            "timeTo": timeTo ? timeTo : new Date(app.timer.endTime).format('yyyy-MM-dd hh:mm:ss') //类型：String  必有字段  备注：结束时间yyyy-MM-dd HH:mm:ss（<）
-                        }
-                    ]
+                    "timeFrom": timeFrom ? timeFrom : new Date(app.timer.startTime).format('yyyy-MM-dd hh:mm:ss'), //类型：String  必有字段  备注：开始时间yyyy-MM-dd HH:mm:ss（>=）
+                    "timeTo": timeTo ? timeTo : new Date(app.timer.endTime).format('yyyy-MM-dd hh:mm:ss'), //类型：String  必有字段  备注：结束时间yyyy-MM-dd HH:mm:ss（<）
+                    "showByFuncType": _.get(app.query.distinguish, '[0].code', false), //类型：Number true-区分项目类型；false-不区分项目类型
                 }
             },
             // 查询对应图表需要的信息
@@ -861,23 +893,58 @@ $(function () {
                 //  获取查询数据
                 var argu = _that.getQueryArgu();
 
-                return singleController.queryTable(argu).then(function (res) {
+                return controller.queryTable(argu).then(function (res) {
 
-                    // 保存渲染的表格的数据
                     _that.queryBak = res;
-                    _that.queryRes = res[0].dataList.map(function (item) {
-                        return {
-                            x: item.time,
-                            y: item.data,
-                        }
-                    });
 
-                    _that.queryDeatil = _.cloneDeep(_that.queryRes);
+                    _that.queryDeatilBak = _.cloneDeep(res[0]);
 
-                    //  渲染的主表格
-                    return _that.createMaster(_.cloneDeep(_that.queryRes));
+                    //是否区分
+                    if (_that.isColumnar()) {
+                        // 不区分
+                        _that.queryRes = res[0].dataList.map(function (item) {
+                            return {
+                                x: item.time,
+                                y: item.data,
+                            }
+                        });
 
-                    //  渲染的渲染的对应子表格
+                        _that.queryDeatil = _.cloneDeep(_that.queryRes);
+
+                        //  渲染的主表格
+                        return _that.createMaster(_.cloneDeep(_that.queryRes));
+
+                    } else {
+                        // 区分
+                        _that.queryRes = res[0].funcTypeDataList.reduce(function (con, item) {
+
+                            item.dataList.forEach(function (info) {
+                                //  如果没有则保存
+                                if (!_.filter(con, {
+                                        x: info.time
+                                    }).length) con.push({
+                                    x: info.time,
+                                    y: 0
+                                });
+
+                                _.find(con, {
+                                    x: info.time
+                                }).y += info.data;
+                                return con;
+                            })
+
+                            return con;
+                        }, []).sort(function (a, b) {
+                            return +new Date(a.x) - (+new Date(b.x))
+                        });
+
+                        _that.queryDeatil = _.cloneDeep(_that.queryRes);
+
+                        //  渲染的主表格
+                        return _that.createMaster(_.cloneDeep(_that.queryRes));
+                    }
+
+
                 })
             },
             //  时间控件点击选择事件
@@ -891,29 +958,42 @@ $(function () {
                     localId: localId
                 });
             },
+            // 获取建筑类型
+            getItemByBuildModelList: function (code) {
+
+                console.log('使用的时假数据需要替换');
+                return {
+                    "code": "p1", //类型：String  必有字段  备注：编码
+                    "name": "项目类型1", //类型：String  必有字段  备注：名称
+                }
+            },
             // 是柱状图表还是层叠图表
             isColumnar: function () {
-                return _.isUndefined(_.find(this.query.areas, { code: 2 }));
+
+                return _.isUndefined(_.find(this.query.distinguish, {
+                    code: true
+                }));
             },
             // 创建表格 父子图表
             createCharts: function () {
                 var _that = this;
-                if (!_that.isColumnar()) {
 
-                    _that.queryMasterTabel().then(function () {
-                        _that.getChilds(_that.suboptionModel[0].content);
-                    })
-                } else {
-                    // 生成整体图表
-                    _that.queryMasterTabel().then(function (res) {
-                        // 生成参考信息
-                        _that.createReference();
-                        // 绑定总价
-                        _that.Reference.total = _that.queryBak[0].sumData;
-                        // 生成详情图表
-                        _that.createDetail(res);
-                    });
-                }
+                _that.queryMasterTabel().then(function (res) {
+
+                    _that.Reference.total = res[0].sumData;
+
+                    // 是柱状图
+                    if (_that.isColumnar()) {
+
+                        _that.createDetail(_that.queryRes);
+                    } else {
+
+                        //  是层叠柱状
+                        _that.getSlideData(_.cloneDeep(_that.queryBak)).then(function (series) {
+                            _that.createCascadingStyle(series);
+                        })
+                    }
+                })
             },
             // 根据时间粒度来转换时间字符串
             convertTimeByTimeType: function (time, timeType) {
@@ -924,7 +1004,7 @@ $(function () {
                     2: date.format('yyyy-MM-dd'),
                     4: date.format('yyyy-MM'),
                     5: date.format('yyyy'),
-                }[timeType];
+                } [timeType];
             },
             // 创建圆形的图
             createPie: function (canvas, bili) {
@@ -948,7 +1028,7 @@ $(function () {
 
                     ctx.beginPath();
                     ctx.arc(50, 50, 40, Math.PI * 1.5, Math.PI * (backBili + 1.5), false);
-                    ctx.lineCap = 'round';//圆角
+                    ctx.lineCap = 'round'; //圆角
                     ctx.lineWidth = 5;
                     ctx.strokeStyle = color;
                     ctx.stroke();
@@ -988,7 +1068,7 @@ $(function () {
                 timeTo = timeTo || _that.selector.timeTo;
 
                 // 查询对应的环比
-                singleController.ItemEnergyCompare(_that.getQueryReferenceArgu(timeFrom, timeTo, compareType))
+                controller.ItemEnergyCompare(_that.getQueryReferenceArgu(timeFrom, timeTo, compareType))
                     .then(_that.useReferenceRes)
             },
             // 创建下级分项的参考信息 
@@ -996,11 +1076,11 @@ $(function () {
 
                 var _that = this;
 
-                _that.Reference.series = res.map(function (item) {
-
+                _that.Reference.series = res.funcTypeStatic.map(function (item) {
+                    
                     return {
-                        x: _.get(_.find(_that.energyModelList, { localId: item.energyItemLocalId }), 'name', '--'),
-                        y: item.sumData
+                        x: _that.getItemByBuildModelList(item.funcTypeCode).name,
+                        y: item.data
                     }
                 });
 
@@ -1013,13 +1093,17 @@ $(function () {
                 } finally {
 
                     _that.pie = pchart.initPie({
-                        yAxis: { title: { text: '' } },
+                        yAxis: {
+                            title: {
+                                text: ''
+                            }
+                        },
                         container: _that.$refs.pie,
                         series: [{
                             data: _.cloneDeep(_that.Reference.series),
                             point: {
                                 events: {
-                                    click: function () { }
+                                    click: function () {}
                                 }
                             }
                         }],
@@ -1062,7 +1146,7 @@ $(function () {
                     timeTo: _that.selector.timeTo
                 }
 
-                singleController.GetAssistantData(argu).then(function (res) {
+                controller.GetAssistantData(argu).then(function (res) {
 
                     _that.detailTable.series.forEach(function (item) {
                         if (item.type == 'line') item.remove();
@@ -1081,24 +1165,24 @@ $(function () {
         watch: {
             "Reference.parent": function (newValue) {
                 var _that = this;
-                _that.createPie(_that.$refs.parentchart, newValue / _that.Reference.total * 100);
+                _that.createPie(_that.$refs.parentchart,  _that.Reference.total/newValue * 100);
             },
             "Reference.superparent": function (newValue) {
                 var _that = this;
-                _that.createPie(_that.$refs.superparent, newValue / _that.Reference.total * 100);
+                _that.createPie(_that.$refs.superparent, _that.Reference.total/newValue * 100);
             },
             "Reference.total": function (newValue) {
                 var _that = this;
-                _that.createPie(_that.$refs.parentchart, _that.Reference.parent / newValue * 100);
-                _that.createPie(_that.$refs.superparent, _that.Reference.superparent / newValue * 100);
+                _that.createPie(_that.$refs.parentchart, newValue/_that.Reference.parent  * 100);
+                _that.createPie(_that.$refs.superparent, newValue/_that.Reference.superparent  * 100);
             },
         },
         computed: {
             energyModelTree: function () {
                 var _that = this;
                 return _.filter(_that.energyModelList, {
-                    parentLocalId: false
-                })
+                        parentLocalId: false
+                    })
                     .map(function (info) {
 
                         var item = _.clone(info);
@@ -1163,6 +1247,9 @@ $(function () {
 
 
     app.$nextTick(function () {
+
+        // 查询对应的能耗模型树
+        app.queryModelTree();
 
         app.computeWidth();
 
