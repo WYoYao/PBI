@@ -379,7 +379,6 @@ $(function () {
                                 _that.pie.destroy()
                             }
                         } catch (error) {
-
                         }
 
                         _that.createCharts();

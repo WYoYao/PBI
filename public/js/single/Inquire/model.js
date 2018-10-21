@@ -1410,7 +1410,7 @@ $(function () {
             energyModelTree: function () {
                 var _that = this;
                 return _.filter(_that.energyModelList, {
-                    parentLocalId: "-1"
+                    parentLocalId: false
                 })
                     .map(function (info) {
 

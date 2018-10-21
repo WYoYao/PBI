@@ -440,12 +440,12 @@ progress::-webkit-progress-value {
     height: 0px;
 }
 
-.singleSlideChartHeightNoReport{
-    height:calc(100% - 40px);
+.singleSlideChartHeightNoReport {
+    height: calc(100% - 40px);
 }
 
-.singleSlideChartHeightWithReport{
-    height:calc(100% - 231px);
+.singleSlideChartHeightWithReport {
+    height: calc(100% - 231px);
 }
 
 /*# sourceMappingURL=SingleSlide.css.map */
