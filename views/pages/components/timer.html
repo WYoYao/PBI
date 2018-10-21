@@ -6,7 +6,7 @@
            <panel timetype="dwMy" align="left" double="true" startyear="2003" endyear="2018" commontime="['d','pd','w','pw','M','pM','y','py']"></panel>
        </ptime-calendar>
    </div>
-   <div class="line same">
+   <div class="line same" v-if="!hidebtn" v-show="!isHideCom">
        <!-- <div class="imgborder on"> -->
         <div class="imgborder" v-for="(item,index) in comsFilter" :class="time.timeType == item.code?'on':''" @click.stop="compareClick(item)">
            <img class="init" :src="item.init" :alt="item.alt">
@@ -52,6 +52,215 @@
                 cb: {
                     type: Function,
                     required: true,
+                },
+                hidebtn: {
+                    type: Boolean
+                }
+            },
+            methods: {
+                // 时间选择时间
+                handlerClick: function () {
+                    var argu = $(this.$refs.ptime).psel();
+                    // 设置对应的时间类型
+                    this.time = argu;
+
+                    _.isFunction(this.cb) ? this.cb(_.assign({}, argu, { name: $(this.$refs.ptime).find('.per-calendar-text').text() })) : void 0;
+                },
+                // 鼠标移入控件的时候的绑定对应的全局事件
+                addHandlerClickToWindow: function () {
+                    window.timerClick = this.handlerClick;
+                },
+                // 获取一年的周数量
+                getFullYearWeeks: function (date) {
+                    date = new Date(date);
+                    return _.range(12).map(function (num) {
+                        return new Date(date.format(date.getFullYear().toString() + '/' + num.toString() + '/01 00:00:00')).getChinaWeekArr();
+                    }).reduce(function (con, item) {
+                        return con.concat(item);
+                    }, [])
+                },
+                // 同比点击事件
+                compareClick: function (item) {
+                    // this.timeType = item.code;
+                    var _that = this;
+                    var startTime = new Date(this.time.startTime);
+                    var realEndTime = new Date(this.time.realEndTime);
+
+                    var timeType = this.time.timeType;
+
+                    if (item.code == "year") {
+
+                        if (timeType == 'd') {
+                            startTime.setFullYear(startTime.getFullYear() - 1);
+                            realEndTime.setFullYear(realEndTime.getFullYear() - 1);
+                        } else if (timeType == 'w') {
+
+                            // 获取是今年的第几周
+                            var index = _that.getFullYearWeeks(new Date(startTime)).map(function (item) {
+                                return item.startTime;
+                            }).indexOf(startTime.getTime())
+
+                            // 获取去年的周数
+                            var o = _that.getFullYearWeeks(new Date(startTime).setFullYear(new Date(startTime).getFullYear() - 1))[index]
+
+                            //附加去年的开始时间和结束时间
+                            startTime = o.startTime;
+                            realEndTime = o.endTime;
+                        } else if (timeType == 'M') {
+                            var date = new Date(startTime);
+                            var month = date.getMonth();
+                            var year = date.getFullYear();
+                            var o = _.range(12).map(function (num) {
+                                num = num + 1;
+                                var d = new Date((year - 1).toString() + '/' + num.toString() + '/01 00:00:00');
+                                return {
+                                    startTime: d.getTime(),
+                                    realEndTime: d.setMonth(num)
+                                }
+                            })[month];
+                            //附加去年的开始时间和结束时间
+                            startTime = o.startTime;
+                            realEndTime = o.realEndTime;
+                        }
+
+
+                    } else if (item.code == "month") {
+                        if (timeType == 'd') {
+                            startTime = new Date(startTime.setMonth(startTime.getMonth() - 1));
+                            realEndTime = new Date(realEndTime.setMonth(realEndTime.getMonth() - 1));
+
+                            //  如果出现上个月没有这一天的情况直接取上个月最后一天
+                            if (startTime.getMonth() == new Date(_that.time.startTime).getMonth()) {
+                                realEndTime = new Date(new Date(_that.time.startTime).getFullYear() + '/' + (new Date(_that.time.startTime).getMonth() + 1).toString() + '/01 00:00:00').getTime();
+                                startTime = realEndTime - (24 * 60 * 60 * 1000);
+                            }
+                        } else if (timeType == 'w') {
+
+                            var index = new Date(startTime).getChinaWeekArr().map(function (item) {
+                                return item.startTime;
+                            }).indexOf(startTime.getTime());
+
+                            var o = new Date(new Date(startTime).setMonth(new Date(startTime).getMonth() - 1)).getChinaWeekArr()[index];
+                            startTime = o.startTime;
+                            realEndTime = o.endTime;
+                        }
+
+                    } else if (item.code == "week") {
+
+                        startTime = startTime.setDate(startTime.getDate() - 7);
+                        realEndTime = realEndTime.setDate(realEndTime.getDate() - 7);
+                    }
+
+                    $(this.$refs.ptime).psel(Object.assign({}, this.time, {
+                        startTime: +startTime,
+                        endTime: +realEndTime - 1000,
+                        realEndTime: +realEndTime,
+                        timeType: timeType
+                    }));
+                }
+            },
+            computed: {
+                //  是否隐藏对应的周期选择
+                isHideCom: function () {
+                    var timeType = this.time.timeType;
+                    if (timeType == 'd') {
+                        return (this.time.realEndTime - this.time.startTime) > (24 * 60 * 60 * 1000);
+                    } else if (timeType == 'w') {
+                        return (this.time.realEndTime - this.time.startTime) > (7 * 24 * 60 * 60 * 1000);
+                    } else if (timeType == 'y') {
+                        return new Date(this.time.realEndTime).getFullYear() - new Date(this.time.startTime).getFullYear() > 1;
+                    } else if (timeType == 'M') {
+                        return new Date(this.time.realEndTime).getMonth() - new Date(this.time.startTime).getMonth() > 1;
+                    }
+                },
+                // 根据选择的时间类型来进行的筛选
+                comsFilter: function () {
+
+                    if (this.time.timeType == "d") {
+                        return this.coms;
+                    } else if (this.time.timeType == "w") {
+                        return this.coms.filter(function (item) {
+                            return ['year', 'month'].indexOf(item.code) != -1;
+                        })
+                    } else if (this.time.timeType == "M") {
+                        return this.coms.filter(function (item) {
+                            return ['year'].indexOf(item.code) != -1;
+                        })
+                    }
+
+                    return [];
+                }
+            },
+            watch: {
+
+            },
+            mounted: function () {
+                this.handlerClick();
+                window.timerClick = this.handlerClick;
+            },
+            beforeMount: function () {
+
+            }
+        })
+    })
+</script>
+
+<script type="text/html" id="mytimer">
+  <div class="timer" @mouseenter="addHandlerClickToWindow">
+   <div class="line">
+       <ptime-calendar ref="ptime" orientation="down" sel="timerClick">
+           <panel timetype="y" align="left" double="true" startyear="2003" endyear="2018" commontime="['y','py']"></panel>
+       </ptime-calendar>
+   </div>
+   <div class="line same" v-if="!hidebtn">
+       <!-- <div class="imgborder on"> -->
+        <div class="imgborder" v-for="(item,index) in comsFilter" :class="time.timeType == item.code?'on':''" @click.stop="compareClick(item)">
+           <img class="init" :src="item.init" :alt="item.alt">
+           <img class="hove" :src="item.hove" :alt="item.alt">
+        </div>
+   </div>
+</div>
+</script>
+<script>
+
+    $(function () {
+        Vue.component('mytimer', {
+            template: "#mytimer",
+            data: function () {
+                return {
+                    // 日期控件中的日期类型
+                    timeType: "d",
+                    // 同比集合
+                    coms: [{
+                        init: "../../../images/上周同期-2@2x.png",
+                        hove: "../../../images/上周同期-1@2x.png",
+                        alt: "上周同期",
+                        code: "week",
+                    }, {
+                        init: "../../../images/上月同期-2@2x.png",
+                        hove: "../../../images/上月同期-1@2x.png",
+                        alt: "上月同期",
+                        code: "month",
+                    }, {
+                        init: "../../../images/去年同期-2@2x.png",
+                        hove: "../../../images/去年同期-1@2x.png",
+                        alt: "去年同期",
+                        code: "year",
+                    }],
+                    time: {
+                        timeType: "d",
+                        startTime: 1537027200000,
+                        endTime: 1537113599000,
+                    }
+                }
+            },
+            props: {
+                cb: {
+                    type: Function,
+                    required: true,
+                },
+                hidebtn: {
+                    type: Boolean
                 }
             },
             methods: {

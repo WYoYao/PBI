@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/css/single/cobxs.css">
 <script type="text/html" id="cobxs">
 
     <div class="vcheckbox" @click.stop="void 0">
@@ -18,7 +19,7 @@
                 </span>
                 <!-- <ul class="list" :class="open?'on':''" v-show="open"> -->
                  <ul class="list" :class="open?'on':''">
-                    <li v-for="(item,index) in (_.isArray(datasource)?datasource:[])"  :pdisabled="item.lock" class="item" @click="handlerClick(item)" :title="item[name]" v-text="item[name]"></li>
+                    <li v-for="(item,index) in (_.isArray(datasource)?datasource:[])"  :pdisabled="item.lock" :class="selected.indexOf(item[primarykey])!=-1?'on':''" class="item" @click="handlerClick(item)" :title="item[name]" v-text="item[name]"></li>
                 </ul>
             </div>
         </div>
@@ -87,6 +88,7 @@
 
         },
         mounted: function () {
+
             this.selected = _.map(_.filter(this.datasource, 'selected'), 'code');
             this.computewidth();
         },

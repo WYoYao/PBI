@@ -1,29 +1,25 @@
 <script type="text/html" id="grid-template">
-    <div>
-        <div id="commonGrid" class="commonGrid cgrid" v-for="item in renderlist">
+    <div class="chartGridContainer" v-bind:style="{height:containerHeight}">
+        <div id="commonGrid" class="commonGrid cgrid" v-for="item in renderlist" v-bind:style="{height:gridHeight}">
                 <div class="title">
                     <ul>
-                        <li  :style="{width:(100/item.renderTit['length'] + '%')}" v-for="info in item.renderTit">
-                            <span v-text="info.name">
+                        <li v-for="info in item.renderTit" :style="{width:(100/item.renderTit['length'] + '%')}">
+                            <span v-text="info.name" :title="info.name">
                                 
                             </span>
                         </li>
                     </ul>
                 </div>
-                <div style="height:30px">
-        
-                </div>
-                <div class="content" :data="JSON.stringify(item.renderCon)">
-                    <ul>
+                <div class="chartContentGrid">
+                    <ul v-bind:style="{height:gridConUlHeight}">
                         <li v-for="options in item.renderCon">
-                            <span :style="{width:(100/options['length'] + '%')}" v-for="op in options" v-text="op">
+                            <span v-for="op in options" v-text="op" :title="op" :style="{width:(100/options['length'] + '%')}">
                                 
                             </span>
                         </li>
                     </ul>
                 </div>
-        
-            </div>
+        </div>
     </div>
     
 </script>
@@ -35,6 +31,9 @@
         data: function () {
             return {
                 number: "",
+                gridHeight: '260px',
+                containerHeight: '260px',
+                gridConUlHeight: ' calc(100% - 30px)'
             }
         },
         computed: {
@@ -44,39 +43,38 @@
 
         },
         watch: {
-
+            renderlist: function (newVal, oldVal) {
+                setHeight.call(this);
+            }
         },
-        mounted() {
-
+        created() {
+            setHeight.call(this);
         }
 
-    })
+    });
+
+    function setHeight() {
+        var height = this.renderlist[0].renderCon.length * 30 + 30;
+        var oneGridHeight = Math.min(260, height);
+        this.gridHeight = oneGridHeight + 'px';
+        this.containerHeight = (oneGridHeight * this.renderlist.length) + 'px';
+        this.gridConUlHeight = (oneGridHeight - 30) + 'px';
+    };
 </script>
-<script>
-    //滚动时表头固定
-    // $(function () {
-    //     var pre_scrollTop = 0;
-    //     pre_scrollTop = $("#commonGrid").scrollTop();
-    //     $("#commonGrid").scroll(function () {
-    //         // debugger
-    //         var scrollTop = $("#commonGrid").scrollTop();
-    //         if (pre_scrollTop != scrollTop) {
-    //             pre_scrollTop = scrollTop;
-    //             $("#commonGrid .title").css("top", pre_scrollTop);
-    //         }
-    //     })
-    // })
-</script>
+
 <style>
+    .chartGridContainer {
+        height: 260px;
+        overflow: hidden;
+        overflow-y: auto;
+    }
+
     .cgrid {
         position: relative;
         width: 100%;
-        max-height: 300px;
-        min-height: 160px;
-        max-width: 100%;
-        overflow: scroll;
-        overflow: overlay;
-
+        height: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
     }
 
     .cgrid::-webkit-scrollbar {
@@ -103,28 +101,32 @@
     }
 
     .cgrid .title ul li {
-        /* width:130px; */
-        /* min-width:130px; */
         height: 30px;
         line-height: 30px;
         text-align: center;
         background: #8b959a;
+        min-width: 130px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .cgrid .title ul li span {
         color: #fff;
     }
 
-    .cgrid .content {
-        /* max-height: 100px; */
-        /* margin-top: 30px; */
+    .chartContentGrid {
+        overflow-x: hidden;
+        overflow-y: auto;
+        position: absolute;
+        top: 30px;
+        height: calc(100% - 30px);
+        min-width: 100%;
     }
 
-    .cgrid .content ul {
+    .cgrid .chartContentGrid ul {
         /* padding: 0 20px; */
-        max-width: 100%;
-        overflow: scroll;
-        height: 200px;
+
         display: flex;
         flex-flow: column nowrap;
         /* align-items: center; */
@@ -133,7 +135,7 @@
         border-bottom: 1px solid #d9e2e8;
     }
 
-    .cgrid .content ul li {
+    .cgrid .chartContentGrid ul li {
         height: 30px;
         min-height: 30px;
         line-height: 30px;
@@ -143,14 +145,16 @@
         flex-flow: row nowrap;
     }
 
-    .cgrid .content ul li span {
+    .cgrid .chartContentGrid ul li span {
         display: block;
-        /* min-width: 130px; */
-        /* width: 130px; */
+        min-width: 130px;
         text-align: center;
         border-right: 1px solid #d9e2e8;
         border-bottom: 1px solid #d9e2e8;
         background: #fff;
         box-sizing: border-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 </style>

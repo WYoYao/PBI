@@ -7,4 +7,8 @@ module.exports = function (app) {
 
     //根据二级路由渲染不同的页面
     app.get('/bi/:pageid', controller.renderPage());
+
+
+    //下载图表、报表、报告
+    app.post('/downloadReport', controller.downloadReport());
 };

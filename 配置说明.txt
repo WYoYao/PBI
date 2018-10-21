@@ -1,0 +1,35 @@
+﻿项目配置说明
+一、项目配置文件
+	文件路径：pweb_nodeAppConfigList/BI_config.js
+	配置文件分为公共配置、单独项目配置两种：
+		1、公共配置:_public_config.js
+		2、单独项目配置:项目名_config.js
+		
+	公共配置属性包括：	   
+		1、 静态资源地址：commonLibUrl    
+		2、 服务端静态资源引用地址：serviceCommonLibUrl  备注：当客户端访问的静态资源地址和服务器上访问的静态资源地址不一样时，需配置
+		3、 数据接口地址：serviceUrl
+		4、 下载地址：downFileServiceUrl
+		5、 上传地址：fileServiceUrl
+		6、 服务器上访问框架的地址：serviceFrameUrl  
+		7、 访问框架的地址：frameUrl
+		8、	isSlideValid   登录时是否需要滑动验证码
+	
+    单独项目配置属性包括：
+		1、 端口号：port        
+		2、 工单相关部分数据接口地址：baseServiceUrl   
+		3、 事件管理部分数据，BI分析部分数据接口地址: jsonStringServerUrl	 
+	
+    配置示例：
+	1、port:'9092'
+	2、commonLibUrl:'http://192.168.100.25:9000/'
+	3、jsonStringServerUrl：http://192.168.100.210:8080/EMS_SaaS_Web/Spring/MVC/entrance/unifier/
+
+二、配置上传、下载文件的系统编码及密钥
+    文件路径：node_modules/common/tool.js
+	配置属性包括：
+	1、编码：systemCode
+	2、密钥：systemSecret
+	
+	配置示例：
+	1、systemCode = 'saas'

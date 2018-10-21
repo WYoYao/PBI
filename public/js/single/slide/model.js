@@ -1,21 +1,3 @@
-// 工具函数集合
-var tools = {
-    /* id生成器 */
-    generatorId: (function () {
-        var basic = 'idName';
-        var num = 0;
-        return function (idName) {
-            return idName ? idName : basic + num++;
-        }
-    })(),
-    /* 随机数生成器 */
-    generatorRandom: function (start, end, digit) { // 最小值 最大值 保留位数
-        var val = Math.random() * (end - start) + start;
-        val = digit ? Number(val.toFixed(digit)) : val;
-        return val;
-    }
-}
-
 // Vue实例
 $(function () {
     window.slide = new Vue({
@@ -49,31 +31,31 @@ $(function () {
                 isSelected: true,
                 name: "默认",
                 value: "0",
-                unit: "kwh"
+                unit: "kWh"
             }, {
                 isSelected: false,
                 name: "自定义",
                 value: "0",
-                unit: "kwh"
+                unit: "kWh"
             },],
 
             setMin: [{
                 isSelected: true,
                 name: "默认",
                 value: "0",
-                unit: "kwh"
+                unit: "kWh"
             }, {
                 isSelected: false,
                 name: "自定义",
                 value: "0",
-                unit: "kwh"
+                unit: "kWh"
             },],
 
             noDataChartShow: true, //无数据展示
 
             scChartShow: false, //是否显示报表
 
-            scReportShow: true, //是否显示表格
+            scReportShow: false, //是否显示表格
 
             downLoadBlockIsShow: false, //是否显示下载图表
 
@@ -81,10 +63,10 @@ $(function () {
             columnConfigData: { // 柱状图配置
                 // text_title: '这是一个标题',
                 series: [{
-                    name: '功耗',
-                    data: [],
-                    color: '#02A9D1',
-                    pointWidth: 92,
+                    //name: '功耗',
+                    data: []
+                    //color: '#02A9D1',
+                    //pointWidth: 92,
                 }]
             },
 
@@ -92,26 +74,23 @@ $(function () {
             //顶部筛选条件
             // 图标报表
             tableTypes: [{
-                name: "图表",
-                code: 0,
-            }, {
                 name: "报表",
-                code: 1,
+                code: 1
             }],
             // 计量方式
             measurementTypes: [{
                 name: "总量",
                 code: 1,
-            },
-            {
+                selected: true
+            }, {
                 name: "单平米能耗",
                 code: 2,
-            },
-            ],
+            }],
             //单位
             unitTypes: [{
                 name: "能耗",
                 code: 1,
+                selected: true
             },
             {
                 name: "费用",
@@ -130,6 +109,7 @@ $(function () {
             dimensionalityTypes: [{
                 name: "滑动按月",
                 code: 2,
+                selected: true
             },
             {
                 name: "滑动按日",
@@ -161,15 +141,15 @@ $(function () {
                 table: [], //表格
                 measurement: [{
                     name: "总量",
-                    code: 0,
+                    code: 1,
                 }], //计量
                 unit: [{
                     name: "能耗",
-                    code: 0,
+                    code: 1,
                 }], //单位
                 dimensionality: [{
                     name: "滑动按月",
-                    code: 0,
+                    code: 2,
                 }], //区分维度
                 calculate: [], //数值
             },
@@ -177,7 +157,13 @@ $(function () {
             onlineExplainFlag: false, //是否显示在线提示信息
 
             energyPointList: [],//能量拐点列表
-
+            chartUnit: 'kWh',
+            maxData: 0,
+            minData: 0,
+            avgData: 0,
+            midData: 0,
+            yAxisMaxData: 0,
+            yAxisMinData: 0
         },
         methods: {
             //选择项目相关
@@ -192,11 +178,16 @@ $(function () {
                 this.projects = item;
                 this.modelids = item1;
                 this.showEnergyModel = false;
+                var projectItem = item[0] || {};
+                var energyModelItem = item1[0];
+
                 this.searchConditionObj.projectSaveObj = {
-                    name: item[0].projectName,
-                    id: item[0].projectId,
-                    modelName: item1[0].energyModelName,
-                    energyModelId: item1[0].energyModelId
+                    projectId: projectItem.projectId,
+                    projectLocalID: projectItem.projectLocalID,
+                    projectName: projectItem.projectName,
+                    buildingLocalId: energyModelItem.buildingLocalId,
+                    energyModelId: energyModelItem.energyModelId,
+                    energyModelName: energyModelItem.energyModelName
                 }
                 this.addProjectTxt = item[0].projectName + '>' + item1[0].energyModelName;
 
@@ -209,8 +200,8 @@ $(function () {
 
                 //获取分项树请求
                 var queryParam = {
-                    buildingLocalId: that.searchConditionObj.projectSaveObj.id,
-                    energyModelLocalId: that.searchConditionObj.projectSaveObj.energyModelId
+                    buildingLocalId: that.searchConditionObj.projectSaveObj.buildingLocalId,
+                    energyModelId: that.searchConditionObj.projectSaveObj.energyModelId
                 }
                 singleCompareController.GetEnergyModelTreeOfBuilding(queryParam).then(function (res) {
 
@@ -219,14 +210,6 @@ $(function () {
                     that.showSubentryTemp = true;
                     console.log(that.subentryTree);
                 })
-
-            },
-
-            //添加时间相关
-            confirmCurrTime: function () {
-                var that = this;
-                var time = $("#selectTimeLine").psel();
-                that.searchConditionObj.timeSaveArr = [time];
 
             },
             energyModelTree: function (data, parent_id) { //格式化分项树
@@ -245,15 +228,6 @@ $(function () {
                 }
                 return tree;
             },
-            addSubentryFn: function (item) { //添加分项
-                var that = this;
-
-                that.searchConditionObj.subentrySaveArr = [{
-                    obj_id: arguments[0].obj_id,
-                    obj_name: arguments[0].obj_name
-                }];
-
-            },
 
 
             setYAxisShowFn: function () { //显示设置Y轴坐标弹出框
@@ -262,25 +236,31 @@ $(function () {
             setYAxisHideFn: function () { //隐藏设置Y轴坐标弹出框
                 this.setYAxisShow = false;
             },
-            setYdataFn: function (item1, item2) { //确认设置Y轴坐标
+            setYdataFn: function (max, min) { //确认设置Y轴坐标
 
-                this.setYAxisShow = false;
+                slide.singleProjectSlideChart.yAxis[0].setExtremes(min, max);
             },
             drawingChartData: function (obj) { //绘制柱状图
                 var that = this;
                 var arr = [];
+                var max = 0;
+                var min = 0;
                 arr = obj[0].dataList.map(function (item) {
+                    max = Math.max(max, item.data);
+                    min = Math.min(min, item.data);
                     return {
                         x: item.timeSpan,
-                        y: item.data
-                    }
+                        y: item.data,
+                        unit: that.chartUnit
+                    };
                 });
                 that.columnConfigData.series[0].data = JSON.parse(JSON.stringify(arr));
-                // debugger;
-                that.columnConfigData.series[0].name = "xxx";
-                that.columnConfigData.series[0].color = "#02A9D1";
-                that.columnConfigData.series[0].pointWidth = 80;
-
+                that.columnConfigData.series[0].name = (slide.searchConditionObj.subentrySaveArr[0] || {}).name;
+                that.yAxisMaxData = max;
+                that.yAxisMinData = min;
+                Vue.nextTick(function () {
+                    that.drawPlotLine();
+                });
             },
             addSubetryHide: function () {
                 this.showSubentryTemp = false;
@@ -317,17 +297,48 @@ $(function () {
             computeWidth: function () {
                 //  计算宽度是否够容纳
                 //                      整体宽度                             图表报表          下载详情图表                  计量方式                             单位                        区分维度                排序方式                                 
-                // debugger
+
                 this.iscombox = ((this.$refs.tab.clientWidth - this.$refs.vcheckbox1.getWidth() - 84 - this.$refs.vcheckbox2.getWidth() - this.$refs.cobxs1.getWidth() - this.$refs.cobxs2.getWidth() - this.$refs.cobxs3.getWidth() - 20) < 0);
+            },
+            //画辅助线
+            drawPlotLine: function () {
+                var that = this;
+                that.query.calculate.forEach(function (curr) {
+                    var value = curr.code == 0 ? that.maxData : curr.code == 1 ? that.minData : curr.code == 2 ? that.avgData : that.midData;
+                    slide.singleProjectSlideChart.addPlotLineToYAxis({
+                        id: curr.code.toString(),
+                        value: value,
+                        label: { text: curr.name + '：' + value }
+                    });
+                });
             },
             createHandlerClick: function (type) { //导航选中选项
                 var that = this;
-                // 
-                // 
                 return function (arr) {
-                    debugger
                     that.query[type] = arr;
-                    that.AssemblyParameterList(that.query);
+                    switch (type) {
+                        case 'table':   //报表
+                            that.scReportShow = arr.length > 0;
+                            Vue.nextTick(function () {
+                                biTool.setChartSize(slide.singleProjectSlideChart);
+                            });
+                            break;
+                        case 'measurement': //计量方式：总量、单平米
+                        case 'unit':    //能耗类型：能耗、费用、标煤等
+                        case 'dimensionality':      //数据统计方式：滑动按月、滑动按日
+                            $('#divConfirm').click();
+                            break;
+                        case 'calculate':       //辅助数据类型：最大值、最小值等
+                            //先移除已有的
+                            that.calculateTypes.forEach(function (curr) {
+                                slide.singleProjectSlideChart.removePlotLineToYAxis({ id: curr.code.toString() });
+                            });
+                            that.drawPlotLine();
+                            break;
+                    }
+                    // that.AssemblyParameterList(that.query);
+
+                    that.chartUnit = biTool.getChartUnit(that.query.measurement[0].code, that.query.unit[0].code);
                 }
 
             },
@@ -335,10 +346,10 @@ $(function () {
                 var that = this;
                 var arr1 = [];
 
-                var energyItemLocalId = that.searchConditionObj.subentrySaveArr[0].localId;
+                var energyItemName = that.searchConditionObj.subentrySaveArr[0].name;
                 arr.forEach(function (item) {
                     arr1.push({
-                        dataListArr: [{ content: item.dataList, name: energyItemLocalId }]
+                        dataListArr: [{ content: item.dataList, name: energyItemName }]
                     });
                 })
                 arr1.forEach(function (item) {
@@ -355,12 +366,12 @@ $(function () {
                     item.renderCon = [];
                     item.dataListArr.forEach(function (info, index) {
                         item.renderTit.push({
-                            name: info.name
+                            name: info.name + '(' + that.chartUnit + ')'
                         });
 
                         info.content.forEach(function (c, i) {
                             item.renderCon[i] = item.renderCon[i] || [];
-                            item.renderCon[i].push(info.content[i].data);
+                            item.renderCon[i].push(info.content[i].data || info.content[i].data === 0 ? info.content[i].data : pconst.emptyReplaceStr);
                             if (index == 0) {
                                 item.renderCon[i].unshift(info.time[i]);
                             }
@@ -372,7 +383,6 @@ $(function () {
                         name: "时间"
                     });
                 })
-                // debugger
                 return arr1;
             },
             AssemblyParameterList: function (obj) {//选中选项后构造请求数据
@@ -397,7 +407,6 @@ $(function () {
                                 timeTo: new Date(val.timeSaveArr[0].endTime).format("yyyy-MM-dd hh:mm:ss"),
                             }
 
-
                             if (that.scChartShow) {//图表是否显示
                                 that.getChartListFn(paramList, unit[0].code, measurement[0].code, dimensionality[0].code);
                             }
@@ -412,71 +421,83 @@ $(function () {
                 var that = this;
 
                 var val = that.searchConditionObj;
-                if (val.projectSaveObj.hasOwnProperty('id') && val.projectSaveObj.id != '') { //存在项目id ， 模型id
-                    //存在时间 第一项不能为请选择时间
-                    if (val.timeSaveArr.length > 0) {
-
-                        if (val.subentrySaveArr.length > 0 && val.subentrySaveArr[0].obj_id != '') { //分项id不为空
-                            var paramList = [];
-                            var project = val.projectSaveObj;
-                            for (var i = 0, time = val.timeSaveArr; i < time.length; i++) {
-                                for (var j = 0, subentry = val.subentrySaveArr; j < subentry.length; j++) {
-                                    if (time[i] && subentry[j] && time[i].text != "请选择时间") {
-                                        // new Date(1536681599000).format("yyyy-MM-dd hh:mm:ss")  //时间戳转换
-                                        paramList.push({
-                                            // time: time[i],
-                                            // project: project,
-                                            energyItemLocalId: subentry[j].id,
-                                            timeFrom: new Date(time[i].startTime).format("yyyy-MM-dd hh:mm:ss"),
-                                            timeTo: new Date(time[i].endTime).format("yyyy-MM-dd hh:mm:ss"),
-                                        });
-
-                                    }
-                                }
-                            }
-                            that.qParamList = paramList;
-                            debugger;
-                            var timeType = ptool.formatGranularityToJava($("#selectTimeLine"));
-                            //获取图表数据请求
-                            that.getChartListFn(paramList, timeType);
-
-                        }
-
-                    } else {
-
+                if (val.projectSaveObj.projectId && val.projectSaveObj.energyModelId) { //存在项目id ， 模型id
+                    if (val.subentrySaveArr.length > 0 && val.subentrySaveArr[0].localId) { //分项id不为空
+                        //获取图表数据请求
+                        that.getChartListFn();
                     }
                 }
 
             },
-            getChartListFn: function (paramList, timeType, dataKind, dataType) { //获取图表请求数据
+            getChartListFn: function () { //获取图表请求数据
                 var that = this;
-                var _buildingLocalId = that.searchConditionObj.projectSaveObj.id;
-                var _energyModelLocalId = that.searchConditionObj.projectSaveObj.energyModelId;
-                var _dataKind = dataKind || 1;
-                var _dataType = dataType || 1;
+                var timeObj = $('#selectTimeLine').psel();
+                var energyItem = that.searchConditionObj.subentrySaveArr[0] || {};
+                var projectAndEnergyModel = that.searchConditionObj.projectSaveObj;
+                var slideCode = (that.query.dimensionality[0] || {}).code;
+                var dataKindCode = (that.query.measurement[0] || {}).code;
+                var dataTypeCode = (that.query.unit[0] || {}).code;
                 var queryParam = {
-                    buildingLocalId: _buildingLocalId,
-                    energyModelLocalId: _energyModelLocalId,
-                    timeType: timeType, //查询 按天 or 月
-                    dataKind: _dataKind, //能耗总量
-                    dataType: _dataType, //能耗  费用
-                    paramList: paramList
+                    projectId: projectAndEnergyModel.projectId,
+                    buildingLocalId: projectAndEnergyModel.buildingLocalId,
+                    energyModelId: projectAndEnergyModel.energyModelId,
+                    energyItemLocalId: energyItem.localId,
+                    area: (energyItem.area || 0).toString(),
+                    timeType: slideCode == 2 ? 4 : slideCode == 1 ? 2 : 4, //查询 按天 or 月 2-天，4-月
+                    dataKind: dataKindCode || 1,                //类型：Number  必有字段  备注：1-能耗总量；2-单平米能耗；
+                    dataType: dataTypeCode || 1,                //类型：Number  必有字段  备注：1-能耗；2-费用；3-CO2排放量；4-标煤
+                    timeFrom: new Date(timeObj.startTime).format("yyyy-MM-dd hh:mm:ss"),
+                    timeTo: new Date(timeObj.realEndTime).format("yyyy-MM-dd hh:mm:ss")
                 };
 
                 singleSlideController.GetItemSlidingEnergyByTime(queryParam).then(function (res) {
+                    (res || []).forEach(function (curr) {
+                        curr.avgData = Math.toFixed({
+                            value: curr.avgData,
+                            isByInt: true,
+                            isToSpecial: false
+                        });
+                        that.avgData = curr.avgData;
 
+                        curr.maxData = Math.toFixed({
+                            value: curr.maxData,
+                            isByInt: true,
+                            isToSpecial: false
+                        });
+                        that.maxData = curr.maxData;
+
+                        curr.midData = Math.toFixed({
+                            value: curr.midData,
+                            isByInt: true,
+                            isToSpecial: false
+                        });
+                        that.midData = curr.midData;
+
+                        curr.minData = Math.toFixed({
+                            value: curr.minData,
+                            isByInt: true,
+                            isToSpecial: false
+                        });
+                        that.minData = curr.minData;
+
+                        (curr.dataList || []).forEach(function (currDataObj) {
+                            currDataObj.data = Math.toFixed({
+                                value: currDataObj.data,
+                                isByInt: true,
+                                isToSpecial: false
+                            });
+                        });
+                    });
                     that.dataListSubentry = res;
                     that.drawingChartData(res);
                     that.noDataChartShow = false;
                     that.scChartShow = true;
                     //转换表格数据
                     that.gridRenderList = that.transGridRenderListFn(res);
-                    debugger;
                     //转换右侧数据列表数据
 
                     //存储右侧 显示列表数据
                     that.energyPointList = res[0].inflectionPoints;
-                    debugger;
 
 
                 });
@@ -488,42 +509,62 @@ $(function () {
             onlineExplainLeave: function () { //在线说明
                 this.onlineExplainFlag = false;
             },
+            /*下载图表、报表*/
+            downReport: function (type) {
+                switch (type) {
+                    case 1: //图表
+                        biTool.downReportImg({
+                            container: '#divSingleSlidChartParent',
+                            downName: '单项目滑动平均图表'
+                        });
+                        break;
+                    case 2: //报表
+                        var timeObj = $('#selectTimeLine').psel();
+                        var slideCode = (this.query.dimensionality[0] || {}).code;
+                        var formatStr = slideCode == 1 ? 'y.M.d' : 'y.M';
+
+                        var data1 = ['项目名称', '计量方式', '能耗模型', '单位', '分析时间', '所选分项'];
+
+                        var projectInfo = this.searchConditionObj.projectSaveObj;
+                        var projectName = projectInfo.projectName;
+                        var kindName = (this.query.measurement[0] || {}).name;
+                        var modelName = projectInfo.energyModelName;
+                        var unit = this.chartUnit;
+                        var timeStr = new Date(timeObj.startTime).format(formatStr) + '~' + new Date(timeObj.endTime).format(formatStr);
+                        var energyItemStr = (this.searchConditionObj.subentrySaveArr[0] || {}).name;
+                        var data2 = [projectName, kindName, modelName, unit, timeStr, energyItemStr];
+
+                        var data = [data1, data2];
+                        data.push(['', '', '', '', '', '']);
+
+                        var _obj = slide.gridRenderList[0] || {};
+                        var titleData = [];
+                        _obj.renderTit.forEach(function (currTit) {
+                            titleData.push(currTit.name);
+                        });
+                        data.push(titleData);
+
+                        _obj.renderCon.forEach(function (currCon) {
+                            data.push(JSON.parse(JSON.stringify(currCon)));
+                        });
+
+
+                        biTool.downReportExcel({
+                            downName: '单项目滑动平均报表',
+                            data: data
+                        });
+                        break;
+                }
+            }
         },
         mounted: function () {
-            var that = this;
-            that.subentryTree = [{
-                obj_id: "xxxx",
-                obj_name: "建筑总能耗",
-                child: [{
-                    obj_id: "xxxx1",
-                    obj_name: "动力用电",
-                    child: [{
-                        obj_id: "xxxx11",
-                        obj_name: "电梯",
-                        child: [{
-                            obj_id: "xxx111",
-                            obj_name: "自动扶梯",
-                        }]
-                    }]
-                }, {
-                    obj_id: "xxxx2",
-                    obj_name: "动力用电2",
-                    child: [{
-                        obj_id: "xxxx22",
-                        obj_name: "电梯22",
-                        child: [{
-                            obj_id: "xxx222",
-                            obj_name: "自动扶梯222",
-                        }]
-                    }]
-                },]
-            }];
-
-        },
-        watch: {
-
+            var date = new Date();
+            $('#selectTimeLine').psel({
+                timeType: 'y',
+                startTime: date.getTime(),
+                endTime: date.getTime()
+            });
         }
-
     });
 
     slide.$nextTick(function () {

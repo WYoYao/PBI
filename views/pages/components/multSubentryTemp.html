@@ -29,7 +29,7 @@
                         </div>
                     </div>
                     <div class="search" v-if="searchResult && searchResult.length >0">
-                        <ul>
+                        <ul >
                             <li v-for="item in searchResult" @click="handlerClick(item)">
                                 <span v-text="item[modelname]" :class="{isSelected : item.isSelected}"></span>
                                 <em></em>
@@ -61,8 +61,8 @@
                     <div class="btn" @click.stop="cancle()">
                         <pbutton-white text="取消"></pbutton-white>
                     </div>
-                    <div class="btn mconfirm" @click.stop="submit(selectList)">
-                        <pbutton-blue text="确定"></pbutton-blue>
+                    <div class="btn mconfirm">
+                        <pbutton-blue text="确定" @click.stop="submit(selectList)"></pbutton-blue>
                     </div>
                 </div>
 
@@ -309,7 +309,6 @@
             beforeMount: function () {
                 var that = this;
                 this.selectList = this.result;
-                debugger
 
                 that.treedata = _.clone(that.subtree);
                 that.searchList = that.treeTransArr(that.treedata);
@@ -483,7 +482,7 @@
     }
 
     .option {
-        height:100%;
+        height: 100%;
     }
 
     .option .top:hover {
@@ -557,6 +556,9 @@
 
     .search>ul {
         border: 1px solid #e9e2e8;
+        overflow-x: hidden;
+        overflow-y: auto;
+        max-height: 365px;
     }
 
     .search>ul>li {

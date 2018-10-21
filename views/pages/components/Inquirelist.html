@@ -8,7 +8,7 @@
             <em v-text="item.name"></em>
         </div>
         <div class="bot">
-            <em v-text="item.value"></em>
+            <em v-text="item.value + (item.unit || '')"></em>
             <em v-text="item.proportion + '%'"></em>
         </div>
     </li>
@@ -34,6 +34,9 @@
                     type: String
                 },
                 value: {
+                    type: String
+                },
+                unit: {
                     type: String
                 },
                 proportion: {
@@ -67,6 +70,7 @@
                         return {
                             name: item[_that.name || 'x'],
                             value: item[_that.value || 'y'],
+                            unit: item[_that.unit || 'unit'],
                             proportion: total,
                             color: item.color || pcolor.cd[index]
                         }

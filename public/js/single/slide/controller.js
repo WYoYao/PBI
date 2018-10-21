@@ -4,7 +4,7 @@
         link: [{
             name: "GetItemSlidingEnergyByTime",
             url: "GetItemSlidingEnergyByTime",
-            isNotJava: true,
+            isNotJava: false,
             data: function () {
                 return [{
                     minData: "10",

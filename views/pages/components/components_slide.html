@@ -40,8 +40,7 @@
             data: {
                 handler: function (newVal, oldVal) {
                     var that = this;
-                    debugger;
-                    pchart.initColumn(that.chartConfig(that.data));
+                    slide.singleProjectSlideChart = pchart.initColumn(that.chartConfig(that.data));
                 },
                 deep: true
             }
@@ -76,11 +75,11 @@
             }
         },
         created: function () {
-            this.id_ = this.id ? this.id : tools.generatorId();
+            this.id_ = this.id ? this.id : ptool.produceId();
         },
         mounted: function () {
             // 初始化图表
-            pchart.initColumn(this.chartConfig(this.data));
+            //pchart.initColumn(this.chartConfig(this.data));
         },
     });
 </script>

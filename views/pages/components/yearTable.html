@@ -1,0 +1,138 @@
+<link rel="stylesheet" href="/css/single/yeartable.css">
+<script type="text/html" id="yeartable">
+<div class="yeartable">
+
+    <!-- 每一个纵列Start -->
+    <div>
+            <div class="yeartable_header">
+
+            </div>
+
+            <div class="yeartable_body">
+                <div class="yeartable_body_list">
+                    <div class="yeartable_body_list_item">周日</div>
+                    <div class="yeartable_body_list_item">周一</div>
+                    <div class="yeartable_body_list_item">周二</div>
+                    <div class="yeartable_body_list_item">周三</div>
+                    <div class="yeartable_body_list_item">周四</div>
+                    <div class="yeartable_body_list_item">周五</div>
+                    <div class="yeartable_body_list_item">周六</div>
+                </div>
+            </div>
+    </div>
+    <!-- 每一个纵列End -->
+
+        <!-- 每一个纵列Start -->
+        <div v-for="(item,index) in comlist">
+                <div class="yeartable_header" v-text="item.month+1+'月'">
+                    
+                </div>
+                <div class="yeartable_body">
+                    <div class="yeartable_body_list" v-for="(info,i) in item.items">
+                        <div class="yeartable_body_list_item" @mouseenter='on=item' :class="item==on?'on':''" v-for="(x,y) in info" :title="x.data" v-text="JSON.stringify(x.data)"></div>
+                    </div>
+                </div>
+        </div>
+        <!-- 每一个纵列End -->
+</div>
+</script>
+<script>
+    $(function () {
+        Vue.component('yeartable', {
+            template: "#yeartable",
+            data: function () {
+                return {
+                    on: null
+                }
+            },
+            props: {
+                list: Array,
+            },
+            methods: {},
+            computed: {
+                comlist: function () {
+
+                    var list = this.list;
+
+                    // 首先根据时间排序
+                    list = list.sort(function (a, b) {
+                        return +a.time - b.time;
+                    });
+
+                    // 获取最早的时间和最晚的时间
+                    var start = _.get(list.slice(0), '[0].time', new Date());
+                    var end = _.get(list.slice(-1), '[0].time', new Date());
+
+                    // 将时间根据月进行分组
+                    var months = list.reduce(function (con, item, i, c) {
+
+                        var monthIndex = new Date(item.time).getMonth();
+
+                        // 初始化数组
+                        if (!_.isArray(con[monthIndex])) con[monthIndex] = [];
+
+                        con[monthIndex].push(item);
+
+                        return con;
+                    }, []);
+
+                    // 根据每月的内容生成对应的表格
+                    return months.map(function (item, i) {
+                        return {
+                            month: i,
+                            items: item.reduce(function (con, info, index, content) {
+
+                                // 第一个的时候需要填充每周空的日期
+                                var date = new Date(info.time);
+                                var week = date.getDay();
+                                // 如果都是周一或者开始的时间，需要填充结构
+                                if (index == 0 || week == 0) {
+                                    con.push(
+                                        _.range(week).map(function (o, i) {
+                                            return {
+                                                time: +date - (i + 1) * (24 *
+                                                    60 * 60 * 1000),
+                                                value: 0
+                                            }
+                                        }).reverse()
+                                    );
+                                }
+
+                                // 填充结构后填充自己
+                                con.slice(-1)[0].push(info);
+
+                                // 如果是最后一个切不是周六结束
+                                if (index == (content.length - 1)) {
+                                    _.range(7 - con.slice(-1)[0].length).forEach(
+                                        function (o, i) {
+
+                                            con.slice(-1)[0].push({
+                                                time: +date + (i + 1) *
+                                                    (24 * 60 * 60 *
+                                                        1000),
+                                                value: 0
+                                            })
+                                        });
+                                }
+
+                                return con;
+                            }, [])
+                        }
+                    })
+
+                    return months;
+
+                }
+            },
+            watch: {
+
+            },
+            mounted: function () {
+
+            },
+            beforeMount: function () {
+
+            }
+        })
+    })
+</script>

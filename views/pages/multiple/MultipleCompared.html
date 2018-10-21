@@ -30,24 +30,11 @@
             <div class="title">
                 选择时间
             </div>
+             <!-- 单个时间选择控件 Start -->
             <div class="content">
-                <div class="choiceTime" :arr="JSON.stringify(searchConditionObj.timeSaveArr.length)" v-show="searchConditionObj.timeSaveArr.length >0">
-                    <div class="choiceTimeOp" v-for="(item,index) in searchConditionObj.timeSaveArr">
-                        <div class="timer">
-                            <span @click="showTimerPop(item,index,$event)" v-text="item.text">
-
-                            </span>
-                            <em @click="deleteTimeFn(item,index)">
-                                一
-                            </em>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="addTimeBtn">
-                    <pbutton-white bind="true" icon="'J'" text="'添加时间'" @click="addTimeFn"></pbutton-white>
-                </div>
+                <multtimerall :cb="timeClick"></multtimerall>
             </div>
+             
         </div>
 
         <div class="choiceCondition">
@@ -65,40 +52,6 @@
             </div>
 
             <!-- 支路对比相关 -->
-            <!-- <div class="subentryNotMatch">
-                <span class="sTit"></span>
-
-                <div class="notMatchList" :arr="JSON.stringify(searchConditionObj.notMatchSubentryArr.length)" v-show="searchConditionObj.notMatchSubentryArr.length >0">
-                    <div class="notMatchOption" v-for="(item,index) in searchConditionObj.notMatchSubentryArr">
-                        <div class="pName" v-text="item.projectName"></div>
-                        <div class="subAbout">
-                            <div class="subList" v-for="(info,sindex) in item.subArrSaveList">
-                                <div class="subOption">
-                                    <span @click="notMatchSubentryPopShow(info,index,sindex,event)" v-text="info.text">
-
-                                    </span>
-                                    <em @click="deleteNotMatchSubentry(info,index,sindex)">
-                                        一
-                                    </em>
-                                </div>
-                                <div class="subBranch" :data="JSON.stringify(branchIsShow)" v-if="branchIsShow">
-                                    <ul>
-                                        <li v-for="brc in info.branch">
-                                            <span :class="{isSelected:brc.isSelected}" v-text="brc.name" @click="selectedBranchOptionFn(brc)"></span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="addsubentryBtn">
-                            <pbutton-white bind="true" icon="'J'" text="'添加分项'" @click="addNotMatchSubentry(index)"></pbutton-white>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div> -->
 
             <div class="confirmCommit">
                 <pbutton-blue bind="true" text="'确定'" @click="confirmSearchListFn"></pbutton-blue>
@@ -109,7 +62,7 @@
         <div class="topNav">
             <div class="gridOption">
                 <div class="gridOptionItem">
-                    <pswitch-checkbox text="图表" id="chartId" state="true" change="multipleCompare.showChatFn"></pswitch-checkbox>
+                    <!-- <pswitch-checkbox text="图表" id="chartId" state="true" change="multipleCompare.showChatFn"></pswitch-checkbox> -->
                 </div>
                 <div class="gridOptionItem">
                     <pswitch-checkbox text="报表" id="reportId" state="false" change="multipleCompare.showReportFn"></pswitch-checkbox>
@@ -118,7 +71,7 @@
             <div class="numberOption">
                 <ul>
                     <li v-for=" item in tabOptionTwo" :class="{'checked':item.checked}" v-text="item.name" :id="item.code"
-                        @click="tableOptionChangeFn(tabOptionTwo,item)">
+                        @click="tableOptionTwoChangeFn(item)">
 
                     </li>
                 </ul>
@@ -126,54 +79,22 @@
             <div class="energyOption">
                 <ul>
                     <li v-for="item in tabOptionThree" :class="{'checked':item.checked}" v-text="item.name" :id="item.code"
-                        @click="tableOptionChangeFn(tabOptionThree,item)">
+                        @click="tableOptionThreeChangeFn(item)">
                     </li>
                 </ul>
             </div>
-            <div class="operatOption">
-                <ul class="list">
-                    <li>
-                        <div class="btn">
-                            <pbutton-white bind="true" icon="'D'" @click="downloadChart"></pbutton-white>
-                        </div>
-                        <div v-if="downLoadBlockIsShow" class="downloadBlock">
-                            <ul>
-                                <li>下载图表</li>
-                                <li>下载报表</li>
-                            </ul>
-                        </div>
-
-                    </li>
-                    <li>
-                        <div class="btn">
-                            <pbutton-white bind="true" icon="'N'" @mouseenter="onlineExplainEnter" @mouseleave="onlineExplainLeave"></pbutton-white>
-                        </div>
-                        <div style="position:relative;" v-if="onlineExplainFlag" @mouseenter="onlineExplainEnter"
-                            @mouseleave="onlineExplainLeave">
-                            <promptmessage :type="1"></promptmessage>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+            <navright :type="1" :down-click="downReport"></navright>
         </div>
         <div class="contentPart">
-            <div class="aboutChart">
+            <div class="aboutChart" id="divMultiCompareChartParent">
                 <!-- 没有数据展示 -->
                 <div class="noData" v-show="noDataChartShow">
                     <h3>meos</h3>
                     <span>请先在左侧列表选择参数</span>
                 </div>
+                <unitandyset :unit="chartUnit" :show="scChartShow" :confirm="setYdataFn" :max="max" :min="min"></unitandyset>
                 <!-- 引入chart图表 -->
-                <div class="chartOperat" v-show="scChartShow">
-                    <div>
-                        <pbutton-blue bind="true" icon="'`'" isborder="false" @click="setYAxisShowFn"></pbutton-blue>
-                    </div>
-                    <div>
-                        单位：
-                        <span v-text="chartUnit"></span>
-                    </div>
-                </div>
-                <div id="divLineChart"></div>
+                <div id="divLineChart" v-show="scChartShow" v-bind:class="{multiComparChartHeightWithReport:scReportShow,multiComparChartHeightNoReport:!scReportShow}"></div>
 
                 <!-- 引入报表表格-->
                 <div class="reportFrom" id="scReportFrom" v-if="scReportShow">
@@ -188,13 +109,6 @@
                 <ctrecord :list-data="cRecordList" :type="'compare'" :deletecb="deleteRecordFn"></ctrecord>
             </div>
         </div>
-    </div>
-
-    <!-- 选择时间控件 -->
-    <div id="choiceTimePop">
-        <ptime-calendar id="choiceTime" orientation="down" sel="multipleCompare.confirmCurrTime">
-            <panel timetype="dwMy" align="left" double="true" startyear="2003"></panel>
-        </ptime-calendar>
     </div>
 
     <!-- 多选项目模块 -->
@@ -213,12 +127,10 @@
         :result="_.map(notMatchSubCurrList,'obj_id')">
 
     </msubentry>
-
-    <!-- 设置纵坐标组件 -->
-    <setdata v-if="setYAxisShow" :max="setMax" :min="setMin" :cb="setYdataFn" :cancle="setYAxisHideFn"></setdata>
 </div>
 
 <!-- loading -->
 <ploading-part id="globalloading" text="加载中..."></ploading-part>
 <!-- 成功失败提示 -->
 <pnotice-message id="globalnotice"></pnotice-message>
+<% include ../../template/pageFoot.html %>

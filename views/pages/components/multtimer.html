@@ -1,15 +1,15 @@
 <link rel="stylesheet" href="/css/single/multtimer.css">
 <script type="text/html" id="multtimer">
   <div class="multtimer" @mouseenter="addHandlerClickToWindow">
-   <div class="line" v-for="(item,index) in times">
+   <div class="line" v-for="(item,index) in times" :key="item">
        <ptime-calendar :ref="'ptime'+index" orientation="down" sel="timerClick">
            <panel timetype="wy" double="false" align="left" double="true" startyear="2003" endyear="2018" commontime="['w','pw','y','py']"></panel>
        </ptime-calendar>
-       <p class="remove" @click.stop="times.splice(index,1)">
+       <p class="remove" @click.stop="times.splice(index,1);handlerClick();">
           一
        </p>
    </div>
-   <div class="line" v-show="times.length<6">
+   <div class="line" v-show="times.length<2 && !hasYear">
        <div class="btn" @click.stop="addTime">
             <pbutton-white text="添加时间" icon="J"></pbutton-white>
        </div>
@@ -51,8 +51,24 @@
 
                     _that.$nextTick(function () {
                         _that.times = _that.times.map(function (item, index) {
-                            return $(_that.$refs['ptime' + index]).psel();
+                            var object = _.assign({}, $(_that.$refs['ptime' + index]).psel(), { name: $(_that.$refs['ptime' + index]).find('.per-calendar-text').text() });
+                            for (var key in object) {
+                                if (object.hasOwnProperty(key)) {
+                                    var element = object[key];
+                                    item[key] = element;
+                                }
+                            }
+
+                            return item;
+
                         });
+
+
+                        if (_that.hasYear) {
+                            _that.times = _that.times.filter(function (item) {
+                                return item.timeType == 'y';
+                            });
+                        }
 
                         _.isFunction(this.cb) ? this.cb(_that.times) : void 0;
                     })
@@ -63,7 +79,9 @@
                 },
             },
             computed: {
-
+                hasYear: function () {
+                    return !!_.filter(this.times, { timeType: 'y' }).length
+                }
             },
             watch: {
 

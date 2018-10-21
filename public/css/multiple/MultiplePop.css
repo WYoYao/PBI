@@ -186,9 +186,12 @@
 .multiplePopContent .pageLeft .confirmCommit{
     /* width: 180px; */
     height: 30px;
-    text-align:center;
+    text-align: center;
     margin-top: 50px;
     margin-bottom: 20px;
+    position: absolute;
+    bottom: 200px;
+    left: 50px;
 }
 .multiplePopContent .pageLeft .confirmCommit >div{
     width:180px;
@@ -367,7 +370,7 @@
     width: 70px;
     position: absolute;
     right: 0;
-    top: 406px;
+    bottom: 0px;
 } 
 .multiplePopContent .pageRight .contentPart .aboutChart .chartOperat .edit{
     display:flex;
@@ -397,6 +400,12 @@
     color:#637E99;
     font-size:18px;
     margin-top:16px;
+}
+.multiplePopContent .pageRight .contentPart .aboutChart .chartContent{
+    position:relative;
+}
+#multiPop{
+    height:100%;
 }
 .pchart_backcolumn {
     opacity: 0.16;
@@ -460,3 +469,10 @@
 }
 
 
+.multiPopChartHeightWithReport{
+    height:calc(100% - 320px);
+}
+
+.multiPopChartHeightNoReport{
+    height:calc(100% - 40px);
+}

@@ -13,15 +13,15 @@
             <div class="block">
                 <div class="line">
                     <div @click.stop="showEnergyModel=!showEnergyModel" class="project">
-                        <em class="textover" v-if="_.get(energyProject,'projectName')" :title="_.get(energyProject,'projectName')"
-                            v-text="_.get(energyProject,'projectName')"></em>
-                        <template v-if="energyProject&&energyModel">></template>
-                        <em class="textover" v-if="_.get(energyModel,'energyModelName')" :title="_.get(energyModel,'energyModelName')"
-                            v-text="_.get(energyModel,'energyModelName')"></em>
-                        <template v-if="!(energyProject&&energyModel)">请选择能耗模型</template>
+                        <em class="textover" v-if="_.get(energyProjectBak,'projectName')" :title="_.get(energyProjectBak,'projectName')"
+                            v-text="_.get(energyProjectBak,'projectName')"></em>
+                        <template v-if="energyProjectBak && energyModelBak">></template>
+                        <em class="textover" v-if="_.get(energyModelBak,'energyModelName')" :title="_.get(energyModelBak,'energyModelName')"
+                            v-text="_.get(energyModelBak,'energyModelName')"></em>
+                        <template v-if="!(energyProjectBak && energyModelBak)">请选择能耗模型</template>
                     </div>
-                    <energymodel ref="energymodel" v-if="showEnergyModel" :propsprojectids="[energyProject['projectId']]"
-                        :propsmodelids="[energyModel['energyModelId']]" :cancel="handlercancelenergyModel" :cb="handlerclickenergyModel"></energymodel>
+                    <energymodel ref="energymodel" v-if="showEnergyModel" :propsprojectids="[energyProjectBak['projectId']]"
+                        :propsmodelids="[energyModelBak['energyModelId']]" :cancel="handlercancelenergyModel" :cb="handlerclickenergyModel"></energymodel>
                     </energymodel>
                 </div>
             </div>
@@ -44,7 +44,7 @@
         </div>
         <!-- 选择分项End -->
         <!-- 查询按钮 Start -->
-        <div class="section footbtn" :pdisabled="canSubmit" @click.stop="canSubmit?submitQuery():void 0">
+        <div class="section footbtn" :pdisabled="!canSubmit" @click.stop="canSubmit?submitBtnSquery():void 0">
             <pbutton-blue text="查询"></pbutton-blue>
         </div>
         <!-- 查询按钮 End -->
@@ -65,14 +65,13 @@
             <cobxs ref="cobxs1" :icon="'g'" :title="'能源'" :datasource="energyTypes" :iscombox="iscombox" :computewidth="computeWidth"
                 :primarykey="'code'" :name="'name'" :selected="query.energy" :cb="createHandlerClick('energy')"></cobxs>
 
+            <div class="colorp">
+                <colorpanel :cb="colorcall"></colorpanel>
+            </div>
+
             <!--  下载Icon Start -->
             <div ref="iconlist" class="iconlist">
-                <div class="vg">
-                    <pbutton-white icon="D" shape="rectangle"></pbutton-white>
-                </div>
-                <div class="vg">
-                    <pbutton-white icon="!" shape="rectangle"></pbutton-white>
-                </div>
+                <navright :type="4" :down-click="downclick"></navright>
             </div>
             <!--  下载Icon End -->
 
@@ -82,12 +81,33 @@
         <div class="content">
             <div class="l">
                 <div id="chart" class="chart">
-                    <div class="item" v-for="(item,index) in res" :ref="'chart'+index">
-
-                    </div>
+                    <template v-for="(item,index) in res">
+                        <div class="charth">
+                            <em v-text="_.map(suboptionModel,'name').join('')"></em>
+                            <!--  单个时间Start -->
+                            <em v-if="timer.length==1" v-text="_.map(timer,'name').join('')"></em>
+                            <!--  单个时间End -->
+                            <!-- 多个时间Start -->
+                            <em v-if="timer.length==2" v-text="_.get(timer,'['+ (index==0?0:1) +'].name')"></em>
+                            <em v-if="timer.length==2" v-text="'对比'"></em>
+                            <em v-if="timer.length==2" v-text="_.get(timer,'['+ (index==0?1:0) +'].name')"></em>
+                            <!-- 多个时间End -->
+                            <em class="unitr" v-text="unit"></em>
+                        </div>
+                        <div class="item" :ref="'chart'+index"></div>
+                    </template>
                 </div>
                 <div class="tb" v-show="!isAreas()">
+                    <yeartable v-for="(item,index) in res" :key="charts[index]" :ref="'yeartable'" v-show="tab_table==index"
+                        v-if="_.get(timer,'[0].timeType','')=='y'" :list=item.dataList></yeartable>
+                    <weektable v-for="(item,index) in res" :key="charts[index]" :ref="'weektable'" v-show="tab_table==index"
+                        v-if="_.get(timer,'[0].timeType','')=='w'" :list=item.dataList></weektable>
+                    <ul class="tab_table">
+                        <li class="tab_table_item" :class="tab_table==index?'on':''" v-for="(item,index) in res"
+                            @click.stop="tab_table=index" v-text="_.get(timer,'['+index+'].name'),''">
 
+                        </li>
+                    </ul>
                 </div>
             </div>
             <div class="r">
@@ -104,7 +124,7 @@
     <!-- 右侧内容 End -->
 </div>
 
-<script src="../../js/single/Inquire/controller.js"></script>
+<script src="../../js/single/heatmap/controller.js"></script>
 <script src="../../js/single/heatmap/model.js"></script>
 
 <% include ../../template/pageFoot.html %>

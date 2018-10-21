@@ -1,6 +1,11 @@
 .boxshadow {
   box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12); }
 
+[v-cloak],
+[v-show],
+[v-if] {
+  display: none !important; }
+
 .clear:after {
   content: "   ";
   display: block;
@@ -31,7 +36,7 @@
     .multtimer .line .remove {
       position: absolute;
       top: 0;
-      right: 0;
+      left: 209px;
       height: 28px;
       width: 30px;
       border: 1px solid #cacaca;

@@ -14,13 +14,12 @@
     width:280px;
     border-right:1px solid #d9e2e8;
     box-sizing: border-box;
-    overflow-y:scroll;
+    /* overflow-y:scroll; */
 }
 .multipleComparePage .pageLeft .choiceCondition{
     border-bottom:1px solid #d9e2e8;
     min-height:90px;
-    padding-left:16px;
-    padding-top:18px;
+    padding:18px 16px 0 16px;
 }
 .multipleComparePage .pageLeft .choiceCondition:last-child{
     border-bottom:none;
@@ -179,9 +178,12 @@
 .multipleComparePage .pageLeft .confirmCommit{
     /* width: 180px; */
     height: 30px;
-    text-align:center;
+    text-align: center;
     margin-top: 50px;
     margin-bottom: 20px;
+    position: absolute;
+    left: 50px;
+    bottom: 200px;
 }
 .multipleComparePage .pageLeft .confirmCommit >div{
     width:180px;
@@ -325,7 +327,7 @@
     overflow-y: scroll;
     overflow-y: overlay;
     border-right: 1px solid #d9e2e8;
-    background: #f7f7f9;
+    /* background: #f7f7f9; */
     box-sizing: border-box;
 }
 .multipleComparePage .pageRight .contentPart .aboutChart .chartOperat{
@@ -393,3 +395,10 @@
 }
 
 
+.multiComparChartHeightWithReport{
+    height:calc(100% - 320px);
+}
+
+.multiComparChartHeightNoReport{
+    height:calc(100% - 40px);
+}

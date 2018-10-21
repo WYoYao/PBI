@@ -1,6 +1,11 @@
 .boxshadow {
   box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12); }
 
+[v-cloak],
+[v-show],
+[v-if] {
+  display: none !important; }
+
 .clear:after {
   content: "   ";
   display: block;
@@ -25,7 +30,7 @@
     #app .left .section {
       padding: 0 20px;
       border-bottom: 1px solid #D9E2E8; }
-      #app .left .section .title {
+      #app .left .section > .title {
         display: inline-block;
         margin-top: 8px;
         line-height: 36px;
@@ -137,7 +142,7 @@
                 float: right;
                 margin-top: 4px;
                 height: 20px;
-                width: 20px;
+                width: 16px;
                 transform: rotate(-15deg); }
               #app .right .content .r .tab_slide_block_smallnumber .pdonw {
                 transform: rotate(75deg); }
@@ -209,43 +214,42 @@
         flex-flow: column nowrap;
         justify-content: flex-start;
         align-items: stretch; }
-        #app .right .content .l .chartTitle {
-          height: 70px;
-          box-sizing: border-box;
-          position: relative;
-          margin-bottom: -30px; }
-          #app .right .content .l .chartTitle .chartname {
-            position: absolute;
-            display: none;
-            top: 16px;
-            left: 20px;
-            font-size: 16px;
-            color: #333333;
-            line-height: 16px; }
-          #app .right .content .l .chartTitle .unit {
-            position: absolute;
-            top: 24px;
-            right: 44px;
-            font-size: 12px;
-            color: #333333;
-            line-height: 12px; }
-          #app .right .content .l .chartTitle .icon_click {
-            position: absolute;
-            top: 24px;
-            left: 20px;
-            width: 16px;
-            height: 16px;
-            z-index: 10;
-            color: #7A94AD; }
-        #app .right .content .l .chart {
-          flex: 521;
-          box-sizing: border-box;
-          border-bottom: 1px solid #D9E2E8; }
+        #app .right .content .l #down {
+          flex: 230;
+          display: flex;
+          flex-flow: column nowrap;
+          justify-content: flex-start;
+          align-items: stretch; }
+          #app .right .content .l #down .chartTitle {
+            height: 70px;
+            box-sizing: border-box;
+            position: relative; }
+            #app .right .content .l #down .chartTitle .chartname {
+              position: absolute;
+              top: 16px;
+              left: 20px;
+              font-size: 16px;
+              color: #333333;
+              line-height: 16px; }
+            #app .right .content .l #down .chartTitle .uni {
+              margin-top: 30px; }
+            #app .right .content .l #down .chartTitle .icon_click {
+              position: absolute;
+              top: 40px;
+              left: 20px;
+              width: 16px;
+              height: 16px;
+              z-index: 10;
+              color: #7A94AD; }
+          #app .right .content .l #down .chart {
+            flex: 521;
+            box-sizing: border-box;
+            border-bottom: 1px solid #D9E2E8; }
         #app .right .content .l .zom {
-          flex: 150;
+          flex: 76;
           border-bottom: 1px solid #D9E2E8; }
         #app .right .content .l .tb {
-          flex: 310;
+          flex: 100;
           overflow: auto; }
     #app .right .tab {
       box-sizing: border-box;
@@ -255,79 +259,9 @@
       border-bottom: 1px solid #D9E2E8;
       white-space: nowrap; }
       #app .right .tab .iconlist {
-        float: right;
-        line-height: 50px; }
-        #app .right .tab .iconlist .vg {
-          height: 30px;
-          display: inline-block;
-          margin-right: 10px;
-          vertical-align: middle; }
-
-.vcheckbox {
-  float: left;
-  line-height: 30px; }
-  .vcheckbox .hiddencompute {
-    opacity: 0;
-    z-index: -100;
-    position: fixed;
-    overflow: hidden; }
-  .vcheckbox .tbchk {
-    line-height: 49px; }
-    .vcheckbox .tbchk .item {
-      cursor: pointer;
-      line-height: 36px;
-      margin: 0 10px;
-      font-size: 14px;
-      color: #6D6D6D;
-      vertical-align: middle; }
-    .vcheckbox .tbchk .item.on,
-    .vcheckbox .tbchk .item:hover {
-      color: #02A9D1; }
-  .vcheckbox .combx,
-  .vcheckbox .tb1,
-  .vcheckbox .tbchk {
-    float: left;
-    box-sizing: border-box;
-    padding: 0 10px;
-    border-right: 1px solid #D9E2E8; }
-  .vcheckbox .tb1 .item {
-    display: inline-block;
-    line-height: 50px;
-    margin: 0 10px; }
-  .vcheckbox .combx {
-    min-width: 120px;
-    line-height: 30px; }
-    .vcheckbox .combx .title {
-      position: relative;
-      cursor: pointer;
-      margin: 9px 0;
-      height: calc(100% - 20px);
-      border: 1px solid #D9E2E8;
-      text-align: center; }
-      .vcheckbox .combx .title .icon {
-        line-height: 30px;
-        font-size: 18px; }
-      .vcheckbox .combx .title .list.on {
-        display: block !important; }
-      .vcheckbox .combx .title .list {
-        display: none;
         position: absolute;
-        top: calc(100% + 1px);
-        left: -1px;
-        right: -1px;
-        box-sizing: border-box;
-        border: 1px solid #D9E2E8;
-        border-top: none;
-        overflow-y: auto;
-        background: #FFFFFF;
-        z-index: 1; }
-        .vcheckbox .combx .title .list .item {
-          display: block;
-          line-height: 44px; }
-        .vcheckbox .combx .title .list .item:hover {
-          color: #02A9D1; }
-    .vcheckbox .combx .title:hover .icon,
-    .vcheckbox .combx .title:hover .text {
-      color: #02A9D1; }
+        right: 0px;
+        top: 10px;
+        z-index: 10; }
 
 /*# sourceMappingURL=Inquire.css.map */

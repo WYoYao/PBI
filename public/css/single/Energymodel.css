@@ -1,6 +1,11 @@
 .boxshadow {
   box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12); }
 
+[v-cloak],
+[v-show],
+[v-if] {
+  display: none !important; }
+
 .clear:after {
   content: "   ";
   display: block;
@@ -57,7 +62,9 @@
         height: calc(100% - 10px);
         margin: 10px 10px 0;
         box-sizing: border-box;
-        border: 1px solid #D9E2E8; }
+        border: 1px solid #D9E2E8;
+        overflow: hidden;
+      }
         .energymodel .box .ebody .esection .esh {
           text-align: center;
           height: 50px;
@@ -66,9 +73,10 @@
           border-bottom: 1px solid #D9E2E8; }
         .energymodel .box .ebody .esection .esb {
           width: 100%;
-          height: calc(100% - 50px);
+          height: calc(100% - 86px);
           overflow-y: auto;
-          text-align: left; }
+          text-align: left; 
+        }
     .energymodel .box .efooter {
       position: absolute;
       width: 100%;

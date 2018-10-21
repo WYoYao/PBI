@@ -1,7 +1,0 @@
-{
-"version": 3,
-"mappings": "AAGY,8BAAO;EACH,OAAO,EAAE,YAAY;EACrB,KAAK,EAAE,IAAI;EACX,MAAM,EAAE,IAAI;EACZ,aAAa,EAAE,GAAG;EAClB,MAAM,EAAE,GAAG;EACX,aAAa,EAAE,CAAC;AAGxB,uBAAK;EACD,OAAO,EAAE,IAAI;EACb,SAAS,EAAE,UAAU;EACrB,eAAe,EAAE,aAAa;EAC9B,YAAY,EAAE,IAAI",
-"sources": ["../singleSrc/inquirelist.scss"],
-"names": [],
-"file": "inquirelist.css"
-}

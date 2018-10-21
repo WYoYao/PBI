@@ -1,0 +1,77 @@
+<link rel="stylesheet" href="/css/single/projectlist.css">
+<script type="text/html" id="projectlist">
+   <div class="projectlist">
+                    <div class="projectTop">
+                        已选项目<span class="projectNum" v-html="'<span style=\'color:#02a9d1\'>'+ count +'</span>个'"></span>
+                    </div>
+                    <div class="projectCon" v-for="(item,index) in list">
+                        <div class="projectTitle">
+                            <span class="iconR" @click="slideClick(item.funtionType)" v-text="(sd.indexOf(item.funtionType)!=-1)?'b':'r'">b</span>{{item.funtionName}}<span class="projectNum" v-html="'<span style=\'color:#02a9d1\'>'+ item.content.length +'</span>个'"></span>
+                        </div>
+                        <div class="projects" v-show="sd.indexOf(item.funtionType)!=-1">
+                            <div class="projectItem" v-for="(info,i) in item.content">
+                                <div class="word">
+                                    <span v-text="info.name"></span>
+                                    <span class="projectNum">{{info.value}}{{info.unit?info.unit:'kWh'}}</span>
+                                </div>
+                                <progress max="100" :value="parseInt(info.value/max*100)"></progress>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+</script>
+<script>
+
+    $(function () {
+        Vue.component('projectlist', {
+            template: "#projectlist",
+            data: function () {
+                return {
+                    sd: [],
+                    //list: [{ "funtionName": "办公建筑", "funtionType": "200", "content": [{ "name": "晋江博锐尚格", "value": "8648282.8", "funtionType": "200", "funtionName": "办公建筑" }] }, { "funtionName": "商业综合体", "funtionType": "100", "content": [{ "name": "宁波博锐尚格", "value": "25928382.1", "funtionType": "100", "funtionName": "商业综合体" }, { "name": "青浦博锐尚格", "value": "16935739.8", "funtionType": "100", "funtionName": "商业综合体" }, { "name": "北京博锐尚格", "value": "15616423.5", "funtionType": "100", "funtionName": "商业综合体" }, { "name": "长春博锐尚格", "value": "34985815.9", "funtionType": "100", "funtionName": "商业综合体" }] }]
+                }
+            },
+            props: {
+                list: {
+                    type: Array,
+                }
+            },
+            methods: {
+                slideClick: function (code) {
+                    var index = this.sd.indexOf(code);
+                    if (index == -1) {
+                        this.sd.push(code)
+                    } else {
+                        this.sd.splice(index, 1);
+                    }
+                }
+            },
+            computed: {
+                max: function () {
+
+                    return _.max(this.list.reduce(function (con, item) {
+                        con = con.concat(item.content);
+                        return con;
+                    }, []).map(function (item) {
+                        return item.value
+                    }));
+                },
+                count: function () {
+                    return this.list.reduce(function (con, item) {
+                        con += item.content.length;
+                        return con;
+                    }, 0)
+                }
+            },
+            watch: {
+
+            },
+            mounted: function () {
+
+            },
+            beforeMount: function () {
+
+            }
+        })
+    })
+</script>

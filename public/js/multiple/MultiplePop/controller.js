@@ -4,7 +4,7 @@
         link: [ {
             name: "GetProjectBubbleCompare", //获取图表表格数据
             url: "GetProjectBubbleCompare",
-            isNotJava: true,
+            isNotJava: false,
             data: function () {
                 return [
                     {                //类型：Object  必有字段  备注：无
@@ -63,7 +63,7 @@
         },{
             name: "GetEnergyModelTreeOfStory", //打开故事版时获取分项树（分项树同能耗模型树）
             url: "GetEnergyModelTreeOfStory",
-            isNotJava: true,
+            isNotJava: false,
             data: function () {
                 return [{ //类型：Object  必有字段  备注：无
                     "energyModelCode": "e111", //类型：String  必有字段  备注：能耗模型编码

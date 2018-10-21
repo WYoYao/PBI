@@ -5,6 +5,7 @@
 <!-- 表格模板 -->
 <% include ../components/girdTemplate.html %>
 
+
 <link rel="stylesheet" href="../css/multiple/MultiplePop.css">
 <script src="../../../js/multiple/MultiplePop/model.js"></script>
 <script src="../../../js/multiple/MultiplePop/controller.js"></script>
@@ -59,9 +60,6 @@
         <div class="topNav">
             <div class="gridOption">
                 <div class="gridOptionItem">
-                    <pswitch-checkbox text="图表" id="chartId" state="true" change="multiplePop.showChatFn"></pswitch-checkbox>
-                </div>
-                <div class="gridOptionItem">
                     <pswitch-checkbox text="报表" id="reportId" state="false" change="multiplePop.showReportFn"></pswitch-checkbox>
                 </div>
             </div>
@@ -69,10 +67,11 @@
             <div class="energyOption">
                 <ul>
                     <li v-for="item in tabOptionThree" :class="{'checked':item.checked}" v-text="item.name" :id="item.code"
-                        @click="tableOptionChangeFn(tabOptionThree,item)">
+                        @click="tableOptionChangeFn(item)">
                     </li>
                 </ul>
             </div>
+            
 
             <div class="popColor">
                 <span>气泡颜色区分维度</span>
@@ -91,31 +90,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="operatOption">
-                <ul class="list">
-                    <li>
-                        <div class="btn">
-                            <!-- <pbutton-white bind="true" icon="'D'" @click="downloadChart"></pbutton-white> -->
-                        </div>
-                        <div v-if="downLoadBlockIsShow" class="downloadBlock">
-                            <ul>
-                                <li>下载图表</li>
-                                <li>下载报表</li>
-                            </ul>
-                        </div>
-
-                    </li>
-                    <li>
-                        <div class="btn">
-                            <!-- <pbutton-white bind="true" icon="'N'" @mouseenter="onlineExplainEnter" @mouseleave="onlineExplainLeave"></pbutton-white> -->
-                        </div>
-                        <div style="position:relative;" v-if="onlineExplainFlag" @mouseenter="onlineExplainEnter"
-                            @mouseleave="onlineExplainLeave">
-                            <promptmessage :type="1"></promptmessage>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+            <navright :type="5" :down-click="downReport"></navright>
         </div>
         <div class="contentPart">
             <div class="aboutChart">
@@ -124,15 +99,9 @@
                     <h3>meos</h3>
                     <span>请先在左侧列表选择参数</span>
                 </div>
+                <unitandyset :show="scChartShow" :confirm="setYdataFn" :max="max" :min="min"></unitandyset>
                 <!-- 引入chart图表 -->
-                <div class="chartOperat" v-show="scChartShow">
-                    <div class="edit">
-                        <span>单平米指标（kWh/㎡）</span>
-                        <pbutton-blue bind="true" icon="'`'" isborder="false" @click="setYAxisShowFn"></pbutton-blue>
-                    </div>
-
-                </div>
-                <div class="chartContent" v-show="scChartShow">
+                <div class="chartContent" v-show="scChartShow" v-bind:class="{multiPopChartHeightWithReport:scReportShow,multiPopChartHeightNoReport:!scReportShow}">
                     <div id="multiPop"></div>
                     <div class="chartY">
                         面积（㎡）
@@ -195,7 +164,7 @@
 
     <!-- 多选项目模块 -->
     <!-- showProjectTemp 显示隐藏   searchContent 搜索关键字  cb 点击事件回调 cancle组件隐藏 result选中的数据列表 -->
-    <mproject v-if="showProjectTemp" :search="searchContent" :cb="addProjectCallBack" :cancle="addProjectHide" :result="_.map(currProjectResult,'projectLocalID')">
+    <mproject :valchangecb="changeVal" v-if="showProjectTemp" :search="searchContent" :cb="addProjectCallBack" :cancle="addProjectHide" :result="_.map(currProjectResult,'projectLocalID')">
     </mproject>
 
     <!-- 选择分项 -->
@@ -204,9 +173,5 @@
 
     </msubentry>
 
-
-
-    <!-- 设置纵坐标组件 -->
-    <setdata v-if="setYAxisShow" :max="setMax" :min="setMin" :cb="setYdataFn" :cancle="setYAxisHideFn"></setdata>
-
 </div>
+<% include ../../template/pageFoot.html %>

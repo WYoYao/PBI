@@ -1,0 +1,216 @@
+<script type="text/html" id="stUnitAndYSet">
+    <div>
+        <div v-show="show">
+            <div class="chartUnitOperat">
+                <div>
+                    <pbutton-blue bind="true" icon="'`'" isborder="false" @click="showPanel"></pbutton-blue>
+                </div>
+                <div v-if="unit">
+                    单位：
+                    <span v-text="unit"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="setData" v-show="panelShow">
+            <div class="setDataBox">
+                <div class="setDataMax setDataDiv">
+                    <h3 class="title">
+                        设置纵坐标最大值
+                    </h3>
+                    <div class="max content">
+                        <div class="option">
+                            <em class="per-radio_input" @click="selItem(1)" :class="{'per-radio-checked':maxIsSelected}"></em>
+                            <em>默认</em>
+                            <span class="setunitdefaultval" v-text="max + unit"></span>
+        
+                        </div>
+                        <div class="option">
+                            <em class="per-radio_input" @click="selItem(-1)" :class="{'per-radio-checked':!maxIsSelected}"></em>
+                            <em>自定义</em>
+                            <span class="setunitcustomval">
+                                <input type="text" v-model="customMax">
+                            </span>
+        
+                        </div>
+                    </div>
+                </div>
+                <div class="setDataMin setDataDiv">
+                    <h3 class="title">
+                        设置纵坐标最小值
+                    </h3>
+                    <div class="min content">
+                        <div class="option">
+                            <em class="per-radio_input" @click="selItem(2)" :class="{'per-radio-checked':minIsSelected}"></em>
+                            <em>默认</em>
+                            <span v-text="min+unit" class="setunitdefaultval"></span>
+        
+                        </div>
+                        <div class="option">
+                            <em class="per-radio_input" @click="selItem(-2)" :class="{'per-radio-checked':!minIsSelected}"></em>
+                            <em>自定义</em>
+                            <span class="setunitcustomval">
+                                <input type="text" v-model="customMin">
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="setDataCommit" @click.stop="submit()" style="left:30%;">
+                    <pbutton-blue text="确定"></pbutton-blue>
+                </div>
+                <div class="setDataCommit" @click.stop="closePanel()" style="left:70%;">
+                    <pbutton-white text="取消"></pbutton-white>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+
+<script>
+    Vue.component('unitandyset', {
+        template: '#stUnitAndYSet',
+        data: function () {
+            return {
+                panelShow: false,        //Y轴坐标设置面板是否显示
+                maxIsSelected: true,    //最大值初始化时选中默认选项
+                minIsSelected: true,    //最小值初始化时选中默认选项
+                customMax: null,
+                customMin: null
+            }
+        },
+        /**
+         * unit chart的单位
+         * show 控制单位是否显示的属性
+         * max Y轴最大值
+         * min Y轴最小值
+         * confirm 确定设置时的回调函数，传入两个参数   最大值  和 最小值
+        */
+        props: {
+            unit: { type: String },
+            show: { type: Boolean },
+            max: { type: Number },
+            min: { type: Number },
+            confirm: { type: Function }
+        },
+        methods: {
+            showPanel: function () {
+                if (this.customMax == null) {
+                    this.customMax = this.max;
+                    this.customMin = this.min;
+                }
+                this.panelShow = true;
+            },
+            selItem: function (type) {
+                switch (type) {
+                    case 1:
+                        this.maxIsSelected = true;
+                        break;
+                    case -1:
+                        this.maxIsSelected = false;
+                        break;
+                    case 2:
+                        this.minIsSelected = true;
+                        break;
+                    case -2:
+                        this.minIsSelected = false;
+                        break;
+                }
+            },
+            closePanel: function () {
+                this.panelShow = false;
+            },
+            submit: function () {
+                var maxValue = parseFloat(this.maxIsSelected == true ? this.max : this.customMax);
+                var minValue = parseFloat(this.minIsSelected == true ? this.min : this.customMin);
+                typeof this.confirm == 'function' ? this.confirm(maxValue, minValue) : '';
+                this.panelShow = false;
+            }
+        },
+        mounted: function () {
+
+        }
+    })
+</script>
+
+<style type="text/css">
+    .chartUnitOperat {
+        height: 40px;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+    }
+
+    .setData {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+    }
+
+    .setData .setDataBox {
+        width: 380px;
+        height: 310px;
+        border: 1px solid #d9e2e8;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        display: flex;
+        flex-flow: column nowrap;
+        padding-left: 20px;
+        padding-top: 20px;
+    }
+
+    .setData .setDataBox .setDataCommit {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .setData .setDataDiv .title {
+        height: 30px;
+        line-height: 30px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .setData .setDataDiv .content .option {
+        display: flex;
+        flex-flow: row nowrap;
+        height: 30px;
+        align-items: center;
+    }
+
+    .setData .setDataDiv .content .option>em {
+        display: block;
+        margin-right: 10px
+    }
+
+    .setData .setDataDiv .content .option>span>input {
+        height: 30px;
+    }
+
+    .setData .setDataDiv .content .desc {
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+    .setunitdefaultval{
+        margin-left:35px;
+    }
+
+    .setunitcustomval{
+        margin-left:21px;
+    }
+
+    .setDataDiv{
+        padding-top: 20px;
+    }
+</style>

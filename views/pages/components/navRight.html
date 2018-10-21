@@ -1,0 +1,212 @@
+<script type="text/html" id="sptNavRight">
+    <div class="topNavRightOperatOption">
+        <ul class="list">
+            <li>
+                <div class="btn">
+                    <pbutton-white bind="true" icon="'D'" @click="showDownButton"></pbutton-white>
+                </div>
+                <div v-if="downLoadBlockIsShow" class="downloadBlock">
+                    <ul>
+                        <li v-on:click="downReport(1)">下载图表</li>
+                        <li v-on:click="downReport(2)">下载报表</li>
+                    </ul>
+                </div>
+    
+            </li>
+            <li>
+                <div class="btn">
+                    <pbutton-white bind="true" icon="'N'" @mouseenter="onlineExplainEnter" @mouseleave="onlineExplainLeave"></pbutton-white>
+                </div>
+                <div style="position:relative;" v-if="onlineExplainFlag" @mouseenter="onlineExplainEnter" @mouseleave="onlineExplainLeave">
+    
+                    <div id="promptMessage">
+                        <!-- type 1 基本类型 -->
+                        <div v-if="type == 1" class="promptMessage_box">
+                            <div class="pmt1">
+                                <span class="title">单位换算</span>
+                                <div class="content">
+                                    <em>费用=能耗(kWh)×能源单价(元/kWh）</em>
+                                    <em>碳排放量(g)=能耗(kWh)×折算系数</em>
+                                    <em>标煤(tce)=能耗(kWh)×折算系数</em>
+                                </div>
+    
+                            </div>
+                        </div>
+                        <!-- 参考单项目数据查询 单平米能耗 -->
+                        <div v-if="type == 2" class="promptMessage_box">
+                            <div class="pmt1">
+                                <span class="title">单位换算</span>
+                                <div class="content">
+                                    <em>费用=能耗(kWh)×能源单价(元/kWh）</em>
+                                    <em>碳排放量(g)=能耗(kWh)×折算系数</em>
+                                    <em>标煤(tce)=能耗(kWh)×折算系数</em>
+                                </div>
+    
+                            </div>
+                            <div class="pmt1">
+                                <span class="title">数据来源</span>
+                                <div class="content">
+                                    <em>费用=能耗(kWh)×能源单价(元/kWh）</em>
+                                    <em>碳排放量(g)=能耗(kWh)×折算系数</em>
+                                    <em>标煤(tce)=能耗(kWh)×折算系数</em>
+                                </div>
+    
+                            </div>
+                        </div>
+    
+                        <!-- 参考单项目滑动平均  -->
+                        <div v-if="type == 3" class="promptMessage_box">
+                            <div class="pmt1">
+                                <span class="title">单位换算</span>
+                                <div class="content">
+                                    <em>费用=能耗(kWh)×能源单价(元/kWh）</em>
+                                    <em>碳排放量(g)=能耗(kWh)×折算系数</em>
+                                    <em>标煤(tce)=能耗(kWh)×折算系数</em>
+                                </div>
+    
+                            </div>
+                            <div class="pmt1">
+                                <span class="title">数据来源</span>
+                                <div class="content">
+                                    <em>按月滑动：即柱状图中每个柱子推移1个月，每个柱子均包含12个月的能耗。如第一个柱子是2016.1~2016.12的年能耗（包含12个月），第二个柱子是2016.2~2017.1的年能耗（也包含12个月），以此类推。</em>
+                                    <em>按日滑动：即柱状图中每个柱子推移1天，每个柱子均包含365天的能耗。如第一个柱子是2016.1.1~2016.12.31的年能耗（包含365天），第二个柱子是2016.1.2~2017.1.1的年能耗（也包含365天），以此类推</em>
+                                </div>
+    
+                            </div>
+                        </div>
+    
+                        <!-- 参考热图分析 -->
+                        <div v-if="type == 4" class="promptMessage_box">
+                            <div class="pmt1">
+                                <span class="title">单位换算</span>
+                                <div class="content">
+                                    <em>费用=能耗(kWh)×能源单价(元/kWh）</em>
+                                    <em>碳排放量(g)=能耗(kWh)×折算系数</em>
+                                    <em>标煤(tce)=能耗(kWh)×折算系数</em>
+                                </div>
+    
+                            </div>
+                            <div class="pmt1">
+                                <span class="title">图表信息</span>
+                                <div class="content">
+                                    <em>每个色块代表一天，横轴为1~12月，纵轴为星期一~星期日，按照每日能耗总量大小进行染色，在两个自然月之间用黑线加以区分。</em>
+                                </div>
+    
+                            </div>
+                        </div>
+    
+                        <!-- 参考多项目气泡图 -->
+                        <div v-if="type == 5" class="promptMessage_box">
+                            <div class="pmt1">
+                                <span class="title">单位换算</span>
+                                <div class="content">
+                                    <em>费用=能耗(kWh)×能源单价(元/kWh）</em>
+                                    <em>碳排放量(g)=能耗(kWh)×折算系数</em>
+                                    <em>标煤(tce)=能耗(kWh)×折算系数</em>
+                                </div>
+    
+                            </div>
+                            <div class="pmt1">
+                                <span class="title">图表信息</span>
+                                <div class="content">
+                                    <em>横坐标为所选项目所选分项对应面积</em>
+                                    <em>纵坐标为所选项目所选分项单平米指标</em>
+                                    <em>气泡大小为所选项目所选分项总能耗</em>
+                                </div>
+    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</script>
+
+
+<script>
+    Vue.component('navright', {
+        template: '#sptNavRight',
+        data: function () {
+            return {
+                onlineExplainFlag: false,       //是否显示悬浮说明
+                downLoadBlockIsShow: false      //是否显示下载图表、下载报表按钮
+            };
+        },
+        /**
+         * type = 1 基本类型  type = 2 单项目数据查询 单平米能耗  type = 3单项目滑动平均  type = 4 热图分析  type = 5 多项目气泡图
+         * downClick 下载图表、下载报表的点击事件，回调时会传入一个参数，1 下载图表   2 下载报表
+        */
+        props: {
+            type: { type: String, default: '1' },
+            downClick: { type: Function }
+        },
+        methods: {
+            onlineExplainEnter: function () {
+                this.onlineExplainFlag = true;
+            },
+            onlineExplainLeave: function () {
+                this.onlineExplainFlag = false;
+            },
+            showDownButton: function () {
+                this.downLoadBlockIsShow = !this.downLoadBlockIsShow;
+            },
+            downReport: function (type) {
+                this.downLoadBlockIsShow = false;
+                typeof this.downClick == 'function' ? this.downClick(type) : '';
+            }
+        }
+    })
+</script>
+
+<style type="text/css">
+    .topNavRightOperatOption {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        height: 50px;
+        padding: 14px 20px;
+        box-sizing: border-box;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+
+    .topNavRightOperatOption>.list {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+    }
+
+    .topNavRightOperatOption>.list>li {
+        margin-right: 10px;
+        position: relative;
+    }
+
+    .topNavRightOperatOption>.list>li .downloadBlock {
+        width: 100px;
+        height: 60px;
+        position: absolute;
+        top: 29px;
+        right: 0;
+        border: 1px solid #d9e2e8;
+        z-index: 100;
+    }
+
+    .topNavRightOperatOption>.list>li .downloadBlock>ul {
+        width: 100px;
+        height: 60px;
+        background: #FFFFFF;
+    }
+
+    .topNavRightOperatOption>.list>li .downloadBlock>ul>li {
+        height: 30px;
+        line-height: 30px;
+        cursor: pointer;
+        color:#5478a4;
+    }
+
+    .topNavRightOperatOption>.list>li .downloadBlock>ul>li:hover {
+        background: #ccc;
+    }
+</style>

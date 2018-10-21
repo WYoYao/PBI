@@ -1,0 +1,85 @@
+<link rel="stylesheet" href="/css/single/timer.css">
+<script type="text/html" id="timertype">
+  <div class="timer" @mouseenter="addHandlerClickToWindow">
+   <div class="line" v-show="type==1">
+       <ptime-calendar ref="ptime1" orientation="down" sel="timerClick">
+           <panel timetype="My" align="left" double="true" startyear="2003" endyear="2018" iscommontime="false" commontime="[]"></panel>
+       </ptime-calendar>
+   </div>
+   <div class="line" v-show="type==2">
+       <ptime-calendar ref="ptime2" orientation="down" sel="timerClick">
+           <panel timetype="dw" align="left" double="true" startyear="2003" endyear="2018" iscommontime="false" commontime="[]"></panel>
+       </ptime-calendar>
+   </div>
+</div>
+</script>
+<script>
+
+    $(function () {
+        Vue.component('timertype', {
+            template: "#timertype",
+            data: function () {
+                return {
+                }
+            },
+            props: {
+                cb: {
+                    type: Function,
+                    required: true,
+                },
+                hidebtn: {
+                    type: Boolean
+                },
+                type: {
+                    type: Number
+                }
+            },
+            methods: {
+                // 时间选择时间
+                handlerClick: function () {
+                    var _that = this;
+                    _that.$nextTick(function () {
+
+                        var argu = $(_that.$refs['ptime' + _that.type]).psel();
+
+                        _.isFunction(_that.cb) ? _that.cb(_.assign({}, argu, { name: $(_that.$refs['ptime' + _that.type]).find('.per-calendar-text').text() })) : void 0;
+                    })
+                },
+                // 鼠标移入控件的时候的绑定对应的全局事件
+                addHandlerClickToWindow: function () {
+                    window.timerClick = this.handlerClick;
+                },
+                setDefault: function (type) {
+
+                    var _that = this;
+
+                    var el = $(_that.$refs['ptime' + type]);
+
+                    var date = new Date();
+
+                    el.psel({
+                        startTime: + new Date((date.getFullYear() - 1).toString() + '/01/01 00:00:00'),
+                        endTime: +new Date(date.format('yyyy/01/01 00:00:00')) - 1000
+                    })
+                }
+            },
+            computed: {
+            },
+            watch: {
+                type: function (type) {
+                    this.setDefault(type);
+                    this.handlerClick();
+                }
+            },
+            mounted: function () {
+
+                window.timerClick = this.handlerClick;
+                this.setDefault(this.type);
+                this.handlerClick();
+            },
+            beforeMount: function () {
+
+            }
+        })
+    })
+</script>

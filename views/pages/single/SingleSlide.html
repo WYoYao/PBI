@@ -35,10 +35,11 @@
                 选择时间
             </div>
             <div class="content">
-                <div class="choiceTime" :arr="JSON.stringify(searchConditionObj.timeSaveArr.length)">
+                <div class="choiceTime">
                     <div class="choiceTimeOp">
-                        <ptime-calendar :id="'selectTimeLine'" orientation="down" sel="slide.confirmCurrTime">
-                            <panel timetype="dwMy" align="left" double="true" startyear="2003"></panel>
+                        <ptime-calendar :id="'selectTimeLine'" orientation="down" beforesel="biTool.slideTimeBeforeSel">
+                            <panel timetype="dMy" align="left" double="true" startyear="2003" doubletoggle="false"
+                                iscommontime="false"></panel>
                         </ptime-calendar>
                     </div>
                 </div>
@@ -53,12 +54,12 @@
                 <div class="section choiceSubentry" style="height: 50px;padding-top:10px;margin-bottom:20px;">
                     <suboption :cb="addSubetryCallBack" :tree="subentryTree"></suboption>
                 </div>
-                
+
             </div>
         </div>
 
         <div class="operatBtn">
-            <pbutton-blue bind="true" text="'确定'" @click="confirmSearchListFn"></pbutton-blue>
+            <pbutton-blue text="确定" click="slide.confirmSearchListFn" id="divConfirm"></pbutton-blue>
         </div>
     </div>
     <div class="pageRight">
@@ -81,19 +82,7 @@
 
             <!--  下载Icon Start -->
             <div ref="iconlist" class="iconlist">
-                <div class="vg">
-                    <pbutton-white icon="D" shape="rectangle"></pbutton-white>
-                </div>
-                <div class="vg">
-                    <div class="btn">
-                        <pbutton-white bind="true" icon="'N'" @mouseenter="onlineExplainEnter" @mouseleave="onlineExplainLeave"></pbutton-white>
-                    </div>
-                    <div style="position:relative;" v-if="onlineExplainFlag" @mouseenter="onlineExplainEnter"
-                        @mouseleave="onlineExplainLeave">
-                        <promptmessage :type="1"></promptmessage>
-                    </div>
-
-                </div>
+                <navright :type="3" :down-click="downReport"></navright>
             </div>
             <!--  下载Icon End -->
 
@@ -102,16 +91,12 @@
         </div>
         <div class="operatOption_">
             <div class="dataVisualization">
-                <div class="chart" v-show="scChartShow">
+                <unitandyset :unit="chartUnit" :show="scChartShow" :confirm="setYdataFn" :max="yAxisMaxData" :min="yAxisMinData"></unitandyset>
+                <div class="chart" :class="{singleSlideChartHeightWithReport:scReportShow,singleSlideChartHeightNoReport:!scReportShow}"
+                    id="divSingleSlidChartParent">
                     <!-- <div id="barChart"></div> -->
                     <!-- 柱状图组件 -->
                     <column_chart :data="columnConfigData"></column_chart>
-                    <div class="supple">
-                        <div>
-                            <pbutton-blue bind="true" icon="'`'" isborder="false" @click="setYAxisShowFn"></pbutton-blue>
-                        </div>
-                        <!-- <span class="unit">单位：kWh</span> -->
-                    </div>
                 </div>
                 <div class="table">
                     <!-- 引入报表表格   支持横向竖向滚动   需组件-->
@@ -127,13 +112,10 @@
             </div>
             <div class="projectInformation">
                 <h3 class="title">项目信息</h3>
-                <div class="content">
+                <div class="content" style="height: calc(100% - 66px);">
                     <h4>能量拐点</h4>
-                    <div>
-                        <div v-for="item in energyPointList" v-if="energyPointList && energyPointList.length >0" v-text="item.time"
-                            :class="{rise:item.state == '2',drop:item.state == '1'}">
-
-                        </div>
+                    <div style="height: calc(100% - 50px);overflow-x: hidden;overflow-y: auto;">
+                        <div v-for="item in energyPointList" v-text="item.time" :class="{rise:item.state == '2',drop:item.state == '1'}"></div>
                         <!-- <div class="rise">2016.05</div> -->
                         <!-- <div class="drop">2016.07</div> -->
                     </div>
@@ -141,22 +123,11 @@
             </div>
         </div>
     </div>
-    <!-- 选择分项 -->
-    <!-- 
-        showSubentryTemp:是否显示分项控件
-        addSubetryCallBack：确定选中项回调
 
-        subentryTree：数据源
-     -->
-
-    <!-- <suboption v-if="showSubentryTemp" :cb="addSubetryCallBack" :tree="subentryTree"></suboption> -->
-
-
-    <!-- 设置纵坐标组件 -->
-    <setdata v-if="setYAxisShow" :max="setMax" :min="setMin" :cb="setYdataFn" :cancle="setYAxisHideFn"></setdata>
 </div>
 
 <script src="../../../js/single/slide/model.js"></script>
 <script src="/js/single/compared/controller.js"></script>
 <script src="/js/single/slide/controller.js"></script>
 <script src="/js/single/Inquire/controller.js"></script>
+<% include ../../template/pageFoot.html %>

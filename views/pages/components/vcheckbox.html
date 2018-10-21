@@ -1,0 +1,114 @@
+<link rel="stylesheet" href="/css/single/vcheckbox.css">
+
+<script type="text/html" id="vcheckbox">
+    <div class="vcheckbox" @click.stop="void 0">
+        <!-- 图表Start -->
+        <div :class="iscombox?'hiddencompute':''">
+            <div class="tb1" ref="tb">
+                <span class="item" v-for="(item,index) in (_.isArray(datasource)?datasource:[])" :pdisabled="item.lock">
+                    <div class="per-switch-checkbox" :title="item[name]" @click="handlerClick(item)">
+                        <span class="per-checkbox_input" :class="(selected.indexOf(item[primarykey])!=-1)?'per-checkbox-checked':''"></span>
+                        <span class="per-switch_label" :title="item[name]" v-text="item[name]"></span>
+                    </div>
+                </span>
+            </div>
+        </div>
+        <!-- 图表End -->
+        <!-- 下拉Start -->
+        <div class="combx" v-show="iscombox">
+            <div class="title" @click.stop="open=!open">
+                <span>
+                    <em class="icon" v-text="icon"></em>
+                    <em class="text" v-text="title"></em>
+                </span>
+                <!-- <ul class="list" :class="open?'on':''" v-show="open"> -->
+                 <ul class="list" :class="open?'on':''" @click.stop="void 0">
+                    <li v-for="(item,index) in (_.isArray(datasource)?datasource:[])" :pdisabled="item.lock" class="item" @click="handlerClick(item)">
+                        <div class="per-switch-checkbox" :title="item[name]">
+                            <span class="per-checkbox_input" :class="(selected.indexOf(item[primarykey])!=-1)?'per-checkbox-checked':''"></span>
+                            <span class="per-switch_label" :title="item[name]" v-text="item[name]"></span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- 下拉End -->
+    </div>
+</script>
+
+
+<script>
+    Vue.component('vcheckbox', {
+        template: '#vcheckbox',
+        data: function () {
+            return {
+                // iscombox: false,
+                selected: [],
+                open: false
+            }
+        },
+        /**
+         * more 单选或多选  单选为 false 多选为 true
+         * computewidth 父级可用空间宽度方法
+         * datasrouce 选项集合
+         * primarykey 集合中实例的主键
+         * name 集合中实例的名字
+         * cb 点击选择的返回值
+        */
+        props: ["more", "datasource", "computewidth", "primarykey", "cb", "name", "iscombox", "title", "icon"],
+        methods: {
+            //  点击事件
+            handlerClick: function (item) {
+
+                if (item.lock) return;
+
+                var _that = this;
+                var index = _that.selected.indexOf(item[_that.primarykey]);
+                index == -1 ? _that.selected.push(item[_that.primarykey]) : _that.selected.splice(index, 1);
+                _.isFunction(_that.cb) ? _that.cb(
+                    (_that.datasource || []).filter(function (item) {
+                        return _that.selected.indexOf(item[_that.primarykey]) != -1;
+                    })
+                ) : "";
+
+                // 隐藏内容
+                _that.open = false;
+            },
+            getWidth: function () {
+                return this.$refs.tb.offsetWidth;
+            },
+            documentClick: function () {
+                this.open = false;
+            }
+        },
+        computed: {
+
+        },
+        watch: {
+            open: function (newValue, oldValue) {
+
+                if (newValue != oldValue) {
+
+                    if (newValue) {
+                        document.addEventListener("click", this.documentClick);
+                    } else {
+                        document.removeEventListener("click", this.documentClick);
+                    }
+                }
+
+            }
+        },
+        updated: function () {
+
+        },
+        mounted: function () {
+
+            this.selected = _.map(_.filter(this.datasource, 'selected'), 'code');
+
+            this.computewidth();
+        },
+        beforeDestroy: function () {
+
+        }
+    })
+</script>

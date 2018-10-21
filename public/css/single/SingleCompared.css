@@ -1,11 +1,13 @@
 #singleComparePage{
     width:100%;
+    min-width:1280px;
     height:100%;
     /* background:#ccc; */
     box-sizing: border-box;
     display:flex;
     flex-flow: row nowrap;
     position:relative;
+    
 }
 .singleComparePage .pageLeft,.singleComparePage .pageRight{
     height:inherit;
@@ -14,13 +16,11 @@
     width:280px;
     border-right:1px solid #d9e2e8;
     box-sizing: border-box;
-    overflow-y:scroll;
 }
 .singleComparePage .pageLeft .choiceCondition{
     /* border-bottom:1px solid #d9e2e8; */
     min-height:90px;
-    padding-left:16px;
-    padding-top:18px;
+    padding: 18px 16px 0 16px;
 }
 .singleComparePage .pageLeft .choiceCondition:last-child{
     border-bottom:none;
@@ -31,6 +31,7 @@
 }
 .singleComparePage .pageLeft .choiceCondition .content{
     padding-top:16px;
+    width:242px;
 }
 .singleComparePage .pageLeft .choiceCondition .content .choiceProject>div{
     width:242px;
@@ -189,62 +190,16 @@
     color:#02a9d1;
 }
 
-.singleComparePage .pageRight .topNav .operatOption{
-    display:flex;
-    flex-flow: row nowrap;
-    align-items: center;
-    height:50px;
-    padding:14px 20px;
-    box-sizing: border-box;
-    position:absolute;
-    right:0;
-    top:0;
-    /* border-right:1px solid #d9e2e8; */
-}
-.singleComparePage .pageRight .topNav .operatOption >.list{
-    display:flex;
-    flex-flow: row nowrap;
-    align-items: center;
-}
-.singleComparePage .pageRight .topNav .operatOption >.list >li{
-    margin-right:10px;
-    position: relative;
-}
-.singleComparePage .pageRight .topNav .operatOption >.list >li .btn{
-
-}
-.singleComparePage .pageRight .topNav .operatOption >.list >li .downloadBlock{
-    width:100px;
-    height:60px;
-    position:absolute;
-    top:29px;
-    right:0;
-    border:1px solid #d9e2e8;
-}
-.singleComparePage .pageRight .topNav .operatOption >.list >li .downloadBlock >ul{
-    width:100px;
-    height:60px;
-    
-}
-.singleComparePage .pageRight .topNav .operatOption >.list >li .downloadBlock >ul >li{
-    height:30px;
-    line-height:30px;
-    cursor:pointer;
-}
-
-.singleComparePage .pageRight .topNav .operatOption >.list >li .downloadBlock >ul >li:hover{
-    background:#ccc;
-}
-
 /* 包含表格   和  右侧生成的记录 */
 .singleComparePage .pageRight .contentPart{
     width:100%;
+    height: calc(100% - 51px);
     display: flex;
     flex-flow: row nowrap;
 }
 .singleComparePage .pageRight .contentPart .aboutChart{
     width: calc(100% - 260px);
-    height: calc(100% - 60px);
+    height: 100%;
     overflow-y: scroll;
     overflow-y: overlay;
     border-right: 1px solid #d9e2e8;
@@ -275,14 +230,6 @@
 }
 .singleComparePage .pageRight .contentPart .aboutChart .reportFrom{
     margin-top:20px;
-}
-.singleComparePage .pageRight .contentPart .aboutChart .chartOperat{
-    height:40px;
-    display:flex;
-    flex-flow:row nowrap;
-    align-items: center;
-    justify-content: space-between;
-    padding:0 20px;
 }
 .pchart_backcolumn {
     opacity: 0.16;
@@ -317,4 +264,11 @@
 }
 #choiceTimePop .per-calendar-con{
     display:block!important;
+}
+.singleComparChartHeightWithReport{
+    height:calc(100% - 320px);
+}
+
+.singleComparChartHeightNoReport{
+    height:calc(100% - 40px);
 }

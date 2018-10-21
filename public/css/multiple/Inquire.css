@@ -1,0 +1,261 @@
+.boxshadow {
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12); }
+
+[v-cloak],
+[v-show],
+[v-if] {
+  display: none !important; }
+
+.clear:after {
+  content: "   ";
+  display: block;
+  height: 0;
+  clear: both; }
+
+.icon {
+  font-family: perficon; }
+
+.textover {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
+
+#app {
+  height: 100%; }
+  #app .left {
+    float: left;
+    width: 279px;
+    height: 100%;
+    border-right: 1px solid #D9E2E8; }
+    #app .left .section {
+      padding: 0 20px;
+      border-bottom: 1px solid #D9E2E8; }
+      #app .left .section > .title {
+        display: inline-block;
+        margin-top: 8px;
+        line-height: 36px;
+        font-size: 16px; }
+      #app .left .section .block {
+        padding-bottom: 8px; }
+        #app .left .section .block .line {
+          margin-bottom: 10px; }
+          #app .left .section .block .line .project {
+            height: 30px;
+            border: 1px solid #D9E2E8;
+            border-radius: 1px;
+            line-height: 30px;
+            cursor: pointer;
+            padding-left: 20px;
+            background: #F7F7F9; }
+            #app .left .section .block .line .project em {
+              display: inline-block;
+              vertical-align: middle;
+              color: #637E99; }
+        #app .left .section .block .same {
+          display: flex;
+          flex-flow: row nowrap;
+          justify-content: space-between;
+          align-items: center; }
+          #app .left .section .block .same .imgborder {
+            border-radius: 2px;
+            border: 1px solid #CACACA;
+            width: 68px;
+            height: 68px;
+            cursor: pointer; }
+            #app .left .section .block .same .imgborder img {
+              margin-left: 50%;
+              margin-top: 50%;
+              transform: translate(-50%, -50%); }
+            #app .left .section .block .same .imgborder .hove {
+              display: none; }
+          #app .left .section .block .same .imgborder:hover .init,
+          #app .left .section .block .same .imgborder.on .init {
+            display: none; }
+          #app .left .section .block .same .imgborder:hover .hove,
+          #app .left .section .block .same .imgborder.on .hove {
+            display: block; }
+    #app .left .footbtn {
+      position: absolute;
+      bottom: 0;
+      left: 78px;
+      height: 50px;
+      width: 80px; }
+  #app .right {
+    margin-left: 280px;
+    height: 100%; }
+    #app .right .content {
+      height: calc(100% - 50px);
+      position: relative; }
+      #app .right .content .r {
+        float: right;
+        height: 100%;
+        width: 260px;
+        box-sizing: border-box;
+        border-left: 1px solid #D9E2E8; }
+        #app .right .content .r .tab_slide {
+          overflow: hidden; }
+          #app .right .content .r .tab_slide .slide {
+            float: left;
+            width: 50%;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            color: #333333;
+            cursor: pointer;
+            background: #FAFAFA;
+            border-bottom: 1px solid #D9E2E8;
+            box-sizing: border-box; }
+          #app .right .content .r .tab_slide .slide.on {
+            background: #FFFFFF;
+            border-bottom: none; }
+          #app .right .content .r .tab_slide_block {
+            margin: 0 20px;
+            color: #333333; }
+            #app .right .content .r .tab_slide_block_title {
+              display: block;
+              line-height: 3em;
+              font-weight: 900;
+              font-size: 14px; }
+            #app .right .content .r .tab_slide_block_desc {
+              display: block;
+              line-height: 3em;
+              font-size: 14px; }
+            #app .right .content .r .tab_slide_block_bignumber {
+              display: block;
+              font-size: 28px;
+              line-height: 1.4em; }
+              #app .right .content .r .tab_slide_block_bignumber .unit {
+                line-height: 1.4em;
+                font-size: 12px; }
+            #app .right .content .r .tab_slide_block_smallnumber {
+              display: block; }
+              #app .right .content .r .tab_slide_block_smallnumber .num {
+                font-weight: 900;
+                color: #151515;
+                font-size: 20px;
+                line-height: 1.2em; }
+              #app .right .content .r .tab_slide_block_smallnumber .unit {
+                line-height: 1.4em;
+                font-size: 12px; }
+              #app .right .content .r .tab_slide_block_smallnumber .pic {
+                float: right;
+                margin-top: 4px;
+                height: 20px;
+                width: 16px;
+                transform: rotate(-15deg); }
+              #app .right .content .r .tab_slide_block_smallnumber .pdonw {
+                transform: rotate(75deg); }
+              #app .right .content .r .tab_slide_block_smallnumber .rtext {
+                float: right;
+                font-weight: 900;
+                font-size: 20px; }
+              #app .right .content .r .tab_slide_block_smallnumber .up {
+                color: #FF7B7B; }
+              #app .right .content .r .tab_slide_block_smallnumber .down {
+                color: #69C6B3; }
+            #app .right .content .r .tab_slide_block_tip {
+              display: block;
+              line-height: 3em;
+              font-size: 12px;
+              color: #6D6D6D; }
+            #app .right .content .r .tab_slide_block .circle {
+              background: #FBFBFC;
+              display: flex;
+              flex-flow: row nowrap;
+              align-items: center; }
+              #app .right .content .r .tab_slide_block .circle_item {
+                flex: 1;
+                display: flex;
+                flex-flow: column wrap;
+                align-items: center; }
+                #app .right .content .r .tab_slide_block .circle_item_title {
+                  height: 50px;
+                  line-height: 50px;
+                  font-size: 12px;
+                  color: #6D6D6D; }
+                #app .right .content .r .tab_slide_block .circle_item_chart {
+                  position: relative;
+                  height: 100px;
+                  width: 100px; }
+                  #app .right .content .r .tab_slide_block .circle_item_chart .ctitle {
+                    position: absolute;
+                    top: 38%;
+                    width: 100%;
+                    text-align: center;
+                    font-size: 16px;
+                    font-weight: 900;
+                    color: #02A9D1; }
+                    #app .right .content .r .tab_slide_block .circle_item_chart .ctitle .unit {
+                      font-size: 12px;
+                      font-weight: 200; }
+          #app .right .content .r .tab_slide_list .item.fst {
+            background: #FAFAFA;
+            padding-left: 20px; }
+          #app .right .content .r .tab_slide_list .item {
+            display: block;
+            padding-left: 40px;
+            line-height: 30px;
+            font-size: 12px;
+            color: #333333;
+            cursor: pointer;
+            border-bottom: 1px solid #D9E2E8; }
+          #app .right .content .r .tab_slide_list .item.on {
+            background: #02A9D1;
+            color: #FFFFFF; }
+      #app .right .content .l {
+        position: absolute;
+        height: 100%;
+        right: 260px;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: flex-start;
+        align-items: stretch; }
+        #app .right .content .l #down {
+          flex: 230;
+          display: flex;
+          flex-flow: column nowrap;
+          justify-content: flex-start;
+          align-items: stretch; }
+          #app .right .content .l #down .chartTitle {
+            height: 40px;
+            box-sizing: border-box;
+            position: relative;
+            padding: 16px 20px; }
+            #app .right .content .l #down .chartTitle .chartname {
+              position: absolute;
+              top: 16px;
+              left: 20px;
+              font-size: 16px;
+              color: #333333;
+              line-height: 16px; }
+          #app .right .content .l #down .chartIcon {
+            height: 30px;
+            box-sizing: border-box;
+            position: relative; }
+          #app .right .content .l #down .chart {
+            flex: 521;
+            box-sizing: border-box;
+            border-bottom: 1px solid #D9E2E8; }
+        #app .right .content .l .zom {
+          flex: 76;
+          border-bottom: 1px solid #D9E2E8; }
+        #app .right .content .l .tb {
+          flex: 100;
+          overflow: auto; }
+    #app .right .tab {
+      box-sizing: border-box;
+      height: 50px;
+      line-height: 50px;
+      padding: 0 20px 0 0;
+      border-bottom: 1px solid #D9E2E8;
+      white-space: nowrap; }
+      #app .right .tab .iconlist {
+        position: absolute;
+        right: 0px;
+        top: 10px;
+        z-index: 10; }
+
+/*# sourceMappingURL=Inquire.css.map */

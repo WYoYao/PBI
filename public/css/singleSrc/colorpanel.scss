@@ -1,0 +1,79 @@
+@charset "utf-8";
+.colorpanel {
+    position: relative;
+    height: 100%;
+    min-height: 30px;
+    &_panel {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: center;
+        align-items: flex-start;
+        line-height: 30px;
+        font-size: 14px;
+        color: #6D6D6D;
+        .line {
+            display: inline-block;
+            height: 14px;
+            width: 134px;
+            margin-top: 8px;
+            background: linear-gradient(to right, red, blue);
+        }
+    }
+    .layer {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1;
+    }
+    .showblock {
+        position: absolute;
+        width: 304px;
+        padding: 20px;
+        background: #FFFFFF;
+        border: 0 solid #D9D9D9;
+        box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.12);
+        border-radius: 3px;
+        z-index: 10;
+        .item {
+            line-height: 16px;
+            display: flex;
+            flex-flow: row nowrap;
+            .section {
+                margin: 10px 0;
+                .per-radio_input {
+                    display: inline-block;
+                    vertical-align: middle;
+                    float: none;
+                }
+                .roate {
+                    display: inline-block;
+                    margin: 0 5px;
+                    transform: rotate(180deg);
+                }
+                .input {
+                    display: inline-block;
+                    &>div {
+                        width: 60px;
+                    }
+                }
+            }
+            .r {
+                .section {
+                    margin: 10px 10px;
+                    .progress {
+                        margin: 10px 0;
+                        width: 120px;
+                        height: 14px;
+                        cursor: pointer;
+                    }
+                    .progress.on {
+                        box-sizing: border-box;
+                        border: 1px solid #02A9D1;
+                    }
+                }
+            }
+        }
+    }
+}

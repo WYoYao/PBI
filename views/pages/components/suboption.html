@@ -3,14 +3,14 @@
    <div class="suboption">
        <div class="sheader ptem">
             <div class="input-unit">
-                <div class="input-div selected" @click.captrue.stop="list.length?isShow=!isShow:void 0">
-                    {{tree.length?(_.map(selectedNames,vname).join(',') || '请选择'):'请选择能耗模型'}}
+                <div class="input-div selected" @click.captrue.stop="list.length?isShow=!isShow:void 0,queryShows()">
+                        {{tree.length?(_.map(selectedNames,vname).join(',') || '请选择分项'):'请选择分项'}}
                      <div class="icon">></div>
                 </div>
             </div>
 
             <div class="floatemp" @click.stop="void 0;" v-show="isShow">
-                <div class="layer" @click.stop="isShow=!isShow" v-show="isShow"></div>
+                <div class="layer" @click.stop="isShow=!isShow,str=''" v-show="isShow"></div>
                 <div class="sheader">
                     <div class="input-unit">
                         <div class="icon">f</div>
@@ -20,7 +20,7 @@
                         </div>
                 </div>
                 <div class="sbody">
-                        <multipletree :vcontent='str?"":vcontent' :vname="vname" :vkey="vkey" :list="list" :click="click" :clickplus="clickplus" :showlist="shows" :selectedlist="selecteds" :issingle="true"></multipletree>
+                    <multipletree :vcontent='str?"":vcontent' :vname="vname" :vkey="vkey" :list="list" :click="click" :clickplus="clickplus" :showlist="shows" :selectedlist="selecteds" :issingle="true"></multipletree>
                 </div>
             </div>
         </div>
@@ -60,6 +60,35 @@
                 }
             },
             methods: {
+                queryShows: function () {
+
+                    var _that = this;
+                    var selected = false;
+                    var filter = function (o) {
+
+                        var arr = [];
+
+                        ; (function (o) {
+
+                            var item = _.find(_that.searchlist, { localId: o.parentLocalId })
+
+                            if (item) arr.push(item.localId);
+
+                            if (item.parentLocalId != -1) {
+                                arguments.callee(item);
+                            }
+                        })(o);
+
+                        return arr;
+                    }
+
+                    _that.shows = _that.searchlist.filter(function (item) {
+                        return _that.selecteds.indexOf(item.localId) != -1;
+                    }).reduce(function (con, item) {
+                        return con.concat(filter(item))
+                    }, [])
+
+                },
                 clickplus: function (id) {
                     var index = this.shows.indexOf(id);
                     if (index != -1) {
@@ -69,9 +98,20 @@
                     }
                 },
                 click: function (id) {
+                    var _that = this;
+                    _that.isShow = false;
+                    Vue.set(_that, 'selecteds', [id])
 
-                    this.isShow = false;
-                    Vue.set(this, 'selecteds', [id])
+                    // 选择的时候清空搜索内容
+                    _that.str = "";
+
+                    if (_.isFunction(_that.cb)) {
+                        _that.cb(
+                            _that.searchlist.filter(function (item) {
+                                return _that.selecteds.indexOf(item[_that.vkey]) != -1;
+                            })
+                        )
+                    }
                 }
             },
             computed: {
@@ -96,7 +136,14 @@
 
                     if (_that.str) {
                         return _that.searchlist.filter(function (item) {
+
                             return item[_that.vname].indexOf(_that.str) != -1;
+                        }).map(function (item) {
+                            item = _.cloneDeep(item);
+                            item[_that.vname] = item[_that.vname].replace(new RegExp(_that.str), function (value) {
+                                return '<em style="color:#02A9D1">' + value + '</em>'
+                            });
+                            return item;
                         });
                     } else {
                         return _that.tree;
@@ -110,27 +157,14 @@
                 }
             },
             watch: {
-                str: function () {
-                    Vue.set(this, 'shows', []);
-                    Vue.set(this, 'selecteds', []);
-                },
-                selecteds: {
-                    handler: function (val, oldVal) {
-                        var _that = this;
-                        if (val.length) {
-                            _that.cb(
-                                _that.searchlist.filter(function (item) {
-                                    return _that.selecteds.indexOf(item[_that.vkey]) != -1;
-                                })
-                            )
-                        }
-                    },
-                    deep: true
+                tree: function (value) {
+                    this.shows = [];
+                    this.selecteds = [];
                 }
             },
 
             mounted: function () {
-
+                window.test = this;
             },
             beforeMount: function () {
 

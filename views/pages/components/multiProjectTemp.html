@@ -14,21 +14,20 @@
                             <div clear="" class="input_x" v-if="search.length >0" @click="search = ''">x</div>
                         </div>
                         <section>
-                            <pcombobox-normal bind="true"  istree="true" sel="itemClick">
-                                <header placeholder="'管理区：全部'"></header>
+                            <pcombobox-normal bind="true"  istree="true" sel="conditionSelectFn(1,model)">
+                                <header placeholder="'管理区：全部'" prefix="管理区："></header>
                                 <item datasource="manageAreaList" text="managePartitionName" child="managePartitionChildren" pronametoissel="issel" orientation="right"></item>
                             </pcombobox-normal>
-        
                         </section>
                         <section>
-                            <pcombobox-normal bind="true" sel="weatherArea" >
+                            <pcombobox-normal bind="true" sel="conditionSelectFn(2,model)">
                                 <header placeholder="'气候区：全部'" prefix="气候区："></header>
                                 <item datasource="weatherAreaList" text="name"></item>
                             </pcombobox-normal>
         
                         </section>
                         <section>
-                            <pcombobox-normal bind="true" sel="projectType" >
+                            <pcombobox-normal bind="true" sel="conditionSelectFn(3,model)">
                                 <header placeholder="'项目类型：全部'" prefix="项目类型："></header>
                                 <item datasource="projectTypeList" text="name"></item>
                             </pcombobox-normal>
@@ -39,7 +38,7 @@
                 <div class="operat">
                     <div class="left">
                         <span v-text="result.length">0</span>/
-                        <span v-text="searchList.length">0</span>
+                        <span v-text="showProjectCount.length">0</span>
                     </div>
                     <div class="right" v-if="searchResult && searchResult.length == 0">
                         <ul>
@@ -62,10 +61,10 @@
                         <div class="pList" v-for="data in item.projectList">
                             <h4 class="title">
                                 <span class="per-tree-arrow" v-text="data.isOpen ? 'b' : 'r'" @click="data.isOpen = !data.isOpen"></span>
-                                <em  v-text="data.funtionType"></em>
+                                <em :name="data" v-text="data.functionName"></em>
                             </h4>
                             <ul class="opList" v-show="data.isOpen">
-                                <li v-for="info in data.projects" @click="handlerClick(info)">
+                                <li v-for="info in data.projects" @click="handlerClick(info)"  v-show="info.isShow">
                                     <div v-text="info.projectLocalName"></div>
                                     <em class="per-checkbox_input" :class="{'per-checkbox-checked' : info.isSelected}"></em>
                                 </li>
@@ -93,7 +92,6 @@
 <script src="../../../js/multiple/compared/controller.js"></script>
 <script>
     $(function () {
-
         Vue.component('mproject', {
             template: '#multiple-project-template',
             props: {
@@ -115,6 +113,9 @@
                 cancle: {
                     type: Function,
                 },
+                valchangecb: {
+                    type: Function
+                }
             },
             data: function () {
                 return {
@@ -141,9 +142,29 @@
 
                     projectTypeList: [], //项目类型列表 array
 
+                    selectConditionObj: {
+                        manageZone: {},     //管理区域
+                        climateZone: {},    //气候区
+                        projectType: {}     //项目类型
+                    },
                 }
             },
             computed: {
+                showProjectCount: function () {
+                    return this.treedata.reduce(function (con, item) {
+
+                        return item.projectList.reduce(function (c, info) {
+
+                            return info.projects.reduce(function (arr, info) {
+
+                                if (info.isShow == true) {
+                                    arr.push(info);
+                                }
+                                return arr;
+                            }, c)
+                        }, con);
+                    }, [])
+                },
                 // seleceted: function () {
                 //     return this.result;
                 // },
@@ -152,6 +173,83 @@
                 },
             },
             methods: {
+                queryFunctionType: function (type) {
+
+                },
+                conditionSelectFn: function (code, model) {//筛选条件选择
+                    var that = this;
+                    if (code == 1) {
+                        if (model.managePartitionId == -1) {
+                            that.selectConditionObj.manageZone = {}
+                        } else {
+                            that.selectConditionObj.manageZone = model;
+                        }
+                    } else if (code == 2) {
+                        if (model.code == -1) {
+                            that.selectConditionObj.climateZone = {};
+                        } else {
+                            that.selectConditionObj.climateZone = model;
+                        }
+
+                    } else if (code == 3) {
+                        if (model.code == -1) {
+                            that.selectConditionObj.projectType = {};
+                        } else {
+                            that.selectConditionObj.projectType = model;
+                        }
+                    }
+                    that.filterChoiceResult(that.selectConditionObj);
+                },
+                filterChoiceResult: function (obj) {//过滤筛选结果
+                    var manageZoneCode = obj.manageZone.managePartitionId;
+                    var climateZoneCode = obj.climateZone.code;
+                    var projectTypeCode = obj.projectType.code;
+                    //根据筛选条件已选结果，控制当前数据源中选项 isShow 属性进行显示隐藏
+                    if (manageZoneCode || climateZoneCode || projectTypeCode) {
+                        this.treedata[0].projectList.forEach(function (item) {
+                            item.projects.forEach(function (info) {
+                                var i = 0;
+                                if (manageZoneCode) {
+                                    if (info.manageZone != manageZoneCode) {
+                                        i++;
+                                    }
+                                }
+
+                                if (climateZoneCode) {
+                                    if (info.climateZone != climateZoneCode) {
+                                        i++;
+                                    }
+                                }
+
+                                if (projectTypeCode) {
+                                    if (info.funtionType != projectTypeCode) {
+                                        i++;
+                                    }
+                                }
+
+                                info.isShow = i == 0;
+                                !info.isShow ? (info.isSelected = false) : '';
+
+                                //  20181017 leo 修改多条件筛选
+                                // info.isShow =
+                                //     manageZoneCode && climateZoneCode && projectTypeCode ?
+                                //         (info.manageZone == manageZoneCode && info.climateZone == climateZoneCode && info.funtionType == projectTypeCode ? true : false) :
+                                //         manageZoneCode && climateZoneCode && !projectTypeCode ? (info.manageZone == manageZoneCode && info.climateZone == climateZoneCode ? true : false) :
+                                //             manageZoneCode && projectTypeCode && !climateZoneCode ? (info.manageZone == manageZoneCode && info.funtionType == projectTypeCode ? true : false) :
+                                //                 climateZoneCode && projectTypeCode && !manageZoneCode ? (info.climateZone == climateZoneCode && info.funtionType == projectTypeCode ? true : false) :
+                                //                     manageZoneCode && !climateZoneCode && !projectTypeCode ? (info.manageZone == manageZoneCode ? true : false) :
+                                //                         climateZoneCode && !manageZoneCode && !projectTypeCode ? (info.climateZone == climateZoneCode ? true : false) :
+                                //                             projectTypeCode && !manageZoneCode && !climateZoneCode ? (info.funtionType == projectTypeCode ? true : false) : false;
+                            })
+                        })
+                    } else {
+                        this.treedata[0].projectList.forEach(function (item) {
+                            item.projects.forEach(function (info) {
+                                info.isShow = true;
+                            })
+                        })
+                    }
+                },
                 searchFn: function () { //触发搜索
                     this.searchKey = $("#searchInput").pval();
                 },
@@ -176,7 +274,6 @@
                     // 有则删除无则添加
                     index == -1 ? _that.selectList.push(item[_that.modelkey]) : _that.selectList.splice(
                         index, 1);
-                    console.log(_that.result == _that.selectList);
                     _that.result = _.clone(_that.selectList);
                     // debugger
 
@@ -242,7 +339,8 @@
                         tree.forEach(function (item) {
                             item.projectList.forEach(function (data) {
                                 data.projects.forEach(function (info) {
-                                    info.isSelected = true;
+                                    if (info.isShow)
+                                        info.isSelected = true;
                                 })
                             })
                         });
@@ -253,7 +351,7 @@
                         tree.forEach(function (item) {
                             item.projectList.forEach(function (data) {
                                 data.projects.forEach(function (info) {
-                                    info.isSelected = false;;
+                                    info.isSelected = false;
                                 })
                             })
                         });
@@ -265,9 +363,9 @@
                             tree.forEach(function (item) {
                                 item.projectList.forEach(function (data) {
                                     data.projects.forEach(function (info) {
-                                        if (_currList.indexOf(info[that.modelkey]) == '-1') {
+                                        if (_currList.indexOf(info[that.modelkey]) == '-1' && info.isShow) {
                                             info.isSelected = true;
-                                        }else{
+                                        } else {
                                             info.isSelected = false;;
                                         }
                                     })
@@ -284,7 +382,8 @@
                             tree.forEach(function (item) {
                                 item.projectList.forEach(function (data) {
                                     data.projects.forEach(function (info) {
-                                        info.isSelected = true;
+                                        if (info.isShow)
+                                            info.isSelected = true;
                                     })
                                 })
                             });
@@ -300,7 +399,7 @@
                 },
                 disabledMethods: function () {
                     this.$nextTick(function () {
-                        $(".mconfirm").find("div").pdisable(!this.result.length);
+                        $(".mconfirm").pdisable(!this.result.length);
                     })
 
                 }
@@ -332,6 +431,7 @@
                         } else {
                             item.isSelected = false;
                         }
+                        // that.selectList = _.cloneDeep(that.result);
                     })
 
                 },
@@ -342,99 +442,119 @@
                     },
                     deep: true
                 }
-
             },
             beforeMount: function () {
+
                 var that = this;
                 this.result = _.cloneDeep(this.result);
-                // debugger;
-                this.selectList = _.cloneDeep(this.result);
+                this.selectList = this.result;
+                // this.result = _.cloneDeep(this.result);
 
+                // this.selectList = _.cloneDeep(this.result);
 
 
                 // this.shows =  JSON.parse(JSON.stringify(this.result));
 
                 //Ajax请求获取项目数据并处理
                 //管理分区
-                multCompareController.listManagementPartitionsService({}).then(function (res) {
-                    (function add(arr){
-                        var add = arguments.callee;
-                        for(var i=0;i<arr.length;i++){
-                            var json = arr[i];
-                            json.issel = true;
-                            if(json.managePartitionChildren && json.managePartitionChildren.length >0){
-                                add(json.managePartitionChildren);
+                if (that.manageAreaList.length == 0) {
+                    multCompareController.listManagementPartitionsService({}).then(function (res) {
+                        (function add(arr) {
+                            typeof that.valchangecb == 'function' ? that.valchangecb(1, res) : '';
+                            var add = arguments.callee;
+                            for (var i = 0; i < arr.length; i++) {
+                                var json = arr[i];
+                                json.issel = true;
+                                if (json.managePartitionChildren && json.managePartitionChildren.length > 0) {
+                                    add(json.managePartitionChildren);
+                                }
                             }
-                        }
-                    })(res)
-                    that.manageAreaList = res;
-                    console.log(that.manageAreaList);
-                    // debugger;
-                });
+                        })(res)
+                        that.manageAreaList = [{
+                            "managePartitionId": -1,
+                            "managePartitionName": "全部",
+                            "managePartitionParentId": -1,
+                            "managePartitionChildren": [],
+                            "issel": true
+                        }].concat(res);
+
+                    });
+                }
                 //气候区
-                multCompareController.listClimateZoneService({}).then(function (res) {
-                    that.weatherAreaList = res;
-                    console.log(that.weatherAreaList);
-                });
-                //项目类型
-                multCompareController.listFunctionTypesService({}).then(function (res) {
-                    that.projectTypeList = res;
-                    console.log(that.projectTypeList);
-                });
+                if (that.weatherAreaList.length == 0) {
+                    multCompareController.listClimateZoneService({}).then(function (res) {
+                        typeof that.valchangecb == 'function' ? that.valchangecb(3, res) : '';
+                        that.weatherAreaList = [{
+                            "code": -1,
+                            "name": "全部",
+                            "contents": []
+                        }].concat(res);
+                    });
+                }
 
-                //多项目列表
-                multCompareController.listAccountProjects({}).then(function (res) {
-                    _.forEach(res, function (item) {
-                        _.forEach(item.projectList, function (info) {
-                            info['isOpen'] = false;
-                            _.forEach(info.projects, function (pro) {
-                                pro.isSelected = false;
-                            })
-                        })
-                    })
-
-                    that.treedata = _.cloneDeep(res);
-                    that.searchList = that.treeTransArr(that.treedata);
-
-                    // 通过判断已选结果 选中数据中当前选项并打开对应的层级
-                    if(that.result && that.result.length >0){
-                        //选中当前项
-                        _.forEach(that.treedata,function(item){
-                            _.forEach(item.projectList,function(data){
-                                _.forEach(data.projects,function(info){
-                                    if(that.result.indexOf(info.projectLocalID) !='-1'){
-                                        info.isSelected = true;
-                                        data.isOpen = true;
-                                    }
-                                })
-                            })
-                        })
-                    }
-
-
-
-                    // console.log(JSON.stringify(that.searchList) + "*");
-                    console.log(that.treedata);
-                })
             },
             mounted: function () {
                 var that = this;
-                // that.selectList = [];
                 this.disabledMethods();
 
+                if (!window.conditionSelectFn)
+                    window.conditionSelectFn = that.conditionSelectFn.bind(that);
 
+                //项目类型
+                if (that.projectTypeList.length == 0) {
+                    multCompareController.listFunctionTypesService({}).then(function (res) {
+                        typeof that.valchangecb == 'function' ? that.valchangecb(2, res) : '';
+                        that.projectTypeList = [{
+                            "code": -1,
+                            "name": "全部",
+                            "contents": []
+                        }].concat(res);
 
+                        //多项目列表
+                        multCompareController.listAccountProjects({}).then(function (res) {
+                            var projectList = [];
+                            _.forEach(res, function (item) {
+                                _.forEach(item.projectList, function (info) {
+                                    info['isOpen'] = false;
+                                    that.projectTypeList.forEach(function (type) {
+                                        if (type.code == info.funtionType) {
+                                            info.functionName = type.name;
+                                        }
+                                    })
+                                    _.forEach(info.projects, function (pro) {
+                                        pro.isSelected = false;
+                                        pro.isShow = true;
+                                        projectList.push(pro);
+                                    })
+                                })
+                            })
+                            window.multProjectList = projectList;
 
+                            that.treedata = _.cloneDeep(res);
+                            that.searchList = that.treeTransArr(that.treedata);
 
-
+                            // 通过判断已选结果 选中数据中当前选项并打开对应的层级
+                            if (that.result && that.result.length > 0) {
+                                //选中当前项
+                                _.forEach(that.treedata, function (item) {
+                                    _.forEach(item.projectList, function (data) {
+                                        _.forEach(data.projects, function (info) {
+                                            if (that.result.indexOf(info.projectLocalID) != '-1') {
+                                                info.isSelected = true;
+                                                data.isOpen = true;
+                                            }
+                                        })
+                                    })
+                                })
+                            }
+                        });
+                    });
+                }
             }
 
 
         })
     })
-</script>
-<script>
-
 </script>
 <style>
     .mproject {

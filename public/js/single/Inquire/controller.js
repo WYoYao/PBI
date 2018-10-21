@@ -47,7 +47,7 @@ var Controller = function () {
                 var argus = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 
-                if (true) {
+                if (false) {
 
                     // 调用假数据方法进行查询
                     return new Promise(function (resolve, reject) {
@@ -60,6 +60,7 @@ var Controller = function () {
 
                     // 真实发请求
                     return new Promise(function (resolve, rejcet) {
+                        if (name == "ItemEnergyByTime") $("#globalloading").pshow()
                         pajax.post({
                             url: url,
                             data: Object.assign({}, argu, argus, _this.user),
@@ -68,7 +69,10 @@ var Controller = function () {
                                 res = _.has(res, "data") ? res.data : res;
                                 resolve(_.isFunction(convert) ? convert(res) : res);
                             },
-                            error: rejcet
+                            error: rejcet,
+                            complete: function () {
+                                $("#globalloading").phide()
+                            }
                         });
                     });
                 }
@@ -88,10 +92,10 @@ var Controller = function () {
     return Controller;
 }();
 
-var singleController = new Controller([], {});
+var controller = new Controller([], {});
 
 
-singleController.push([
+controller.push([
     {
         // 获取模型
         name: "queryModel",
@@ -99,17 +103,6 @@ singleController.push([
         argu: {},
         cb: function () {
 
-
-            return _.range(20).map((item, index) => ({                //类型：Object  必有字段  备注：无
-                "buildingLocalName": index == 0 ? '主建筑' : `建筑${index}`,                //类型：String  必有字段  备注：无
-                "buildingLocalId": `buildingLocalId${index}`,                //类型：String  必有字段  备注：无
-                "buildingId": `buildingId${index}`,                //类型：String  必有字段  备注：无
-                "isMain": index == 0,                //类型：Boolean  必有字段  备注：无
-                "energyModelList": _.range(20).map((info, i) => ({                //类型：Object  必有字段  备注：无
-                    "energyModelName": (index == 0 ? '主建筑' : `建筑${index}`) + `模型名称${i}`,                //类型：String  必有字段  备注：无
-                    "energyModelId": `buildingLocalId${index}energyModelId${i}`                //类型：String  必有字段  备注：无
-                }))
-            }))
         },
         convert: function (res) {
             return res.map(function (item) {
@@ -130,92 +123,7 @@ singleController.push([
         argu: {},
         cb: function () {
 
-            var id = 1;
 
-            var fn = function (con, item) {
-
-                con.push(item);
-
-                if (_.isArray(item.content)) {
-                    item.content.reduce(fn, con);
-                }
-
-                delete item.content;
-
-                return con;
-            };
-
-            var res = [{                //类型：Object  必有字段  备注：无
-                "name": "分项名称",                //类型：String  必有字段  备注：分项名称
-                "id": `id${id}`,                 //类型：String  必有字段  备注：无
-                "localId": `localId${id}`,                //类型：String  必有字段  备注：本地编码
-                "parentLocalId": false,                //类型：Boolean  必有字段  备注：父级节点本地编码，若为根节点，则此值为-1
-                "area": 125,                //类型：Number  必有字段  备注：面积
-                content: _.range(5).map((item, index) => {
-
-                    return ((id, index) => {
-                        var parent = id;
-                        id += index.toString();
-
-                        return {
-                            "name": `分项名称${id}`,                //类型：String  必有字段  备注：分项名称
-                            "id": `id${id}`,                 //类型：String  必有字段  备注：无
-                            "localId": `localId${id}`,                 //类型：String  必有字段  备注：本地编码
-                            "parentLocalId": `localId${parent}`,                //类型：Boolean  必有字段  备注：父级节点本地编码，若为根节点，则此值为-1
-                            "area": 125,                //类型：Number  必有字段  备注：面积
-                            content: _.range(5).map((item, index) => {
-
-                                return ((id, index) => {
-                                    var parent = id;
-                                    id += index.toString();
-
-                                    return {
-                                        "name": `分项名称${id}`,                //类型：String  必有字段  备注：分项名称
-                                        "id": `id${id}`,                 //类型：String  必有字段  备注：无
-                                        "localId": `localId${id}`,                 //类型：String  必有字段  备注：本地编码
-                                        "parentLocalId": `localId${parent}`,                //类型：Boolean  必有字段  备注：父级节点本地编码，若为根节点，则此值为-1
-                                        "area": 125,                //类型：Number  必有字段  备注：面积
-                                        content: _.range(5).map((item, index) => {
-
-                                            return ((id, index) => {
-                                                var parent = id;
-                                                id += index.toString();
-
-                                                return {
-                                                    "name": `分项名称${id}`,                //类型：String  必有字段  备注：分项名称
-                                                    "id": `id${id}`,                 //类型：String  必有字段  备注：无
-                                                    "localId": `localId${id}`,                 //类型：String  必有字段  备注：本地编码
-                                                    "parentLocalId": `localId${parent}`,                //类型：Boolean  必有字段  备注：父级节点本地编码，若为根节点，则此值为-1
-                                                    "area": 125,                //类型：Number  必有字段  备注：面积
-                                                    content: _.range(5).map((item, index) => {
-
-                                                        return ((id, index) => {
-                                                            var parent = id;
-                                                            id += index.toString();
-
-                                                            return {
-                                                                "name": `分项名称${id}`,                //类型：String  必有字段  备注：分项名称
-                                                                "id": `id${id}`,                 //类型：String  必有字段  备注：无
-                                                                "localId": `localId${id}`,                 //类型：String  必有字段  备注：本地编码
-                                                                "parentLocalId": `localId${parent}`,                //类型：Boolean  必有字段  备注：父级节点本地编码，若为根节点，则此值为-1
-                                                                "area": 125,                //类型：Number  必有字段  备注：面积
-                                                            };
-                                                        })(id, index)
-
-                                                    })
-                                                };
-                                            })(id, index)
-
-                                        })
-                                    };
-                                })(id, index)
-                            })
-                        };
-                    })(id, index)
-                })
-            }].reduce(fn, []);
-
-            return res;
         }
     },
     {
@@ -260,6 +168,13 @@ singleController.push([
                     })
             }
 
+        },
+        convert: function (res) {
+            return res.map(function (item) {
+                item.data = parseFloat(item.data);
+                if (_.isNaN(item.data)) item.data = 0;
+                return item;
+            })
         }
     },
     {
@@ -279,56 +194,22 @@ singleController.push([
     },
     {
         // 获取表格信息
-        name: "queryTable",
-        url: "restObjectService/queryObjectByClass",
+        name: "ItemEnergyByTime",
+        url: "ItemEnergyByTime",
         argu: {},
         cb: function (argu) {
 
-            var diff = (+new Date(argu.paramList[0].timeTo) - new Date(argu.paramList[0].timeFrom)) / {
-                1: (60 * 60 * 1000),
-                2: 24 * (60 * 60 * 1000),
-                4: 30 * (60 * 60 * 1000),
-                5: 365 * (60 * 60 * 1000),
-            }[argu.timeType]
+        },
+        convert: function (res) {
+            return res.map(function (item) {
 
+                item.dataList = item.dataList.map(function (info) {
 
-
-            return argu.paramList.map((x, index) => {
-
-                return {
-                    "energyItemLocalId": argu.paramList[index].energyItemLocalId,        //类型：String  必有字段  备注：分项本地编码
-                    "timeFrom": x.timeFrom,                //类型：String  必有字段  备注：开始时间yyyy-MM-dd HH:mm:ss（>=）
-                    "timeTo": x.timeTo,                //类型：String  必有字段  备注：结束时间yyyy-MM-dd HH:mm:ss（<）
-                    "minData": 100,                //类型：Number  必有字段  备注：最小值
-                    "maxData": 9000,                //类型：Number  必有字段  备注：最大值
-                    "avgData": 6000,                //类型：Number  必有字段  备注：平均值
-                    "midData": 5000,                //类型：Number  必有字段  备注：中位数
-                    "sumData": _.random(5000),                //类型：Number  必有字段  备注：求和
-                    dataList: _.range(Math.round(diff)).map((item, index) => {
-
-                        if (argu.timeType == 1) {
-                            return {
-                                time: new Date(argu.paramList[0].timeFrom).setHours(index),
-                                data: _.random(5000)
-                            }
-                        } else if (argu.timeType == 2) {
-                            return {
-                                time: new Date(argu.paramList[0].timeFrom).setDate(index),
-                                data: _.random(5000)
-                            }
-                        } else if (argu.timeType == 4) {
-                            return {
-                                time: new Date(argu.paramList[0].timeFrom).setMonth(index),
-                                data: _.random(5000)
-                            }
-                        } else if (argu.timeType == 5) {
-                            return {
-                                time: new Date(argu.paramList[0].timeFrom).setFullYear(index),
-                                data: _.random(5000)
-                            }
-                        }
-                    })
-                }
+                    info.time = + new Date(info.time.replace(/-/g, '/'));
+                    if (!info.data) info.data == 0
+                    return info;
+                });
+                return item;
             })
         }
     }

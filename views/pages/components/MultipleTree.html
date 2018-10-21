@@ -7,7 +7,8 @@
             <span class="per-tree-arrow" style="visibility: visible;" v-if="item[vcontent] && _.isArray(item[vcontent]) && item[vcontent].length" @click.stop="clickplus(item[vkey])" v-text="(showlist.indexOf(item[vkey]) !=-1)?'b':'r'"></span>
             <span class="per-tree-arrow" style="visibility: visible;" v-if="!(item[vcontent] && _.isArray(item[vcontent]) && item[vcontent].length)" v-text=""></span>
             <b :title="item[vname]" @click.stop="click(item[vkey])">
-                {{item[vname]}}
+                <!-- {{item[vname]}} -->
+                <em v-html="item[vname]"></em>
                 <div class="pcheckbox" v-if="!issingle">
                     <span class="pcheckbox_input" :class="(selectedlist.indexOf(item[vkey]) !=-1)?'pcheckbox-checked':''"></span>
                     <span class="pswitch_label"></span>
@@ -15,7 +16,7 @@
             </b>
         </div>
     </div>
-    <div class="per-tree-con" v-if="item[vcontent] && _.isArray(item[vcontent]) && item[vcontent].length" v-show="showlist.indexOf(item[vkey]) !=-1">
+    <div class="per-tree-con" :style="{paddingLeft:'20px'}" v-if="item[vcontent] && _.isArray(item[vcontent]) && item[vcontent].length" v-show="showlist.indexOf(item[vkey]) !=-1">
         <multipletreeitem v-for="(item,index) in item[vcontent]" :click="click" :clickplus="clickplus" :item="item" :vcontent="vcontent" :selectedlist="selectedlist" :showlist="showlist" :vname="vname" :vkey="vkey" :issingle="issingle"></multipletreeitem>
     </div>
 </div>

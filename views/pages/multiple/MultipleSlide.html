@@ -3,44 +3,37 @@
 
 <!-- 图表组件 -->
 <% include ../components/components_slide.html %>
+
 <!-- 其他组件 -->
 <% include ../components/index.html %>
 
 <!-- 表格模板 -->
 <% include ../components/girdTemplate.html %>
 
-<link rel="stylesheet" href="../../css/single/SingleSlide.css" />
-<link rel="stylesheet" href="../../css/single/Inquire.css">
+<link rel="stylesheet" href="../../css/multiple/SingleSlide.css" />
 
 
 <div id="singleSlidePage" class="singleComparePage">
+    <input type="hidden" ref="projects" value="<%=JSON.stringify(projects)%>" />
     <div class="pageLeft">
         <div class="choiceCondition">
             <div class="title">
                 筛选项目
             </div>
             <div class="content">
-                <div class="addProject" v-text="addProjectTxt" class="content" @click="addProjectShow">
-                    添加项目
+                <div class="addProject" v-text="energyProjectBak.length?('已选择'+ energyProjectBak.length +'个项目'):'添加项目'"
+                    class="content" @click="showProjectTemp=true">
                 </div>
             </div>
-            <energymodel v-if="showEnergyModel" :propsprojectids="_.map(projects,'projectId')" :propsmodelids="_.map(modelids,'obj_id')"
-                :cancel="addProjectHide" :cb="addProjectCallBack">
-            </energymodel>
         </div>
         <div class="choiceCondition">
             <div class="title">
                 选择时间
             </div>
-            <div class="content">
-                <div class="choiceTime" :arr="JSON.stringify(searchConditionObj.timeSaveArr.length)">
-                    <div class="choiceTimeOp">
-                        <ptime-calendar :id="'selectTimeLine'" orientation="down" sel="">
-                            <panel timetype="d" align="left" double="true" startyear="2003" iscommontime="true"
-                                commontime="['d','pd','w','pw','M','pM','y','py']" lock="false"></panel>
-                        </ptime-calendar>
-                    </div>
-                </div>
+            <div class="content" style="padding-left:20px;">
+                <!-- 单个时间选择控件 Start -->
+                <timertype :cb="timeClick" :hidebtn="true" :type="_.get(query,'dimensionality[0].code') == 4?1:2"></timertype>
+                <!-- 单个时间选择控件 End -->
             </div>
         </div>
         <div class="choiceCondition">
@@ -48,14 +41,12 @@
                 选择分项
             </div>
             <div class="content">
-                <div class="section choiceSubentry" style="height: 50px;padding-top:10px;margin-bottom:20px;">
-                    <suboption :cb="addSubetryCallBack" :tree="subentryTree"></suboption>
-                </div>
+                <suboption :cb="handlerclickSuboption" :tree="energyModelTree"></suboption>
             </div>
         </div>
 
-        <div class="operatBtn">
-            <pbutton-blue bind="true" text="'确定'" @click="confirmSearchListFn"></pbutton-blue>
+        <div class="operatBtn" :pdisabled="!suboptionModelBak.length || !energyProjectBak.length" @click.capture="submitQuery">
+            <pbutton-blue bind="true" text="'确定'"></pbutton-blue>
         </div>
     </div>
 
@@ -73,49 +64,32 @@
 
             <cobxs ref="cobxs3" :icon="'g'" :title="'区分维度'" :datasource="dimensionalityTypes" :iscombox="iscombox"
                 :computewidth="computeWidth" :primarykey="'code'" :name="'name'" :selected="query.dimensionality" :cb="createHandlerClick('dimensionality')"></cobxs>
-            <vcheckbox ref="vcheckbox2" :icon="'-'" :title="'常用计算'" :datasource="calculateTypes" :iscombox="iscombox"
-                :computewidth="computeWidth" :primarykey="'code'" :name="'name'" :selected="query.calculate" :cb="createHandlerClick('calculate')"></vcheckbox>
+            <vcheckbox ref="vcheckbox2" :icon="'-'" :title="'常用计算'" :datasource="auxiliarys" :iscombox="iscombox"
+                :computewidth="computeWidth" :primarykey="'code'" :name="'name'" :selected="query.auxiliarys" :cb="createHandlerClick('auxiliarys')"></vcheckbox>
 
             <!--  下载Icon Start -->
             <div ref="iconlist" class="iconlist">
-                <div class="vg">
-                    <pbutton-white icon="D" shape="rectangle"></pbutton-white>
-                </div>
-                <div class="vg">
-                    <div class="btn">
-                        <pbutton-white bind="true" icon="'N'" @mouseenter="onlineExplainEnter" @mouseleave="onlineExplainLeave"></pbutton-white>
-                    </div>
-                    <div style="position:relative;" v-if="onlineExplainFlag" @mouseenter="onlineExplainEnter"
-                        @mouseleave="onlineExplainLeave">
-                        <promptmessage :type="1"></promptmessage>
-                    </div>
-
-                </div>
+                <navright :type="3" :down-click="downclick"></navright>
             </div>
             <!--  下载Icon End -->
 
-
-
         </div>
         <div class="operatOption_">
-            <div class="dataVisualization">
-                <div class="chart">
-                    <!-- <div id="barChart"></div> -->
-                    <!-- 柱状图组件 -->
-                    <column_chart :data="columnConfigData"></column_chart>
-                    <div class="supple">
-                        编辑
-                        <span class="unit">单位：kWh</span>
+            <div class="dataVisualization" v-show="!suboptionModelBak.length || !energyProjectBak.length">
+                <pnotice-nodata text="请先在左侧列表选择参数" subtitle=""></pnotice-nodata>
+            </div>
+            <div class="dataVisualization" v-show="suboptionModelBak.length && energyProjectBak.length">
+                <div id="#down" class="chart" :style="{height:query.table.length?'calc(100% - 240px)':'100%'}">
+                    <div class="supple" v-show="chart">
+                        <!-- 设置纵坐标组件 -->
+                        <unitandyset :unit="unit" :show="true" :confirm="setYAxis" :max="_.find(setMax,{isSelected:true}).value"
+                            :min="_.find(setMin,{isSelected:true}).value"></unitandyset>
                     </div>
+                    <div id="barChart" ref="chart"></div>
                 </div>
-                <div class="table">
-                    <pgrid-normal style="width: 100%; height: 400px;">
-                        <panel datasource="gridArr"></panel>
-                        <header>
-                            <column name="时间" source="time"></column>
-                            <column name="动力用电（kWh）" source="energyConsumption"></column>
-                        </header>
-                    </pgrid-normal>
+                <div class="table" v-if="query.table.length">
+                    <inquiretable :list="compuTables.list" :keys="compuTables.keys">
+                    </inquiretable>
                 </div>
             </div>
             <div class="projectInformation">
@@ -128,78 +102,17 @@
                     </div>
                 </div> -->
                 <h3 class="title">项目信息</h3>
-                <div id="mulProjectMessage">
-                    <div class="projectTop">
-                        已选项目<span class="projectNum" v-html="'<span style=\'color:#02a9d1\'>112</span>个'"></span>
-                    </div>
-                    <div class="projectCon">
-                        <div class="projectTitle">
-                            <span class="iconR" @click="">r</span>商业建筑<span class="projectNum" v-html="'<span style=\'color:#02a9d1\'>112</span>个'"></span>
-                        </div>
-                        <div class="projects">
-                            <div class="projectItem">
-                                <div class="word">
-                                    <span>项目A</span>
-                                    <span class="projectNum">266kWh</span>
-                                </div>
-                                <progress max="100" :value="'20'"></progress>
-                            </div>
-                            <div class="projectItem">
-                                <div class="word">
-                                    <span>项目A</span>
-                                    <span class="projectNum">266kWh</span>
-                                </div>
-                                <progress max="100" :value="'20'"></progress>
-                            </div>
-                            <div class="projectItem">
-                                <div class="word">
-                                    <span>项目A</span>
-                                    <span class="projectNum">266kWh</span>
-                                </div>
-                                <progress max="100" :value="'20'"></progress>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="projectCon">
-                        <div class="projectTitle">
-                            <span class="iconR" @click="">r</span>商业建筑<span class="projectNum" v-html="'<span style=\'color:#02a9d1\'>112</span>个'"></span>
-                        </div>
-                        <div class="projects">
-                            <div class="projectItem">
-                                <div class="word">
-                                    <span>项目A</span>
-                                    <span class="projectNum">266kWh</span>
-                                </div>
-                                <progress max="100" :value="'20'"></progress>
-                            </div>
-                            <div class="projectItem">
-                                <div class="word">
-                                    <span>项目A</span>
-                                    <span class="projectNum">266kWh</span>
-                                </div>
-                                <progress max="100" :value="'20'"></progress>
-                            </div>
-                            <div class="projectItem">
-                                <div class="word">
-                                    <span>项目A</span>
-                                    <span class="projectNum">266kWh</span>
-                                </div>
-                                <progress max="100" :value="'20'"></progress>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <projectlist :list="projectlists"></projectlist>
             </div>
         </div>
     </div>
 
     <!-- 多选项目模块 -->
     <!-- showProjectTemp 显示隐藏   searchContent 搜索关键字  cb 点击事件回调 cancle组件隐藏 result选中的数据列表 -->
-    <mproject v-if="showProjectTemp" :search="searchContent" :cb="addProjectCallBack" :cancle="addProjectHide" :result="_.map(currProjectResult,'projectLocalID')">
+    <mproject v-if="showProjectTemp" :search="searchContent" :cb="addProjectCallBack" :cancle="addProjectHide" :result="_.map(energyProjectBak,'projectLocalID')">
     </mproject>
 </div>
 
 <script src="../../../js/multiple/slide/model.js"></script>
 <script src="/js/multiple/compared/controller.js"></script>
-<script src="/js/single/slide/controller.js"></script>
-<script src="/js/single/Inquire/controller.js"></script>
+<script src="/js/multiple/slide/controller.js"></script>

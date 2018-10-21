@@ -1,0 +1,43 @@
+@charset "utf-8";
+.yeartable,
+.weektable {
+    width: 100%;
+    display: flex;
+    flex-flow: row nowrap;
+    overflow: auto;
+    &_header {
+        background: #8B959A;
+        line-height: 30px;
+        height: 30px;
+        white-space: nowrap;
+        font-size: 12px;
+        color: #ffffff;
+        text-align: center;
+        border: 1px solid #DDDDDD;
+        border-right: none;
+    }
+    &_body {
+        width: 100%;
+        display: flex;
+        flex-flow: row nowrap;
+        &_list {
+            display: flex;
+            flex-flow: column nowrap;
+            &_item {
+                box-sizing: border-box;
+                height: 30px;
+                line-height: 30px;
+                border: 1px solid #DDDDDD;
+                border-right: none;
+                border-top: none;
+                min-width: 60px;
+                text-align: center;
+                color: #6D6D6D;
+                cursor: pointer;
+            }
+            &_item.on {
+                color: #02A9D1;
+            }
+        }
+    }
+}

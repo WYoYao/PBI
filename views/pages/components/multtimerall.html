@@ -1,0 +1,124 @@
+<link rel="stylesheet" href="/css/single/multtimer.css">
+<script type="text/html" id="multtimerall">
+  <div class="multtimer" @mouseenter="addHandlerClickToWindow">
+   <div class="line" v-for="(item,index) in times">
+       <ptime-calendar :in="index" :ref="'ptime'+index" orientation="down" sel="timerClick" beforesel="dataCompare.validStep">
+           <panel timetype="dwMy" double="true" align="left" double="true" startyear="2003" endyear="2018" commontime="['d','pd','M','pM','w','pw','y','py']"></panel>
+       </ptime-calendar>
+       <p class="remove" @click.stop="times.splice(index,1);">
+          一
+       </p>
+   </div>
+   <div class="line" v-show="times.length<6">
+       <div class="btn" @click.stop="addTime">
+            <pbutton-white text="添加时间" icon="J"></pbutton-white>
+       </div>
+   </div>
+</div>
+</script>
+<script>
+
+    $(function () {
+        var dataCompareModel = {
+            // 日期控件中的日期类型
+            times: []
+        };
+        Vue.component('multtimerall', {
+            template: "#multtimerall",
+            data: function () {
+                return dataCompareModel;
+            },
+            props: {
+                cb: {
+                    type: Function,
+                    required: true,
+                }
+            },
+            methods: {
+                // 添加时间段
+                addTime: function () {
+                    var _that = this;
+                    var startTime = new Date(new Date().format('yyyy-MM-dd 00:00:00')).getTime();
+                    var endTime = new Date(new Date().format('yyyy-MM-dd 23:59:59')).getTime();
+                    var realEndTime = endTime + 1000;
+                    _that.times.push({
+                        timeType: "d",
+                        startTime: startTime,
+                        endTime: endTime,
+                        realEndTime: realEndTime
+                    });
+                },
+                // 时间选择事件
+                handlerClick: function () {
+                    var _that = this;
+                    var timeArr = _that.times.map(function (item, index) {
+                        return _.assign({}, {},
+                            $(_that.$refs['ptime' + index]).psel()
+                        );
+                    });
+                    _that.times = timeArr;
+                },
+                // 鼠标移入控件的时候的绑定对应的全局事件
+                addHandlerClickToWindow: function () {
+                    window.timerClick = this.handlerClick;
+                }
+            },
+            watch: {
+                times: function (newVal, oldVal) {
+                    _.isFunction(this.cb) ? this.cb(newVal) : void 0;
+                }
+            }
+        });
+        window.dataCompare = {
+            validStep: function (event) {
+                if (dataCompareModel.times.length == 1) return true;
+                var jqCalendarTarget = $(event.currentTarget);
+                var eachIndex = 0;
+                while (jqCalendarTarget.attr('in') == null) {
+                    jqCalendarTarget = jqCalendarTarget.parent();
+                    ++eachIndex;
+                    if (eachIndex > 30) break;
+                }
+
+                var currIndex = jqCalendarTarget.attr('in');
+                if (!currIndex) return true;
+
+                var newStep = getStepByTimeType(event.pEventAttr);
+                for (var i = 0; i < dataCompareModel.times.length; i++) {
+                    if (i == currIndex) continue;
+                    var curr = dataCompareModel.times[i];
+                    var oldStep = getStepByTimeType(curr);
+                    if (newStep != oldStep) return biTool.fail('对比不同时间的数据需要保持时间间隔一致'), false;
+                }
+                return true;
+
+
+                function getStepByTimeType(_obj) {
+                    var step = 0;
+                    var _startTime = _obj.startTime;
+                    var _endTime = _obj.endTime;
+                    while (_startTime < _endTime) {
+                        ++step;
+                        var _date = new Date(_startTime);
+                        switch (_obj.timeType) {
+                            case 'd':
+                                _date.setDate(_date.getDate() + 1);
+                                break;
+                            case 'w':
+                                _date.setDate(_date.getDate() + 7);
+                                break;
+                            case 'M':
+                                _date.setMonth(_date.getMonth() + 1);
+                                break;
+                            case 'y':
+                                _date.setFullYear(_date.getFullYear() + 1);
+                                break;
+                        }
+                        _startTime = _date.getTime();
+                    }
+                    return step;
+                };
+            }
+        };
+    });
+</script>

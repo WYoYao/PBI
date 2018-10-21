@@ -1,0 +1,93 @@
+.boxshadow {
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12); }
+
+[v-cloak],
+[v-show],
+[v-if] {
+  display: none !important; }
+
+.clear:after {
+  content: "   ";
+  display: block;
+  height: 0;
+  clear: both; }
+
+.icon {
+  font-family: perficon; }
+
+.textover {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
+
+.vcheckbox {
+  float: left;
+  line-height: 30px; }
+  .vcheckbox .hiddencompute {
+    opacity: 0;
+    z-index: -100;
+    position: fixed;
+    overflow: hidden; }
+  .vcheckbox .tbchk {
+    line-height: 49px; }
+    .vcheckbox .tbchk .item {
+      cursor: pointer;
+      line-height: 36px;
+      margin: 3px 10px;
+      font-size: 14px;
+      color: #6D6D6D;
+      vertical-align: middle; }
+    .vcheckbox .tbchk .item.on,
+    .vcheckbox .tbchk .item:hover {
+      color: #02A9D1; }
+  .vcheckbox .combx,
+  .vcheckbox .tb1,
+  .vcheckbox .tbchk {
+    float: left;
+    box-sizing: border-box;
+    padding: 0 10px;
+    border-right: 1px solid #D9E2E8; }
+  .vcheckbox .tb1 .item {
+    display: inline-block;
+    line-height: 50px;
+    margin: 0 10px; }
+    .vcheckbox .tb1 .item > div {
+      vertical-align: middle; }
+  .vcheckbox .combx {
+    min-width: 120px;
+    line-height: 30px; }
+    .vcheckbox .combx .title {
+      position: relative;
+      cursor: pointer;
+      margin: 9px 0;
+      height: calc(100% - 20px);
+      border: 1px solid #D9E2E8;
+      text-align: center; }
+      .vcheckbox .combx .title .icon {
+        line-height: 30px;
+        font-size: 18px; }
+      .vcheckbox .combx .title .list.on {
+        display: block !important; }
+      .vcheckbox .combx .title .list {
+        display: none;
+        position: absolute;
+        top: calc(100% + 1px);
+        left: -1px;
+        right: -1px;
+        box-sizing: border-box;
+        border: 1px solid #D9E2E8;
+        border-top: none;
+        overflow-y: auto;
+        background: #FFFFFF;
+        z-index: 1; }
+        .vcheckbox .combx .title .list .item {
+          display: block;
+          line-height: 44px; }
+        .vcheckbox .combx .title .list .item:hover,
+        .vcheckbox .combx .title .list .item.on {
+          color: #02A9D1; }
+    .vcheckbox .combx .title:hover .icon,
+    .vcheckbox .combx .title:hover .text {
+      color: #02A9D1; }
+
+/*# sourceMappingURL=vcheckbox.css.map */

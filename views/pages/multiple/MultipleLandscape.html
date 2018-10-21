@@ -1,134 +1,191 @@
 <% include ../../template/pageHead.html %>
 
-    <% include ../../pages/components/index.html %>
-        <!-- 表格模板 -->
-        <% include ../components/girdTemplate.html %>
-            <link rel="stylesheet" href="<%=host%>/pcontrol/css/pchart_src_2.0.css" />
-            <link rel="stylesheet" href="../css/multiple/landscape.css">
-            <link rel="stylesheet" href="../../css/single/Inquire.css">
-            <script type="text/javascript" src="<%=host%>/pcontrol/pchart_src_2.0.js"></script>
+<% include ../../pages/components/index.html %>
+<!-- 表格模板 -->
+<% include ../components/girdTemplate.html %>
+<link rel="stylesheet" href="<%=host%>/pcontrol/css/pchart_src_2.0.css" />
+<link rel="stylesheet" href="../css/multiple/landscape.css">
+<link rel="stylesheet" href="../../css/single/Inquire.css">
+<script type="text/javascript" src="<%=host%>/pcontrol/pchart_src_2.0.js"></script>
 
 
-            <div class="multiplePopContent" id="multipleLandscape">
-                <div class="leftContent" id="leftContent">
-                    <div class="multipleSelect">
-                        <div class="title">选择项目</div>
-                        <div class="chooseProjects">
-                            <div class="project">
-                                <span v-text="projectTextShow">项目</span>
-                                <i class="arrow"></i>
-                            </div>
-                            <!--项目选择弹框显示-->
-                        </div>
+<div class="multiplePopContent" id="multipleLandscape">
+    <div class="leftContent" id="leftContent">
+        <div class="multipleSelect">
+            <div class="title">选择项目</div>
+            <div class="chooseProjects">
+                <div class="project" @click.captrue="showProjectTemp=true">
+                    <span v-text="projectTextShow">项目</span>
+                    <i class="arrow"></i>
+                </div>
+                <!--项目选择弹框显示-->
+            </div>
+        </div>
+        <div class="multipleSelect">
+            <div class="title">选择时间</div>
+            <div class="content" style="margin-top: 20px;padding-left: 20px;">
+                <!-- 单个时间选择控件 Start -->
+                <timer :cb="timeClick" :hidebtn="true"></timer>
+                <!-- 单个时间选择控件 End -->
+            </div>
+        </div>
+        <div class="multipleSelect">
+            <div class="title">选择分项</div>
+            <div class="chooseProjects" style="padding: 0;width: 100%;">
+                <suboption :cb="addSubetryCallBack" :tree="energyModelTree"></suboption>
+                <!--分项选择弹框显示-->
+
+            </div>
+        </div>
+
+        <!--没有分项的项目重新选择-->
+
+
+        <pbutton-blue text="确定" id="confirm" :pdisabled="!suboptionModelBak.length || !app.energyProjectBak" @click="(suboptionModelBak.length && energyProjectBak)?app.copyArgu():void 0"></pbutton-blue>
+    </div>
+
+    <div class="rightContent">
+        <div ref="tab" class="tab neck layout">
+
+            <vcheckbox ref="vcheckbox1" :icon="'M'" :title="'布局'" :datasource="tableTypes" :iscombox="iscombox"
+                :computewidth="computeWidth" :primarykey="'code'" :name="'name'" :selected="query.table" :cb="createHandlerClick('table')"></vcheckbox>
+
+            <cobxs ref="cobxs1" :icon="'%'" :title="'计量方式'" :datasource="measurementTypes" :iscombox="iscombox"
+                :computewidth="computeWidth" :primarykey="'code'" :name="'name'" :selected="query.measurement" :cb="createHandlerClick('measurement')"></cobxs>
+
+            <cobxs ref="cobxs2" :icon="'g'" :title="'单位'" :datasource="unitTypes" :iscombox="iscombox" :computewidth="computeWidth"
+                :primarykey="'code'" :name="'name'" :selected="query.unit" :cb="createHandlerClick('unit')"></cobxs>
+
+            <cobxs ref="cobxs3" :icon="'g'" :title="'区分维度'" :datasource="dimensionalityTypes" :iscombox="iscombox"
+                :computewidth="computeWidth" :primarykey="'code'" :name="'name'" :selected="query.dimensionality" :cb="createHandlerClick('dimensionality')"></cobxs>
+
+            <cobxs ref="cobxs4" :icon="'g'" :title="'排序方式'" :datasource="sortTypes" :iscombox="iscombox" :computewidth="computeWidth"
+                :primarykey="'code'" :name="'name'" :selected="query.sort" :cb="createHandlerClick('sort')"></cobxs>
+
+            <vcheckbox ref="vcheckbox2" :icon="'-'" :title="'常用计算'" :datasource="calculateTypes" :iscombox="iscombox"
+                :computewidth="computeWidth" :primarykey="'code'" :name="'name'" :selected="query.calculate" :cb="createHandlerClick('calculate')"></vcheckbox>
+
+            <!--  下载Icon Start -->
+            <div ref="iconlist" class="iconlist">
+                <navright :type="2" :down-click="downclick"></navright>
+            </div>
+            <!--  下载Icon End -->
+
+        </div>
+        <div class="main">
+            <div class="mainChartPart" v-show="suboptionModelBak.length && energyProjectBak.length">
+                <div class="cv" id="down">
+                    <div class="editBtn compareEditBtn" v-if="chart">
+                        <!-- 设置纵坐标组件 -->
+                        <unitandyset :unit="unit" :show="true" :confirm="setYAxis" :max="_.find(setMax,{isSelected:true}).value"
+                            :min="_.find(setMin,{isSelected:true}).value"></unitandyset>
                     </div>
-                    <div class="multipleSelect">
-                        <div class="title">选择时间</div>
-                        <ptime-calendar id="multiplePopCalendar" orientation="down" sel="multiplePopMethods.selCalendarTime">
-                            <panel timetype="dwMy" startyear="2000" endyear="2050" double="true" doubletoggle="true"></panel>
-                        </ptime-calendar>
-                    </div>
-                    <div class="multipleSelect">
-                        <div class="title">选择分项</div>
-                        <div class="chooseProjects">
-                            <div class="project" @click="objectSelectMadel()">
-                                <span v-text="subentryName">选择分项</span>
-                                <i class="arrow"></i>
-                            </div>
-                            <!--分项选择弹框显示-->
-
-                        </div>
-
-                    </div>
-
-                    <!--没有分项的项目重新选择-->
-
-
-                    <pbutton-blue text="确定" id="confirm" @click="confirm()"></pbutton-blue>
+                    <div id="divMonitorChart" ref="chart" class="chart"></div>
+                </div>
+                <!-- 引入报表表格-->
+                <div class="reportFrom" v-if="query.table.length && compuTables.list.length">
+                    <inquiretable :list="compuTables.list" :keys="compuTables.keys">
+                    </inquiretable>
+                    <!-- <tgrid :title="reportFromTitle" :from-content="reportFromContent"></tgrid> -->
                 </div>
 
-                <div class="rightContent">
-                    <div ref="tab" class="tab neck layout">
-
-                        <vcheckbox ref="vcheckbox1" :icon="'M'" :title="'布局'" :datasource="tableTypes" :iscombox="iscombox" :computewidth="computeWidth"
-                            :primarykey="'code'" :name="'name'" :selected="query.table" :cb="createHandlerClick('table')"></vcheckbox>
-
-                        <cobxs ref="cobxs1" :icon="'%'" :title="'计量方式'" :datasource="measurementTypes" :iscombox="iscombox" :computewidth="computeWidth"
-                            :primarykey="'code'" :name="'name'" :selected="query.measurement" :cb="createHandlerClick('measurement')"></cobxs>
-
-                        <cobxs ref="cobxs2" :icon="'g'" :title="'单位'" :datasource="unitTypes" :iscombox="iscombox" :computewidth="computeWidth" :primarykey="'code'"
-                            :name="'name'" :selected="query.unit" :cb="createHandlerClick('unit')"></cobxs>
-
-                        <cobxs ref="cobxs3" :icon="'g'" :title="'区分维度'" :datasource="dimensionalityTypes" :iscombox="iscombox" :computewidth="computeWidth"
-                            :primarykey="'code'" :name="'name'" :selected="query.dimensionality" :cb="createHandlerClick('dimensionality')"></cobxs>
-
-                        <cobxs ref="cobxs4" :icon="'g'" :title="'排序方式'" :datasource="sortTypes" :iscombox="iscombox" :computewidth="computeWidth"
-                            :primarykey="'code'" :name="'name'" :selected="query.sort" :cb="createHandlerClick('sort')"></cobxs>
-
-                        <vcheckbox ref="vcheckbox2" :icon="'-'" :title="'常用计算'" :datasource="calculateTypes" :iscombox="iscombox" :computewidth="computeWidth"
-                            :primarykey="'code'" :name="'name'" :selected="query.calculate" :cb="createHandlerClick('calculate')"></vcheckbox>
-
-                        <!--  下载Icon Start -->
-                        <div ref="iconlist" class="iconlist">
-                            <div class="vg">
-                                <pbutton-white icon="D" shape="rectangle"></pbutton-white>
-                            </div>
-                            <div class="vg">
-                                <div class="btn">
-                                    <pbutton-white bind="true" icon="'N'" @mouseenter="onlineExplainEnter" @mouseleave="onlineExplainLeave"></pbutton-white>
-                                </div>
-                                <div style="position:relative;" v-if="onlineExplainFlag" @mouseenter="onlineExplainEnter" @mouseleave="onlineExplainLeave">
-                                    <promptmessage :type="1"></promptmessage>
-                                </div>
-
-                            </div>
-                        </div>
-                        <!--  下载Icon End -->
-
-                    </div>
-                    <div class="main">
-                        <div class="mainChartPart">
-                            <div class="editBtn compareEditBtn">
-                                <pbutton-blue icon="`" isborder="false" @click="ordinateBuild"></pbutton-blue>
-                                <!-- <pwindow-modal id="modalWindow" templateid="windowTemp1"></pwindow-modal> -->
-                                <div class="unit">能耗:kWh</div>
-                            </div>
-                            <div id="divMonitorChart" ref="chart" class="chart"></div>
-                            <!-- 引入报表表格-->
-                            <div class="reportFrom">
-                                <tgrid :title="reportFromTitle" :from-content="reportFromContent"></tgrid>
-                            </div>
-
-                        </div>
-                        <div class="infoDescribe">
-                            <ul class="infoDescribeTitle">
-                                <li class="addSelect" @click="showInformation">参考信息</li>
-                                <li @click="showInformation">辅助数据</li>
+            </div>
+            <div class="mainChartPart" v-show="!suboptionModelBak.length || !energyProjectBak.length">
+                <pnotice-nodata text="请先在左侧列表选择参数" subtitle=""></pnotice-nodata>
+            </div>
+            <div class="infoDescribe">
+                <ul class="infoDescribeTitle">
+                    <li class="addSelect">参考信息</li>
+                </ul>
+                <div class="infoDescribeContent">
+                    <div class="standardData">
+                        <p>国家标准值</p>
+                        <div>
+                            <span>商业建筑</span>
+                            <ul>
+                                <li>
+                                    <span>约束值</span>
+                                    <span>
+                                        <i>78</i>kWh/㎡</span>
+                                </li>
+                                <li>
+                                    <span>引导值</span>
+                                    <span>
+                                        <i>78</i>kWh/㎡</span>
+                                </li>
                             </ul>
-                            <div class="infoDescribeContent">
-                                <div class="standardData" v-for="cur in 2">
-                                    <p>国家标准值</p>
-                                    <div v-for="item in 2">
-                                        <span>商业建筑</span>
-                                        <ul>
-                                            <li>
-                                                <span>约束值</span>
-                                                <span>
-                                                    <i>108</i>kWh/㎡</span>
-                                            </li>
-                                            <li>
-                                                <span>约束值</span>
-                                                <span>
-                                                    <i>108</i>kWh/㎡</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
+                        </div>
+                        <div>
+                            <span>办公建筑</span>
+                            <ul>
+                                <li>
+                                    <span>约束值</span>
+                                    <span>
+                                        <i>78</i>kWh/㎡</span>
+                                </li>
+                                <li>
+                                    <span>引导值</span>
+                                    <span>
+                                        <i>78</i>kWh/㎡</span>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-
-
+                    <div class="standardData">
+                        <p>行业参考值</p>
+                        <div>
+                            <span>商业建筑</span>
+                            <ul>
+                                <li>
+                                    <span>行业平均值</span>
+                                    <span>
+                                        <i>78</i>kWh/㎡</span>
+                                </li>
+                                <li>
+                                    <span>行业最大值</span>
+                                    <span>
+                                        <i>78</i>kWh/㎡</span>
+                                </li>
+                                <li>
+                                    <span>行业最小值</span>
+                                    <span>
+                                        <i>78</i>kWh/㎡</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <span>办公建筑</span>
+                            <ul>
+                                <li>
+                                    <span>行业平均值</span>
+                                    <span>
+                                        <i>78</i>kWh/㎡</span>
+                                </li>
+                                <li>
+                                    <span>行业最大值</span>
+                                    <span>
+                                        <i>78</i>kWh/㎡</span>
+                                </li>
+                                <li>
+                                    <span>行业最小值</span>
+                                    <span>
+                                        <i>78</i>kWh/㎡</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <script src="../../../js/multiple/landscape/model.js"></script>
-            <script src="../../../js/multiple/landscape/controller.js"></script>
+        </div>
+
+
+    </div>
+
+    <!-- 多选项目模块 -->
+    <!-- showProjectTemp 显示隐藏   searchContent 搜索关键字  cb 点击事件回调 cancle组件隐藏 result选中的数据列表 -->
+    <mproject v-if="showProjectTemp" :search="searchContent" :cb="addProjectCallBack" :cancle="addProjectHide" :result="_.map(energyProjectBak,'projectLocalID')">
+    </mproject>
+
+</div>
+<script src="../../../js/multiple/landscape/controller.js"></script>
+<script src="../../../js/multiple/landscape/model.js"></script>

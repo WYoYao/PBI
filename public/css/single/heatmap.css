@@ -1,6 +1,11 @@
 .boxshadow {
   box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.12); }
 
+[v-cloak],
+[v-show],
+[v-if] {
+  display: none !important; }
+
 .clear:after {
   content: "   ";
   display: block;
@@ -136,14 +141,37 @@
           box-sizing: border-box;
           border-bottom: 1px solid #D9E2E8;
           overflow: auto; }
+          #app .right .content .l .chart .charth {
+            height: 50px;
+            font-size: 16px;
+            color: #333333;
+            line-height: 50px;
+            margin-bottom: -30px;
+            padding: 0 12px; }
           #app .right .content .l .chart .item {
             height: 236px; }
+          #app .right .content .l .chart .unitr {
+            float: right;
+            font-size: 12px; }
         #app .right .content .l .zom {
           flex: 150;
           border-bottom: 1px solid #D9E2E8; }
         #app .right .content .l .tb {
           flex: 310;
           overflow: auto; }
+        #app .right .content .l .tab_table {
+          display: flex;
+          justify-content: flex-start; }
+          #app .right .content .l .tab_table_item {
+            line-height: 20px;
+            width: 100px;
+            box-sizing: border-box;
+            border: 1px solid #D9E2E8;
+            cursor: pointer;
+            text-align: center;
+            color: #6D6D6D; }
+          #app .right .content .l .tab_table_item.on {
+            color: #02A9D1; }
     #app .right .tab {
       box-sizing: border-box;
       height: 50px;
@@ -151,80 +179,13 @@
       padding: 0 20px 0 0;
       border-bottom: 1px solid #D9E2E8;
       white-space: nowrap; }
+      #app .right .tab .colorp {
+        float: left;
+        margin: 10px; }
       #app .right .tab .iconlist {
-        float: right;
-        line-height: 50px; }
-        #app .right .tab .iconlist .vg {
-          height: 30px;
-          display: inline-block;
-          margin-right: 10px;
-          vertical-align: middle; }
-
-.vcheckbox {
-  float: left;
-  line-height: 30px; }
-  .vcheckbox .hiddencompute {
-    opacity: 0;
-    z-index: -100;
-    position: fixed;
-    overflow: hidden; }
-  .vcheckbox .tbchk {
-    line-height: 49px; }
-    .vcheckbox .tbchk .item {
-      cursor: pointer;
-      line-height: 36px;
-      margin: 0 10px;
-      font-size: 14px;
-      color: #6D6D6D;
-      vertical-align: middle; }
-    .vcheckbox .tbchk .item.on,
-    .vcheckbox .tbchk .item:hover {
-      color: #02A9D1; }
-  .vcheckbox .combx,
-  .vcheckbox .tb1,
-  .vcheckbox .tbchk {
-    float: left;
-    box-sizing: border-box;
-    padding: 0 10px;
-    border-right: 1px solid #D9E2E8; }
-  .vcheckbox .tb1 .item {
-    display: inline-block;
-    line-height: 50px;
-    margin: 0 10px; }
-  .vcheckbox .combx {
-    min-width: 120px;
-    line-height: 30px; }
-    .vcheckbox .combx .title {
-      position: relative;
-      cursor: pointer;
-      margin: 9px 0;
-      height: calc(100% - 20px);
-      border: 1px solid #D9E2E8;
-      text-align: center; }
-      .vcheckbox .combx .title .icon {
-        line-height: 30px;
-        font-size: 18px; }
-      .vcheckbox .combx .title .list.on {
-        display: block !important; }
-      .vcheckbox .combx .title .list {
-        display: none;
         position: absolute;
-        top: calc(100% + 1px);
-        left: -1px;
-        right: -1px;
-        box-sizing: border-box;
-        border: 1px solid #D9E2E8;
-        border-top: none;
-        overflow-y: auto;
-        background: #FFFFFF;
-        z-index: 1; }
-        .vcheckbox .combx .title .list .item {
-          display: block;
-          line-height: 44px; }
-        .vcheckbox .combx .title .list .item:hover {
-          color: #02A9D1; }
-    .vcheckbox .combx .title:hover .icon,
-    .vcheckbox .combx .title:hover .text {
-      color: #02A9D1; }
+        right: 0px;
+        top: 10px;
+        z-index: 10; }
 
 /*# sourceMappingURL=heatmap.css.map */

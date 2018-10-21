@@ -13,15 +13,15 @@
             <div class="block">
                 <div class="line">
                     <div @click.stop="showEnergyModel=!showEnergyModel" class="project">
-                        <em class="textover" v-if="_.get(energyProject,'projectName')" :title="_.get(energyProject,'projectName')"
-                            v-text="_.get(energyProject,'projectName')"></em>
-                        <template v-if="energyProject&&energyModel">></template>
-                        <em class="textover" v-if="_.get(energyModel,'energyModelName')" :title="_.get(energyModel,'energyModelName')"
-                            v-text="_.get(energyModel,'energyModelName')"></em>
-                        <template v-if="!(energyProject&&energyModel)">请选择能耗模型</template>
+                        <em class="textover" v-if="_.get(energyProjectBak,'projectName')" :title="_.get(energyProjectBak,'projectName')"
+                            v-text="_.get(energyProjectBak,'projectName')"></em>
+                        <template v-if="energyProjectBak && energyModelBak">></template>
+                        <em class="textover" v-if="_.get(energyModelBak,'energyModelName')" :title="_.get(energyModelBak,'energyModelName')"
+                            v-text="_.get(energyModelBak,'energyModelName')"></em>
+                        <template v-if="!(energyProjectBak && energyModelBak)">请选择能耗模型</template>
                     </div>
-                    <energymodel ref="energymodel" v-if="showEnergyModel" :propsprojectids="[energyProject['projectId']]"
-                        :propsmodelids="[energyModel['energyModelId']]" :cancel="handlercancelenergyModel" :cb="handlerclickenergyModel"></energymodel>
+                    <energymodel ref="energymodel" v-if="showEnergyModel" :propsprojectids="[energyProjectBak['projectId']]"
+                        :propsmodelids="[energyModelBak['energyModelId']]" :cancel="handlercancelenergyModel" :cb="handlerclickenergyModel"></energymodel>
                     </energymodel>
                 </div>
             </div>
@@ -34,7 +34,7 @@
                 筛选时间
             </span>
             <!-- 单个时间选择控件 Start -->
-            <timer :cb="timeClick"></timer>
+            <timer ref="timer" :cb="timeClick"></timer>
             <!-- 单个时间选择控件 End -->
         </div>
         <!-- 筛选时间End -->
@@ -44,7 +44,7 @@
         </div>
         <!-- 选择分项End -->
         <!-- 查询按钮 Start -->
-        <div class="section footbtn" :pdisabled="!suboptionModel.length" @click.stop="suboptionModel.length?submitQuery():void 0">
+        <div class="section footbtn" :pdisabled="!suboptionModelBak.length" @click.stop="suboptionModelBak.length?submitQuery():void 0">
             <pbutton-blue text="查询"></pbutton-blue>
         </div>
         <!-- 查询按钮 End -->
@@ -69,45 +69,40 @@
                 :iscombox="iscombox" :computewidth="computeWidth" :primarykey="'code'" :name="'name'" :selected="query.auxiliarys"
                 :cb="createHandlerClick('auxiliarys')"></vcheckbox>
 
-            <!--  下载Icon Start -->
+
             <div ref="iconlist" class="iconlist">
-                <div class="vg">
-                    <pbutton-white icon="D" shape="rectangle"></pbutton-white>
-                </div>
-                <div class="vg">
-                    <pbutton-white icon="!" shape="rectangle"></pbutton-white>
-                </div>
+                <navright :type="1" :down-click="downclick"></navright>
             </div>
-            <!--  下载Icon End -->
 
         </div>
 
         <!-- 图表 和 辅助信息 Start -->
         <div class="content">
-            <div class="l">
-                <div class="chartTitle">
-                    <div class="chartname" v-text="_.get(energyProject,'projectName','') 
+            <div class="l" v-show="suboptionModel.length">
+                <div id="down">
+                    <div class="chartTitle">
+                        <div class="chartname" v-if="hasChart" v-text="_.get(energyProject,'projectName','') 
                     + (_.get(energyModel,'energyModelName',''))
+                    +' '
+                    +convertTimeByTimeType(selector.timeFrom,timeType2(selector.timeFrom,selector.timeTo))
                     +'-'
-                    +_.map(suboptionModel,'name').join('')
-                    +convertTimeByTimeType(timer.startTime,timeType2(timer.startTime,timer.endTime))
-                    +'-'
-                    +convertTimeByTimeType(timer.endTime,timeType2(timer.startTime,timer.endTime))">
+                    +convertTimeByTimeType(selector.timeTo,timeType2(selector.timeFrom,selector.timeTo))">
+                        </div>
+                        <div class="uni">
+                            <unitandyset :unit="unit" :show="true" :confirm="setYAxis" :max="_.find(setMax,{isSelected:true}).value"
+                                :min="_.find(setMin,{isSelected:true}).value"></unitandyset>
+                        </div>
                     </div>
-                    <div class="unit">
-                        单位：kWh
-                    </div>
-                    <div class="icon_click icon" @click.stop="setYAxisShow=true">`</div>
-
-                    <!-- 设置纵坐标组件 -->
-                    <setdata v-if="setYAxisShow" :max="setMax" :min="setMin" :cb="setYAxis" :cancle="setYAxisHide"></setdata>
+                    <div id="chart" ref="chart" class="chart"></div>
                 </div>
-                <div id="chart" ref="chart" class="chart"></div>
                 <div ref="masterChart" class="zom"></div>
                 <div class="tb" v-show="_.filter(query.tables,{code:1}).length">
-                    <inquiretable :list="compuTables.list" :keys="compuTables.keys">
+                    <inquiretable v-if="compuTables.list.length" :list="compuTables.list" :keys="compuTables.keys">
                     </inquiretable>
                 </div>
+            </div>
+            <div class="l" v-show="!suboptionModel.length">
+                <pnotice-nodata text="请先在左侧列表选择参数" subtitle=""></pnotice-nodata>
             </div>
             <div class="r">
                 <!--  Tab切换 Start  -->
@@ -117,7 +112,7 @@
                 </div>
                 <!--  Tab切换 End  -->
                 <!-- 单平米能耗Start -->
-                <div class="tab_slide_block" v-if="_.get(queryDeatil,'length') && !_.isUndefined(_.find(query.areas,{code:1}))"
+                <div class="tab_slide_block" v-cloak :key="1" v-if="_.get(queryDeatil,'length') && !_.isUndefined(_.find(query.areas,{code:2}))"
                     v-show="helpTab">
                     <span class="tab_slide_block_title">
                         能耗统计
@@ -126,51 +121,45 @@
                         累计单平米能耗
                     </span>
                     <span class="tab_slide_block_bignumber">
-                        <em v-text="_.get(Reference,'total')"></em> <em class="unit">kWh/㎡</em>
+                        <em v-text="fix2(_.get(Reference,'total'))"></em> <em class="unit">kWh/㎡</em>
                     </span>
                     <span class="tab_slide_block_tip">
-                        对应面积：<em v-text="_.get(suboptionModel,'[0].area')"></em> ㎡
+                        对应面积：<em v-text="fix2(_.get(suboptionModel,'[0].area',0))"></em> ㎡
                     </span>
-                    <span class="tab_slide_block_desc">
+                    <span class="tab_slide_block_desc" v-if="timer.timeType !='y'">
                         同比单平米能耗
                     </span>
-                    <span class="tab_slide_block_smallnumber">
-                        <span class="num" v-text="_.get(Reference,'sameData','')">
+                    <span class="tab_slide_block_smallnumber" v-if="timer.timeType !='y'">
+                        <span class="num" v-text="fix2(_.get(Reference,'sameData',0))"></span>
+
+                        <span class="unit" v-text="unit">
+                        </span>
+                        <span v-if="_.get(app.Reference,'sameData')" class="rtext" :class="_.get(Reference,'total')>_.get(Reference,'sameData')?'up':'down'"
+                            v-text="compare(_.get(Reference,'total'),_.get(Reference,'sameData')) + '%'">
 
                         </span>
-
-                        <span class="unit">
-                            kWh
-                        </span>
-                        <span class="rtext" :class="_.get(Reference,'total')>_.get(Reference,'sameData')?'up':'down'"
-                            v-text="Math.abs(fix2((_.get(Reference,'total')-_.get(Reference,'sameData'))/_.get(Reference,'sameData')*100))">
-
-                        </span>
-                        <img class="pic" :class="_.get(Reference,'total')>_.get(Reference,'sameData')?'up':'pdonw'"
+                        <img class="pic" v-if="_.get(Reference,'total')&&_.get(Reference,'sameData')" :class="_.get(Reference,'total')>_.get(Reference,'sameData')?'up':'pdonw'"
                             :src="_.get(Reference,'total')>_.get(Reference,'sameData')?'../../../images/up.png':'../../../images/down.png'">
                     </span>
-                    <span class="tab_slide_block_desc">
+                    <span class="tab_slide_block_desc" v-if="timer.timeType !='y'">
                         环比单平米能耗
                     </span>
-                    <span class="tab_slide_block_smallnumber">
-                        <span class="num" v-text="_.get(Reference,'circleData','')">
+                    <span class="tab_slide_block_smallnumber" v-if="timer.timeType !='y'">
+                        <span class="num" v-text="fix2(_.get(Reference,'circleData',''))"></span>
+
+                        <span class="unit" v-text="unit">
+                        </span>
+                        <span v-if="_.get(app.Reference,'sameData')" class="rtext" :class="_.get(Reference,'total')>_.get(Reference,'circleData')?'up':'down'"
+                            v-text="compare(_.get(Reference,'total'),_.get(Reference,'circleData')) + '%'">
 
                         </span>
-
-                        <span class="unit">
-                            kWh
-                        </span>
-                        <span class="rtext" :class="_.get(Reference,'total')>_.get(Reference,'circleData')?'up':'down'"
-                            v-text="Math.abs(fix2((_.get(Reference,'total')-_.get(Reference,'circleData'))/_.get(Reference,'circleData')*100))">
-
-                        </span>
-                        <img class="pic" :class="_.get(Reference,'total')>_.get(Reference,'circleData')?'up':'pdonw'"
+                        <img class="pic" v-if="_.get(Reference,'total') && _.get(Reference,'circleData')" :class="_.get(Reference,'total')>_.get(Reference,'circleData')?'up':'pdonw'"
                             :src="_.get(Reference,'total')>_.get(Reference,'circleData')?'../../../images/up.png':'../../../images/down.png'">
                     </span>
                 </div>
                 <!-- 单平米能耗End -->
                 <!-- 能耗Start -->
-                <div class="tab_slide_block" v-if="_.get(queryDeatil,'length') && !_.isUndefined(_.find(query.areas,{code:0}))"
+                <div class="tab_slide_block" v-cloak :key="2" v-if="_.get(queryDeatil,'length') && !_.isUndefined(_.find(query.areas,{code:1}))"
                     v-show="helpTab">
                     <span class="tab_slide_block_title">
                         能耗统计
@@ -179,10 +168,10 @@
                         总能耗
                     </span>
                     <span class="tab_slide_block_bignumber">
-                        <em v-text="_.get(Reference,'total')"></em> <em class="unit">kWh/㎡</em>
+                        <em v-text="fix2(_.get(Reference,'total'))"></em> <em class="unit" v-text="unit"></em>
                     </span>
                     <span class="tab_slide_block_tip">
-                        数据来源：下级分项汇总
+                        数据来源：{{_.get(suboptionModel,'[0].content',[]).length?'下级分项汇总':'设备调研'}}
                     </span>
                     <div class="circle">
                         <div class="circle_item">
@@ -191,7 +180,7 @@
                             </span>
                             <div class="circle_item_chart">
                                 <span class="ctitle">
-                                    <em v-text="fix2(Reference.parent/Reference.total*100)"></em>
+                                    <em v-text="fix2(Reference.total/Reference.parent*100)"></em>
                                     <span class="unit">
                                         %
                                     </span>
@@ -205,7 +194,7 @@
                             </span>
                             <div class="circle_item_chart">
                                 <span class="ctitle">
-                                    <em v-text="fix2(Reference.superparent/Reference.total*100)"></em>
+                                    <em v-text="fix2(Reference.total/Reference.superparent*100)"></em>
                                     <span class="unit">
                                         %
                                     </span>
@@ -214,46 +203,42 @@
                             </div>
                         </div>
                     </div>
-                    <span class="tab_slide_block_desc">
-                        同比单平米能耗
+                    <span class="tab_slide_block_desc" v-if="isTimeSpan && timer.timeType !='y'">
+                        同比能耗
                     </span>
-                    <span class="tab_slide_block_smallnumber">
-                        <span class="num" v-text="_.get(Reference,'sameData','')">
+                    <span class="tab_slide_block_smallnumber" v-if="isTimeSpan && timer.timeType !='y'">
+                        <span class="num" v-text="fix2(_.get(Reference,'sameData',''))">
                             18.5
                         </span>
 
-                        <span class="unit">
-                            kWh
+                        <span class="unit" v-text="unit">
                         </span>
                         <span class="rtext" :class="_.get(Reference,'total')>_.get(Reference,'sameData')?'up':'down'"
-                            v-text="Math.abs(fix2((_.get(Reference,'total')-_.get(Reference,'sameData'))/_.get(Reference,'sameData')*100))">
-
-                        </span>
+                            v-text="compare(_.get(Reference,'total'),_.get(Reference,'sameData')) + '%'"></span>
                         <img class="pic" :class="_.get(Reference,'total')>_.get(Reference,'sameData')?'up':'pdonw'"
                             :src="_.get(Reference,'total')>_.get(Reference,'sameData')?'../../../images/up.png':'../../../images/down.png'">
                     </span>
-                    <span class="tab_slide_block_desc">
-                        环比单平米能耗
                     </span>
-                    <span class="tab_slide_block_smallnumber">
-                        <span class="num" v-text="_.get(Reference,'circleData','')">
+                    <span class="tab_slide_block_desc" v-if="isTimeSpan && timer.timeType !='y'">
+                        环比能耗
+                    </span>
+                    <span class="tab_slide_block_smallnumber" v-if="isTimeSpan && timer.timeType !='y'">
+                        <span class="num" v-text="fix2(_.get(Reference,'circleData',0))">
                             18.5
                         </span>
 
-                        <span class="unit">
-                            kWh
+                        <span class="unit" v-text="unit">
                         </span>
                         <span class="rtext" :class="_.get(Reference,'total')>_.get(Reference,'circleData')?'up':'down'"
-                            v-text="Math.abs(fix2((_.get(Reference,'total')-_.get(Reference,'circleData'))/_.get(Reference,'circleData')*100))">
-
-                        </span>
+                            v-text="compare(_.get(Reference,'total'),_.get(Reference,'circleData')) + '%'"></span>
                         <img class="pic" :class="_.get(Reference,'total')>_.get(Reference,'circleData')?'up':'pdonw'"
                             :src="_.get(Reference,'total')>_.get(Reference,'circleData')?'../../../images/up.png':'../../../images/down.png'">
+                    </span>
                     </span>
                 </div>
                 <!-- 能耗End -->
                 <!-- 下级能耗分项Start -->
-                <div class="tab_slide_block" v-if="_.get(queryDeatil,'length') && !_.isUndefined(_.find(query.areas,{code:2}))"
+                <div class="tab_slide_block" v-cloak :key="3" v-if="_.get(queryDeatil,'length') && !_.isUndefined(_.find(query.areas,{code:3}))"
                     v-show="helpTab">
                     <span class="tab_slide_block_title">
                         能耗统计
@@ -262,7 +247,7 @@
                         总能耗
                     </span>
                     <span class="tab_slide_block_bignumber">
-                        <em v-text="_.sum( _.map(Reference.series,'y'))"></em> <em class="unit">kWh/㎡</em>
+                        <em v-text="fix2(_.sum( _.map(Reference.series,'y')))"></em> <em class="unit" v-text="unit"></em>
                     </span>
                     <span class="tab_slide_block_title">
                         下级能耗占比
@@ -278,11 +263,11 @@
                             </div>
                         </div>
                     </div>
-                    <inquirelist :list="Reference.series" :name="'x'" :value="'y'"></inquirelist>
+                    <inquirelist :list="Reference.series" :unit="'unit'" :name="'x'" :value="'y'"></inquirelist>
                 </div>
                 <!-- 下级能耗分项End -->
                 <!-- 室内环境Start -->
-                <div class="tab_slide_list" v-if="!helpTab">
+                <div class="tab_slide_list" v-cloak v-if="!helpTab">
                     <div class=" item fst">室外环境</div>
 
 
